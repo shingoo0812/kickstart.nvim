@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -622,6 +622,16 @@ require('lazy').setup({
           end,
         },
       }
+      -- Can't add 'gdscript' to servers because it is not listed in Mason. So :MasonInstall gdscript won't work
+      local gdscript_config = {
+        capabilities = capabilities,
+        settings = {},
+      }
+      if vim.fn.has 'win32' == 1 then
+        -- Windows specific. Requires nmap installed (`winget install nmap`)
+        gdscript_config['cmd'] = { 'ncat', 'localhost', os.getenv 'GDScript_Port' or '6005' }
+      end
+      require('lspconfig').gdscript.setup(gdscript_config)
     end,
   },
 
@@ -835,9 +845,9 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'gdscript', 'godot_resource' },
       -- Autoinstall languages that are not installed
-      auto_install = true,
+      auto_install = false,
       highlight = {
         enable = true,
         -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
@@ -873,7 +883,7 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
+  require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
@@ -910,3 +920,13 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+-- Enable neovim to be the external editor for Godot, if the cwd has a project.godot file
+if vim.fn.filereadable(vim.fn.getcwd() .. '/project.godot') == 1 then
+  local addr = './godot.pipe'
+  if vim.fn.has 'win32' == 1 then
+    -- Windows can't pipe so use localhost. Make sure this is configured in Godot
+    addr = '127.0.0.1:6004'
+  end
+  vim.fn.serverstart(addr)
+end
