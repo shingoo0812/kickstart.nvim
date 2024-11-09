@@ -1,5 +1,4 @@
 return {
-
   'CopilotC-Nvim/CopilotChat.nvim',
   branch = 'canary',
   dependencies = {
