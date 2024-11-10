@@ -389,6 +389,12 @@ wk.add {
     { '<A-/>', ':vertical resize -2<cr>', desc = 'resize pane to right' },
     { '<A-,>', ':resize -2<cr>gc', desc = 'resize pane to up' },
     { '<A-.>', ':resize +2<cr>gc', desc = 'resize pane to down' },
+    -- Copilot
+    { '<leader>k', '', desc = 'Copilot' },
+    { '<C-[]>', ':Copilot suggestion<cr>gc', desc = 'Copilot suggestion' },
+    { '<leader>kc', '<cmd>CopilotChat<cr>', desc = 'CopilotChat Open' },
+    { '<leader>kx', '<cmd>CopilotChatClose<cr>', desc = 'CopilotChat Close' },
+    { '<leader>kf', '<cmd>CopilotChatFix<cr>', desc = 'CopilotChatFix Open' },
     --Move Line
     { '<A-j>', '<cmd>Move .+1<cr>==' },
     { '<A-k>', '<cmd>Move .-2<cr>==' },
