@@ -367,6 +367,8 @@ if vim.fn.filereadable(vim.fn.getcwd() .. '/project.godot') == 1 then
     -- Exec Path: nvim
     -- Exec Flags: --server 127.0.0.1:6004 --remote-send "<esc>:n {file}<CR>:call cursor({line},{col})<CR>"
     addr = '127.0.0.1:6004'
+  else
+    addr = '127.0.0.1:6004'
   end
   vim.fn.serverstart(addr)
 end
@@ -431,10 +433,10 @@ wk.add {
   {
     mode = { 'v' },
     { 'd', '"_d' },
+    { '<C-a>', '^', desc = 'Move to head' },
+    { '<C-e>', '$', desc = 'Move to end' },
   },
   {
     mode = { 'x' },
-    { '<C-a>', '<esc>^', desc = 'Move to head' },
-    { '<C-e>', '<esc>$', desc = 'Move to end' },
   },
 }
