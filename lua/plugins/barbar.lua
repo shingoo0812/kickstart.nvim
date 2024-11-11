@@ -35,7 +35,7 @@ return {
       --                 :BufferGotoUnpinned
       -- Close buffer
       { '<C-w>', '<Cmd>BufferClose<cr>' },
-      { '<C-o>', '<Cmd>BufferRestore<cr>' },
+      { '<C-x>', '<Cmd>BufferRestore<cr>' },
       { '<C-p>', '<Cmd>silent! BufferPickDelete<CR>', silent = true },
     }
   end,
