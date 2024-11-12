@@ -1,0 +1,9 @@
+= Linux Settings =
+* [[SSH]]
+* [[conda]]
+* [[wsl.conf]]
+* [[fzf]]
+* [[fd]]
+* [[wikiman]]
+= ASCII =
+* [[figlet]]
