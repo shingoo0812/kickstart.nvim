@@ -408,6 +408,7 @@ wk.add {
       end,
       desc = 'Neovim reload',
     },
+    { '<leader>fc', '<cmd>e ' .. vim.fn.expand '%:p:h' .. '<cr>', desc = 'Open Current File Location' },
     { '<leader>fv', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.MYVIMRC, ':p:h') .. '<cr>', desc = 'Open Nvim Conf Location' },
     { '<leader>fw', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.PROFILE, ':p:h') .. '<cr>', desc = 'Open Windows Profile Location' },
     -- Move focus window
@@ -423,10 +424,10 @@ wk.add {
     { '<C-o>', '<esc>o', desc = 'Go to normal mode, create new line' },
     { '<C-a>', '<esc>^', desc = 'Move to head' },
     { '<C-e>', '<esc>$', desc = 'Move to end' },
-    { '<C-h>', '<Left>', desc = 'Move to right' },
-    { '<C-j>', '<Down>', desc = 'Move to down' },
-    { '<C-k>', '<Up>', desc = 'Move to up' },
-    { '<C-l>', '<Right>', desc = 'Move to left' },
+    { '<A-h>', '<Left>', desc = 'Move to right' },
+    { '<A-j>', '<Down>', desc = 'Move to down' },
+    { '<A-k>', '<Up>', desc = 'Move to up' },
+    { '<A-l>', '<Right>', desc = 'Move to left' },
   },
   {
     mode = { 'v' },

@@ -16,6 +16,7 @@ return { -- Highlight, edit, and navigate code
       use_languagetree = true, -- use async parser
     },
     indent = { enable = true, disable = { 'ruby' } },
+    additional_vim_regex_highlighting = false,
   },
   -- There are additional nvim-treesitter modules that you can use to interact
   -- with nvim-treesitter. You should go explore a few and see what interests you:

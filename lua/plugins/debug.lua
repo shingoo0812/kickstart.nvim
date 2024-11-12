@@ -72,6 +72,10 @@ return {
 
     -- DapUIの開始・終了に合わせてNeo-treeの幅を調整
     local function reset_neotree_width()
+      local status_ok, _ = pcall(vim.cmd, 'Neotree close')
+      if not status_ok then
+        return
+      end
       vim.cmd 'Neotree close'
       vim.cmd 'Neotree reveal'
       vim.cmd('vertical resize ' .. neotree_width)
