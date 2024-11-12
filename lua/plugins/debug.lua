@@ -23,6 +23,7 @@ return {
       { '<leader>d4', dap.step_out, desc = 'Debug: Step Out(F3)' },
       { '<leader>dt', dap.toggle_breakpoint, desc = 'Debug: Toggle Breakpoint' },
       { '<leader>du', '<cmd>lua dapui.toggle()<cr>', desc = 'Toggle Dap UI' },
+      { '<leader>de', ':DapTerminate<cr>', desc = 'DAP End' },
       {
         '<leader>db',
         function()
