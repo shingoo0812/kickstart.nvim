@@ -22,6 +22,7 @@ return {
       { '<leader>d3', dap.step_over, desc = 'Debug: Step Over(F2)' },
       { '<leader>d4', dap.step_out, desc = 'Debug: Step Out(F3)' },
       { '<leader>dt', dap.toggle_breakpoint, desc = 'Debug: Toggle Breakpoint' },
+      { '<leader>du', '<cmd>lua dapui.toggle()<cr>', desc = 'Toggle Dap UI' },
       {
         '<leader>db',
         function()
@@ -36,6 +37,7 @@ return {
   config = function()
     local dap = require 'dap'
     local dapui = require 'dapui'
+    local neotree_width = 40 -- Neo-treeの幅を保持
 
     require('mason-nvim-dap').setup {
       automatic_installation = true,
@@ -47,7 +49,6 @@ return {
     vim.keymap.set('n', '<F11>', dap.step_into, { desc = 'Debug: Step Into' })
     vim.keymap.set('n', '<F10>', dap.step_over, { desc = 'Debug: Step Over' })
     vim.keymap.set('n', '<F8>', dap.terminate, { desc = 'Debug: Terminate' })
-    -- vim.keymap.set('n', '<leader>b', dap.toggle_breakpoint, { desc = 'Debug: Toggle Breakpoint' })
     vim.keymap.set('n', '<leader>ds', function()
       dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
     end, { desc = 'Debug: Set Breakpoint' })
@@ -69,9 +70,26 @@ return {
       },
     }
 
-    dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-    dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-    dap.listeners.before.event_exited['dapui_config'] = dapui.close
+    -- DapUIの開始・終了に合わせてNeo-treeの幅を調整
+    local function reset_neotree_width()
+      vim.cmd 'Neotree close'
+      vim.cmd 'Neotree reveal'
+      vim.cmd('vertical resize ' .. neotree_width)
+    end
+
+    dap.listeners.after.event_initialized['dapui_config'] = function()
+      dapui.open()
+    end
+
+    dap.listeners.before.event_terminated['dapui_config'] = function()
+      dapui.close()
+      reset_neotree_width()
+    end
+
+    dap.listeners.before.event_exited['dapui_config'] = function()
+      dapui.close()
+      reset_neotree_width()
+    end
 
     -- GDScript config
     dap.adapters.godot = {

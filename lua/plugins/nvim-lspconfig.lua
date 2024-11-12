@@ -220,4 +220,22 @@ return {
     end
     require('lspconfig').gdscript.setup(gdscript_config)
   end,
+  -----------------------------------------------------------------------------------
+  -- Modify Unity Configuration. Change to unix notation folder path.
+  -----------------------------------------------------------------------------------
+
+  vim.api.nvim_create_user_command('ModifyCSProjFile', function()
+    if vim.fn.has 'win32' == 1 then
+      vim.fn.system 'findstr /s /i "*.csproj" | sed -i "s|C:\\|/mnt/c/|g"'
+      vim.fn.system 'findstr /s /i "*.csproj" | sed -i "s|D:\\|/mnt/d/|g"'
+    else
+      vim.fn.system 'find . -maxdepth 2 -name "*.csproj" | xargs sed -i -e "s/C:/\\/mnt\\/c/g"'
+      vim.fn.system 'find . -maxdepth 2 -name "*.csproj" | xargs sed -i -e "s/D:/\\/mnt\\/d/g"'
+    end
+
+    -- YCM のリロードが必要なら
+    if vim.fn.exists ':YcmCompleter' == 1 then
+      vim.cmd 'YcmCompleter ReloadSolution'
+    end
+  end, {}),
 }

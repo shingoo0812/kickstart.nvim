@@ -1,5 +1,4 @@
 --[[
-
 =====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
@@ -379,7 +378,6 @@ wk.add {
   {
     mode = { 'n' },
     { 'd', '"_d' },
-
     { '<leader>f', '', desc = 'File' },
     { '<leader>w', '', desc = 'Vimwiki' },
     { '<leader>q', '<cmd>confirm q<cr>', desc = 'Quit Window' },
@@ -393,7 +391,7 @@ wk.add {
     { '<A-.>', ':resize +2<cr>gc', desc = 'resize pane to down' },
     -- Copilot
     { '<leader>k', '', desc = 'Copilot' },
-    { '<C-[]>', ':Copilot suggestion<cr>gc', desc = 'Copilot suggestion' },
+    { '<C-[>', ':Copilot suggestion<cr>gc', desc = 'Copilot suggestion' },
     { '<leader>kc', '<cmd>CopilotChat<cr>', desc = 'CopilotChat Open' },
     { '<leader>kx', '<cmd>CopilotChatClose<cr>', desc = 'CopilotChat Close' },
     { '<leader>kf', '<cmd>CopilotChatFix<cr>', desc = 'CopilotChatFix Open' },
