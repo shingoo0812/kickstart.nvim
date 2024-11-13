@@ -1,3 +1,7 @@
-=Settings=
+= Settings =
+    * [[Conventins]]
     * [[EditorSetting]]
     * [[Virtual funciton]]
+
+= Tips =
+    * [[signal]]

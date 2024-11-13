@@ -395,6 +395,9 @@ wk.add {
     { '<leader>kc', '<cmd>CopilotChat<cr>', desc = 'CopilotChat Open' },
     { '<leader>kx', '<cmd>CopilotChatClose<cr>', desc = 'CopilotChat Close' },
     { '<leader>kf', '<cmd>CopilotChatFix<cr>', desc = 'CopilotChatFix Open' },
+    { '<leader>ke', '<cmd>Copilot enable<cr>', desc = 'Copilot Enable' },
+    { '<leader>kd', '<cmd>Copilot disable<cr>', desc = 'Copilot Disable' },
+    { '<leader>ks', '<cmd>Copilot suggestion<cr>', desc = 'Copilot Suggestion' },
     --Move Line
     { '<A-j>', '<cmd>Move .+1<cr>==' },
     { '<A-k>', '<cmd>Move .-2<cr>==' },
@@ -408,7 +411,8 @@ wk.add {
       end,
       desc = 'Neovim reload',
     },
-    { '<leader>fc', '<cmd>e ' .. vim.fn.expand '%:p:h' .. '<cr>', desc = 'Open Current File Location' },
+    { '<leader>fc', '<cmd>BufferClose<cr>', desc = 'Buffer Close' },
+    { '<leader>fo', '<cmd>e ' .. vim.fn.expand '%:p:h' .. '<cr>', desc = 'Open Current File Location' },
     { '<leader>fv', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.MYVIMRC, ':p:h') .. '<cr>', desc = 'Open Nvim Conf Location' },
     { '<leader>fw', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.PROFILE, ':p:h') .. '<cr>', desc = 'Open Windows Profile Location' },
     -- Move focus window
