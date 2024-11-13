@@ -101,18 +101,36 @@ return { -- Autocompletion
         ['<C-Space>'] = cmp.mapping.complete {},
 
         -- Jump to the next/previous snippet placeholder
-        ['<C-l>'] = cmp.mapping(function()
+        ['<C-l>'] = cmp.mapping(function(fallback)
           if luasnip.expand_or_locally_jumpable() then
             luasnip.expand_or_jump()
+          else
+            fallback()
           end
         end, { 'i', 's' }),
-        ['<C-h>'] = cmp.mapping(function()
+        ['<C-h>'] = cmp.mapping(function(fallback)
           if luasnip.locally_jumpable(-1) then
             luasnip.jump(-1)
+          else
+            fallback()
           end
         end, { 'i', 's' }),
-        ['<C-j>'] = cmp.mapping.select_next_item { behavior = cmp.SelectBehavior.Insert },
-        ['<C-k>'] = cmp.mapping.select_prev_item { behavior = cmp.SelectBehavior.Insert },
+        -- <C-j> and <C-k> to navigate completion items
+        ['<C-j>'] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_next_item()
+          else
+            fallback() -- Fallback to default behavior when completion is not visible
+          end
+        end, { 'i', 's' }),
+
+        ['<C-k>'] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_prev_item()
+          else
+            fallback() -- Fallback to default behavior when completion is not visible
+          end
+        end, { 'i', 's' }),
       },
       sources = {
         { name = 'nvim_lsp' },
