@@ -157,6 +157,8 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 
 vim.opt.encoding = 'utf-8'
+vim.opt.fileencoding = 'utf-8'
+vim.env.PYTHONIOENCODING = 'utf-8'
 
 vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
@@ -411,8 +413,61 @@ wk.add {
       end,
       desc = 'Neovim reload',
     },
+    {
+      '<leader>fr',
+      function()
+        -- Get current_path as absolute path
+        local current_path = vim.fn.expand '%:p'
+        -- Input to new_name
+        local new_name = vim.fn.input('New name:', vim.fn.expand '%:p:h' .. '/', 'file')
+
+        if new_name ~= '' and new_name ~= current_path then
+          -- Save as new file
+          vim.cmd('saveas ' .. vim.fn.fnameescape(new_name))
+          -- Delete current file
+          vim.fn.delete(current_path)
+          vim.cmd 'BufferClose'
+          -- Open to new file
+          vim.cmd('e ' .. vim.fn.fnameescape(new_name))
+          vim.cmd 'Neotree close'
+          vim.cmd 'Neotree show'
+          print('File renamed to ' .. new_name)
+        else
+          print 'Renaming canceled or file name is the same.'
+        end
+      end,
+      desc = 'File Rename',
+    },
+    {
+      '<leader>fd',
+      function()
+        local current_path = vim.fn.expand '%:p'
+
+        local confirm = vim.fn.input 'Delete file? (y/n): '
+
+        if confirm == 'y' then
+          vim.fn.delete(current_path)
+          vim.cmd 'BufferClose'
+          vim.cmd 'Neotree close'
+          vim.cmd 'Neotree show'
+          print('File deleted: ' .. current_path)
+        else
+          print 'File deletion canceled.'
+        end
+      end,
+      desc = 'File Delete',
+    },
     { '<leader>fc', '<cmd>BufferClose<cr>', desc = 'Buffer Close' },
-    { '<leader>fo', '<cmd>e ' .. vim.fn.expand '%:p:h' .. '<cr>', desc = 'Open Current File Location' },
+    -- { '<leader>fo', '<cmd>e ' .. vim.fn.expand '%:p:h' .. '<cr>', desc = 'Open Current File Location' },
+    {
+      '<leader>fo',
+      function()
+        local current_path = vim.fn.expand '%:p:h'
+        vim.cmd('Neotree dir=' .. current_path)
+        vim.cmd 'Neotree show'
+      end,
+      desc = 'Open Current File Location(Neotree)',
+    },
     { '<leader>fv', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.MYVIMRC, ':p:h') .. '<cr>', desc = 'Open Nvim Conf Location' },
     { '<leader>fw', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.PROFILE, ':p:h') .. '<cr>', desc = 'Open Windows Profile Location' },
     -- Move focus window

@@ -2,7 +2,7 @@ return {
   'potamides/pantran.nvim',
   config = function()
     require('pantran').setup {
-      -- Default engine to use for translation. To list valid engine names run
+      -- Set encoding for pantran.nvim to avoid character issues
       -- `:lua =vim.tbl_keys(require("pantran.engines"))`.
       default_engine = 'google',
       -- Configuration for individual engines goes here.
