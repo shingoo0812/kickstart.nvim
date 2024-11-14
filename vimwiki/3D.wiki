@@ -1,3 +1,4 @@
 = Tips =
     * [[Collision]]
-    * 
+    * [[Memory Management]]
+    * [[Leaving the screen]]
