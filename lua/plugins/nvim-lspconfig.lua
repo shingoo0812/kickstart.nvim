@@ -85,9 +85,8 @@ return {
         --  Similar to document symbols, except searches over your entire project.
         map('<leader>lw', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
 
-        -- Rename the variable under your cursor.
-        --  Most Language Servers support renaming across files, etc.
-        -- map('<leader>fn', vim.lsp.buf.rename, '[R]e[n]ame')
+        map('<leader>lc', '<cmd>LspStop<cr>', 'Lsp Stop')
+        map('<leader>l1', '<cmd>LspStart<cr>', 'Lsp Start')
 
         -- Execute a code action, usually your cursor needs to be on top of an error
         -- or a suggestion from your LSP for this to activate.
