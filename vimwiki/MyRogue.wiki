@@ -2,7 +2,7 @@
 This is a first rougue like project.
 
 = Index =
-    Player Input [[System]]
+    Player Input System
 
 
 
