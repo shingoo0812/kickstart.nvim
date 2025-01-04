@@ -6,6 +6,7 @@
     * [[Shell Script]]
     * [[Python]]
 =Env=
+    * [[NEOVIM]]
     * [[Linux]]
     * [[Llama]]
 =Game Engine=

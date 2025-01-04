@@ -187,6 +187,13 @@ return {
           },
         },
       },
+
+      require('lspconfig').clangd.setup {
+        on_attach = function()
+          print 'clangd attached to the buffer'
+          vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = 0 })
+        end,
+      },
     }
 
     -- Ensure the servers and tools above are installed
