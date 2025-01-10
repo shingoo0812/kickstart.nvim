@@ -387,10 +387,13 @@ wk.add {
     { '<leader>fn', '<cmd>enew<cr>', desc = 'New File' },
     { '<C-S>', '<cmd>silent! update! | redraw<cr>', desc = 'Force write' },
     { '<esc>', '<cmd>nohlsearch<cr>' },
+    -- Pane
     { '<A-m>', ':vertical resize +2<cr>', desc = 'resize pane to left' },
     { '<A-/>', ':vertical resize -2<cr>', desc = 'resize pane to right' },
     { '<A-,>', ':resize -2<cr>gc', desc = 'resize pane to up' },
     { '<A-.>', ':resize +2<cr>gc', desc = 'resize pane to down' },
+    { '<A-->', ':vs<cr>', desc = 'Sprit Horizontal Pane' },
+    { '<A-+>', ':sv<cr>', desc = 'Sprit Virtical Pane' },
     -- Copilot
     { '<leader>k', '', desc = 'Copilot' },
     { '<C-[>', ':Copilot suggestion<cr>gc', desc = 'Copilot suggestion' },
