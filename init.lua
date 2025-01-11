@@ -88,7 +88,6 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
@@ -160,8 +159,15 @@ vim.opt.encoding = 'utf-8'
 vim.opt.fileencoding = 'utf-8'
 vim.env.PYTHONIOENCODING = 'utf-8'
 
+-- Autoindent
+vim.opt.autoindent = true
+vim.opt.smartindent = true
+vim.cmd 'filetype plugin indent on'
+
 vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
+vim.opt.expandtab = true
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -230,7 +236,7 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   {
     import = 'plugins',
   },
@@ -263,49 +269,6 @@ require('lazy').setup({
   -- you do for a plugin at the top level, you can do for a dependency.
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
-
-  { -- Autoformat
-    'stevearc/conform.nvim',
-    event = { 'BufWritePre' },
-    cmd = { 'ConformInfo' },
-    keys = {
-      {
-        '<leader>ff',
-        function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
-        end,
-        mode = '',
-        desc = '[F]ormat buffer',
-      },
-    },
-    opts = {
-      notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        local lsp_format_opt
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          lsp_format_opt = 'never'
-        else
-          lsp_format_opt = 'fallback'
-        end
-        return {
-          timeout_ms = 500,
-          lsp_format = lsp_format_opt,
-        }
-      end,
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-      },
-    },
-  },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -408,14 +371,7 @@ wk.add {
     { '<A-k>', '<cmd>Move .-2<cr>==' },
     { '<C-a>', '^', desc = 'Move to head' },
     { '<C-e>', '$', desc = 'Move to end' },
-    {
-      '<leader>r',
-      function()
-        vim.cmd 'source $MYVIMRC' -- 設定をリロード
-        require('lazy').sync()
-      end,
-      desc = 'Neovim reload',
-    },
+    { '<leader>r', '<cmd>source $MYVIMRC<cr>', desc = 'init.lua reload' },
     {
       '<leader>fr',
       function()

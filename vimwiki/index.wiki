@@ -3,6 +3,7 @@
     * [[Project Gutenberg]]-- good books are power.
     * Scratchpad -- various temporary stuff.
 =Programming=
+    * [[CPP]]
     * [[Shell Script]]
     * [[Python]]
 =Env=

@@ -6,7 +6,7 @@ return {
     { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
     'williamboman/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
-
+    'rhysd/vim-clang-format',
     -- Useful status updates for LSP.
     -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
     { 'j-hui/fidget.nvim', opts = {} },
@@ -44,6 +44,7 @@ return {
     --    That is to say, every time a new file is opened that is associated with
     --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
     --    function will be executed to configure the current buffer
+
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
       callback = function(event)
@@ -189,10 +190,12 @@ return {
       },
 
       require('lspconfig').clangd.setup {
+        cmd = { 'C:\\Program Files\\LLVM\\bin\\clangd.exe' },
         on_attach = function()
-          print 'clangd attached to the buffer'
+          -- client.server_capabilities.signatureHelpProvider = false
           vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = 0 })
         end,
+        capabilities = capabilities,
       },
     }
 
@@ -209,6 +212,9 @@ return {
     local ensure_installed = vim.tbl_keys(servers or {})
     vim.list_extend(ensure_installed, {
       'stylua', -- Used to format Lua code
+      'clangd',
+      'clang-format',
+      'codelldb',
     })
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
