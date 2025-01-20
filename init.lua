@@ -161,8 +161,8 @@ vim.env.PYTHONIOENCODING = 'utf-8'
 
 -- Autoindent
 vim.opt.autoindent = true
-vim.opt.smartindent = true
-vim.cmd 'filetype plugin indent on'
+-- vim.opt.smartindent = true
+-- vim.cmd 'filetype plugin indent on'
 
 vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
