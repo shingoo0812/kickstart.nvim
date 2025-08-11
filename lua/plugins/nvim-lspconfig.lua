@@ -22,6 +22,13 @@ return {
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
+          -- C#ファイルの場合はomnisharp-vimを優先するため、LSPキーマップをスキップ
+          local filetype = vim.bo[event.buf].filetype
+          if filetype == 'cs' then
+            vim.notify('C#ファイル: OmniSharp-vim を使用（LSPキーマップをスキップ）', vim.log.levels.INFO)
+            return
+          end
+
           local map = function(keys, func, desc, mode)
             mode = mode or 'n'
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
@@ -89,7 +96,7 @@ return {
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-      -- サーバー設定
+      -- サーバー設定（C#のomnisharpは除外）
       local servers = {
         clangd = {},
         lua_ls = {
@@ -107,45 +114,37 @@ return {
             },
           },
         },
-        -- OmniSharp の設定をserversテーブルに追加
-        omnisharp = {
-          cmd = vim.fn.has 'win32' == 1 and {
-            vim.fn.stdpath 'data' .. '/mason/bin/omnisharp.cmd',
-          } or {
-            vim.fn.stdpath 'data' .. '/mason/bin/omnisharp',
-          },
-          root_dir = require('lspconfig.util').root_pattern('*.sln', '*.csproj', 'omnisharp.json', '.git'),
-          settings = {
-            omnisharp = {
-              useModernNet = true,
-              enableRoslynAnalyzers = true,
-              enableImportCompletion = true,
-              includePrerelease = false,
-              -- Unity プロジェクト用の設定
-              enableMsBuildLoadProjectsOnDemand = false,
-              -- デバッグ情報の詳細化
-              enableEditorConfigSupport = true,
-              enableAnalyzersSupport = true,
-            },
-          },
-          on_attach = function(client, bufnr)
-            -- OmniSharp特有の設定
-            client.server_capabilities.semanticTokensProvider = nil
-
-            local opts = { noremap = true, silent = true, buffer = bufnr }
-
-            -- C#専用のキーマップ
-            vim.keymap.set('n', '<leader>lf', function()
-              vim.lsp.buf.format { async = true }
-            end, vim.tbl_extend('force', opts, { desc = 'LSP: Format Document' }))
-
-            -- Unity固有のキーマップ
-            vim.keymap.set('n', '<leader>lu', function()
-              vim.notify('Unity プロジェクト用コマンドを実行中...', vim.log.levels.INFO)
-              vim.cmd 'LspRestart'
-            end, vim.tbl_extend('force', opts, { desc = 'LSP: Restart for Unity' }))
-          end,
-        },
+        -- omnisharp設定をコメントアウト（omnisharp-vimを優先）
+        -- omnisharp = {
+        --   cmd = vim.fn.has 'win32' == 1 and {
+        --     vim.fn.stdpath 'data' .. '/mason/bin/omnisharp.cmd',
+        --   } or {
+        --     vim.fn.stdpath 'data' .. '/mason/bin/omnisharp',
+        --   },
+        --   root_dir = require('lspconfig.util').root_pattern('*.sln', '*.csproj', 'omnisharp.json', '.git'),
+        --   settings = {
+        --     omnisharp = {
+        --       useModernNet = true,
+        --       enableRoslynAnalyzers = true,
+        --       enableImportCompletion = true,
+        --       includePrerelease = false,
+        --       enableMsBuildLoadProjectsOnDemand = false,
+        --       enableEditorConfigSupport = true,
+        --       enableAnalyzersSupport = true,
+        --     },
+        --   },
+        --   on_attach = function(client, bufnr)
+        --     client.server_capabilities.semanticTokensProvider = nil
+        --     local opts = { noremap = true, silent = true, buffer = bufnr }
+        --     vim.keymap.set('n', '<leader>lf', function()
+        --       vim.lsp.buf.format { async = true }
+        --     end, vim.tbl_extend('force', opts, { desc = 'LSP: Format Document' }))
+        --     vim.keymap.set('n', '<leader>lu', function()
+        --       vim.notify('Unity プロジェクト用コマンドを実行中...', vim.log.levels.INFO)
+        --       vim.cmd 'LspRestart'
+        --     end, vim.tbl_extend('force', opts, { desc = 'LSP: Restart for Unity' }))
+        --   end,
+        -- },
       }
 
       -- Mason の設定
@@ -157,7 +156,8 @@ return {
         'clangd',
         'clang-format',
         'codelldb',
-        'omnisharp', -- OmniSharpを自動インストールリストに追加
+        -- omnisharpをコメントアウト（omnisharp-vimを使用するため）
+        -- 'omnisharp',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -205,22 +205,35 @@ return {
         end
       end, {})
 
-      -- OmniSharp用の追加コマンド
-      vim.api.nvim_create_user_command('OmniSharpRestart', function()
-        vim.cmd 'LspStop omnisharp'
-        vim.defer_fn(function()
-          vim.cmd 'LspStart omnisharp'
-        end, 1000)
-      end, { desc = 'Restart OmniSharp LSP server' })
-
-      vim.api.nvim_create_user_command('OmniSharpStatus', function()
-        local clients = vim.lsp.get_active_clients { name = 'omnisharp' }
+      -- LSP用の追加コマンド（C#以外用）
+      vim.api.nvim_create_user_command('LspStatus', function()
+        local clients = vim.lsp.get_active_clients()
         if #clients > 0 then
-          vim.notify('OmniSharp is running (PID: ' .. clients[1].pid .. ')', vim.log.levels.INFO)
+          for _, client in ipairs(clients) do
+            vim.notify(client.name .. ' is running (PID: ' .. client.pid .. ')', vim.log.levels.INFO)
+          end
         else
-          vim.notify('OmniSharp is not running', vim.log.levels.WARN)
+          vim.notify('No LSP clients are running', vim.log.levels.WARN)
         end
-      end, { desc = 'Check OmniSharp LSP status' })
+      end, { desc = 'Check LSP status for all languages except C#' })
+
+      -- デバッグ用コマンド
+      vim.api.nvim_create_user_command('LspDebugInfo', function()
+        local filetype = vim.bo.filetype
+        local clients = vim.lsp.get_active_clients { bufnr = 0 }
+
+        vim.notify('Current filetype: ' .. filetype, vim.log.levels.INFO)
+        if #clients > 0 then
+          for _, client in ipairs(clients) do
+            vim.notify('Active LSP: ' .. client.name, vim.log.levels.INFO)
+          end
+        else
+          vim.notify('No LSP attached to current buffer', vim.log.levels.WARN)
+          if filetype == 'cs' then
+            vim.notify('C# files use OmniSharp-vim instead of LSP', vim.log.levels.INFO)
+          end
+        end
+      end, { desc = 'Debug LSP information for current buffer' })
     end,
   },
 }

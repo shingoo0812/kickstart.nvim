@@ -1,4 +1,4 @@
--- lua/plugins/omnisharp.lua (修正版 - キーバインドを変更)
+-- lua/plugins/omnisharp.lua (修正版 - C#で標準キーを上書き)
 return {
   {
     'OmniSharp/omnisharp-vim',
@@ -22,8 +22,8 @@ return {
       end
     end,
     config = function()
-      -- OmniSharp-vim用のキーマップ（プレフィックス <leader>o を使用）
-      local augroup = vim.api.nvim_create_augroup('omnisharp_vim_commands', { clear = true })
+      -- C#ファイルでomnisharp-vimが標準キーを優先使用
+      local augroup = vim.api.nvim_create_augroup('omnisharp_vim_override', { clear = true })
 
       vim.api.nvim_create_autocmd('FileType', {
         pattern = 'cs',
@@ -31,49 +31,45 @@ return {
         callback = function()
           local opts = { noremap = true, silent = true, buffer = true }
 
-          -- omnisharp-vim専用キーマップ（<leader>o プレフィックス）
-          vim.keymap.set('n', '<leader>od', '<cmd>OmniSharpGotoDefinition<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Goto Definition' }))
-          vim.keymap.set('n', '<leader>oD', '<cmd>OmniSharpPreviewDefinition<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Preview Definition' }))
+          -- 標準キーをomnisharp-vimで上書き（C#ファイルのみ）
+          vim.keymap.set('n', 'gd', '<cmd>OmniSharpGotoDefinition<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Goto Definition' }))
+          vim.keymap.set('n', 'gD', '<cmd>OmniSharpPreviewDefinition<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Preview Definition' }))
 
           -- 参照検索
-          vim.keymap.set('n', '<leader>or', '<cmd>OmniSharpFindUsages<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Find Usages' }))
+          vim.keymap.set('n', 'gr', '<cmd>OmniSharpFindUsages<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Find Usages' }))
 
           -- 実装ジャンプ
-          vim.keymap.set(
-            'n',
-            '<leader>oi',
-            '<cmd>OmniSharpFindImplementations<cr>',
-            vim.tbl_extend('force', opts, { desc = 'OmniSharp: Find Implementations' })
-          )
+          vim.keymap.set('n', 'gI', '<cmd>OmniSharpFindImplementations<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Find Implementations' }))
 
-          -- シンボル検索
-          vim.keymap.set('n', '<leader>os', '<cmd>OmniSharpFindSymbol<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Find Symbol' }))
+          -- ホバー情報
+          vim.keymap.set('n', 'K', '<cmd>OmniSharpDocumentation<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Documentation' }))
 
-          -- コードアクション
-          vim.keymap.set('n', '<leader>oa', '<cmd>OmniSharpGetCodeActions<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Code Actions' }))
-          vim.keymap.set('x', '<leader>oa', '<cmd>OmniSharpGetCodeActions<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Code Actions' }))
+          -- leader キーマップもomnisharp-vimで上書き
+          vim.keymap.set('n', '<leader>la', '<cmd>OmniSharpGetCodeActions<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Code Actions' }))
+          vim.keymap.set('x', '<leader>la', '<cmd>OmniSharpGetCodeActions<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Code Actions' }))
 
-          -- リネーム
-          vim.keymap.set('n', '<leader>oR', '<cmd>OmniSharpRename<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Rename' }))
+          vim.keymap.set('n', '<leader>lr', '<cmd>OmniSharpRename<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Rename' }))
 
-          -- 型情報
-          vim.keymap.set('n', '<leader>oh', '<cmd>OmniSharpDocumentation<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Documentation' }))
-          vim.keymap.set('n', '<leader>ot', '<cmd>OmniSharpTypeLookup<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Type Lookup' }))
+          vim.keymap.set('n', '<leader>ld', '<cmd>OmniSharpTypeLookup<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Type Lookup' }))
 
-          -- サーバー制御
-          vim.keymap.set('n', '<leader>o1', '<cmd>OmniSharpStartServer<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Start Server' }))
-          vim.keymap.set('n', '<leader>oc', '<cmd>OmniSharpStopServer<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Stop Server' }))
-          vim.keymap.set('n', '<leader>oX', '<cmd>OmniSharpRestartServer<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Restart Server' }))
+          vim.keymap.set('n', '<leader>ls', '<cmd>OmniSharpFindSymbol<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Find Symbol' }))
+
+          -- omnisharp-vim専用の追加キーマップ（オプション）
+          vim.keymap.set('n', '<leader>l1', '<cmd>OmniSharpStartServer<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Start Server' }))
+          vim.keymap.set('n', '<leader>lc', '<cmd>OmniSharpStopServer<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Stop Server' }))
+          vim.keymap.set('n', '<leader>lR', '<cmd>OmniSharpRestartServer<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Restart Server' }))
+
+          -- フォーマット（omnisharp-vimには専用コマンドがないので、LSPを使用）
+          vim.keymap.set('n', '<leader>lf', function()
+            vim.lsp.buf.format { async = true }
+          end, vim.tbl_extend('force', opts, { desc = 'LSP: Format Document' }))
 
           -- ナビゲーション
-          vim.keymap.set('n', '<leader>o]', '<cmd>OmniSharpNavigateUp<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Navigate Up' }))
-          vim.keymap.set('n', '<leader>o[', '<cmd>OmniSharpNavigateDown<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Navigate Down' }))
-
-          -- デバッグ用
-          vim.keymap.set('n', '<leader>oS', '<cmd>OmniSharpStatus<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Status' }))
+          vim.keymap.set('n', ']]', '<cmd>OmniSharpNavigateUp<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Navigate Up' }))
+          vim.keymap.set('n', '[[', '<cmd>OmniSharpNavigateDown<cr>', vim.tbl_extend('force', opts, { desc = 'OmniSharp: Navigate Down' }))
 
           -- 通知
-          vim.notify('OmniSharp-vim キーマップが有効になりました（<leader>o プレフィックス）', vim.log.levels.INFO)
+          vim.notify('C#ファイル: OmniSharp-vim が標準キーを使用します', vim.log.levels.INFO)
         end,
       })
 
