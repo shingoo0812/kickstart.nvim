@@ -117,7 +117,7 @@ vim.opt.showmode = false
 -- end)
 
 if vim.g.vscode then
-  vim.opt.clipboard = ''
+  vim.opt.clipboard = 'unnamedplus'
 
   -- yとpのマッピングは削除（keybindings.jsonで処理）
   -- VSCodeのキーバインドに任せる
