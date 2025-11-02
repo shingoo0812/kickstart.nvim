@@ -122,7 +122,6 @@ if vim.g.vscode then
   vim.keymap.set('n', 'dd', '"_dd')
   vim.keymap.set('n', '<C-z>', '^')
   vim.keymap.set('n', '<C-e>', '$')
-  vim.keymap.set('n', '<C-a>', '<cmd>%y<cr>')
   vim.keymap.set('v', 'd', '"_d')
   vim.keymap.set('v', '<C-z>', '^')
   vim.keymap.set('v', '<C-e>', '$')
@@ -388,7 +387,7 @@ wk.add {
     { '<leader>kd', '<cmd>Copilot disable<cr>', desc = 'Copilot Disable' },
     { '<leader>ks', '<cmd>Copilot suggestion<cr>', desc = 'Copilot Suggestion' },
     --Move Line
-    { '<C-a>', '<cmd>%y<cr>' },
+    { '<C-a>', 'ggVG' },
     { '<A-j>', '<cmd>Move .+1<cr>==' },
     { '<A-k>', '<cmd>Move .-2<cr>==' },
     { '<C-z>', '^', desc = 'Move to head' },
