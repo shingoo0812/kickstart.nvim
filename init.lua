@@ -118,7 +118,17 @@ vim.opt.showmode = false
 
 if vim.g.vscode then
   vim.opt.clipboard = 'unnamedplus'
-
+  vim.keymap.set('n', 'd', '"_d')
+  vim.keymap.set('n', 'dd', '"_dd')
+  vim.keymap.set('n', '<C-z>', '^')
+  vim.keymap.set('n', '<C-e>', '$')
+  vim.keymap.set('n', '<C-a>', '<cmd>%y<cr>')
+  vim.keymap.set('v', 'd', '"_d')
+  vim.keymap.set('v', '<C-z>', '^')
+  vim.keymap.set('v', '<C-e>', '$')
+  vim.api.nvim_create_user_command('TestHello', function()
+    print 'Hello from Neovim!'
+  end, {})
   -- yとpのマッピングは削除（keybindings.jsonで処理）
   -- VSCodeのキーバインドに任せる
 else
@@ -348,7 +358,6 @@ if vim.fn.filereadable(vim.fn.getcwd() .. '/project.godot') == 1 then
   end
   vim.fn.serverstart(addr)
 end
-
 -- Custom Keymaps
 local wk = require 'which-key'
 wk.add {
@@ -379,9 +388,10 @@ wk.add {
     { '<leader>kd', '<cmd>Copilot disable<cr>', desc = 'Copilot Disable' },
     { '<leader>ks', '<cmd>Copilot suggestion<cr>', desc = 'Copilot Suggestion' },
     --Move Line
+    { '<C-a>', '<cmd>%y<cr>' },
     { '<A-j>', '<cmd>Move .+1<cr>==' },
     { '<A-k>', '<cmd>Move .-2<cr>==' },
-    { '<C-a>', '^', desc = 'Move to head' },
+    { '<C-z>', '^', desc = 'Move to head' },
     { '<C-e>', '$', desc = 'Move to end' },
     { '<leader>r', '<cmd>source $MYVIMRC<cr>', desc = 'init.lua reload' },
     {
@@ -452,7 +462,7 @@ wk.add {
     mode = { 'i' },
     { 'jk', '<esc>', desc = 'Normal Mode' },
     { '<C-o>', '<esc>o', desc = 'Go to normal mode, create new line' },
-    { '<C-a>', '<esc>^', desc = 'Move to head' },
+    { '<C-z>', '<esc>^', desc = 'Move to head' },
     { '<C-e>', '<esc>$', desc = 'Move to end' },
     { '<C-h>', '<Left>', desc = 'Move to right' },
     { '<C-j>', '<Down>', desc = 'Move to down' },
@@ -462,7 +472,7 @@ wk.add {
   {
     mode = { 'v' },
     { 'd', '"_d' },
-    { '<C-a>', '^', desc = 'Move to head' },
+    { '<C-z>', '^', desc = 'Move to head' },
     { '<C-e>', '$', desc = 'Move to end' },
   },
   {
