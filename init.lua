@@ -463,10 +463,10 @@ wk.add {
     { '<C-o>', '<esc>o', desc = 'Go to normal mode, create new line' },
     { '<C-z>', '<esc>^', desc = 'Move to head' },
     { '<C-e>', '<esc>$', desc = 'Move to end' },
-    { '<C-h>', '<Left>', desc = 'Move to right' },
+    { '<C-h>', '<Left>', desc = 'Move to left' },
     { '<C-j>', '<Down>', desc = 'Move to down' },
     { '<C-k>', '<Up>', desc = 'Move to up' },
-    { '<C-l>', '<Right>', desc = 'Move to left' },
+    { '<C-l>', '<Right>', desc = 'Move to right' },
   },
   {
     mode = { 'v' },

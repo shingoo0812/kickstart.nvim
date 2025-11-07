@@ -96,6 +96,65 @@ return {
       reset_neotree_width()
     end
 
+    -- Python config
+    dap.adapters.python = function(cb, config)
+      -- Detect virtual environment python using VIRTUAL_ENV environment variable
+      local python_path
+      local venv = os.getenv 'VIRTUAL_ENV'
+
+      if venv then
+        -- If VIRTUAL_ENV is set, use that
+        if vim.fn.has 'win32' == 1 then
+          python_path = venv .. '\\Scripts\\python.exe'
+        else
+          python_path = venv .. '/bin/python'
+        end
+      else
+        -- Fallback: Check common virtual environment locations
+        local cwd = vim.fn.getcwd()
+
+        -- For Windows environment
+        if vim.fn.executable(cwd .. '\\.qtcreator\\Python_3_13_7venv\\Scripts\\python.exe') == 1 then
+          python_path = cwd .. '\\.qtcreator\\Python_3_13_7venv\\Scripts\\python.exe'
+        elseif vim.fn.executable(cwd .. '\\venv\\Scripts\\python.exe') == 1 then
+          python_path = cwd .. '\\venv\\Scripts\\python.exe'
+        elseif vim.fn.executable(cwd .. '\\.venv\\Scripts\\python.exe') == 1 then
+          python_path = cwd .. '\\.venv\\Scripts\\python.exe'
+        -- For WSL/Linux environment
+        elseif vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
+          python_path = cwd .. '/venv/bin/python'
+        elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
+          python_path = cwd .. '/.venv/bin/python'
+        else
+          python_path = 'python3'
+        end
+      end
+
+      cb {
+        type = 'executable',
+        command = python_path,
+        args = { '-m', 'debugpy.adapter' },
+      }
+    end
+
+    dap.configurations.python = {
+      {
+        type = 'python',
+        request = 'launch',
+        name = 'Launch file',
+        program = '${file}',
+        console = 'integratedTerminal',
+      },
+      {
+        type = 'python',
+        request = 'launch',
+        name = 'Launch FastAPI',
+        program = '${workspaceFolder}/main.py',
+        args = {},
+        console = 'integratedTerminal',
+      },
+    }
+
     -- GDScript config
     dap.adapters.godot = {
       type = 'server',
