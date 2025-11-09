@@ -156,6 +156,7 @@ return {
         'clangd',
         'clang-format',
         'codelldb',
+        'pyright',
         -- omnisharpをコメントアウト（omnisharp-vimを使用するため）
         -- 'omnisharp',
       })
@@ -189,6 +190,9 @@ return {
         gdscript_config['cmd'] = { 'ncat', 'localhost', os.getenv 'GDScript_Port' or '6005' }
       end
       require('lspconfig').gdscript.setup(gdscript_config)
+
+      -- Python
+      require('lspconfig').pyright.setup {}
 
       -- Unity プロジェクト用のコマンド（既存のまま）
       vim.api.nvim_create_user_command('ModifyCSProjFile', function()
