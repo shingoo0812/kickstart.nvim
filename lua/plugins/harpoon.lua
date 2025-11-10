@@ -18,8 +18,19 @@ return {
       print('Added mark: ' .. file .. ':' .. pos[1])
     end, { desc = 'Add file and cursor position to Harpoon' })
 
+    keymap('n', 'ha', function()
+      local pos = vim.api.nvim_win_get_cursor(0)
+      local file = vim.fn.expand '%:p'
+      list:add { value = file, context = { row = pos[1], col = pos[2] } }
+      print('Added mark: ' .. file .. ':' .. pos[1])
+    end, { desc = 'Add file and cursor position to Harpoon' })
+
     -- Toggle Harpoon quick menu
     keymap('n', '<leader>hl', function()
+      harpoon.ui:toggle_quick_menu(list)
+    end, { desc = 'Toggle Harpoon menu' })
+
+    keymap('n', 'hl', function()
       harpoon.ui:toggle_quick_menu(list)
     end, { desc = 'Toggle Harpoon menu' })
 
