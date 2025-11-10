@@ -30,10 +30,6 @@ return {
       harpoon.ui:toggle_quick_menu(list)
     end, { desc = 'Toggle Harpoon menu' })
 
-    keymap('n', 'hl', function()
-      harpoon.ui:toggle_quick_menu(list)
-    end, { desc = 'Toggle Harpoon menu' })
-
     -- Jump to marked position
     local function jump_to(idx)
       local item = list.items[idx]
