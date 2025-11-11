@@ -60,7 +60,7 @@ return {
 
           -- カーソル下のハイライト機能
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+          if client and client.server_capabilities.documentHighlightProvider then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -84,7 +84,7 @@ return {
           end
 
           -- Inlay hints のトグル
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+          if client and client.server_capabilities.inlayHintProvider then
             map('<leader>lh', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
@@ -167,13 +167,13 @@ return {
           function(server_name)
             local server = servers[server_name] or {}
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
+            vim.lsp.config[server_name] = server
           end,
         },
       }
 
-      -- Clangd の個別設定（既存のまま）
-      require('lspconfig').clangd.setup {
+      -- Clangd の個別設定
+      vim.lsp.config.clangd = {
         cmd = { 'C:\\Program Files\\LLVM\\bin\\clangd.exe' },
         on_attach = function()
           vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = 0 })
@@ -189,10 +189,10 @@ return {
       if vim.fn.has 'win32' == 1 then
         gdscript_config['cmd'] = { 'ncat', 'localhost', os.getenv 'GDScript_Port' or '6005' }
       end
-      require('lspconfig').gdscript.setup(gdscript_config)
+      vim.lsp.config.gdscript = gdscript_config
 
       -- Python
-      require('lspconfig').pyright.setup {}
+      vim.lsp.config.pyright = {}
 
       -- Unity プロジェクト用のコマンド（既存のまま）
       vim.api.nvim_create_user_command('ModifyCSProjFile', function()
@@ -211,10 +211,10 @@ return {
 
       -- LSP用の追加コマンド（C#以外用）
       vim.api.nvim_create_user_command('LspStatus', function()
-        local clients = vim.lsp.get_active_clients()
+        local clients = vim.lsp.get_clients()
         if #clients > 0 then
           for _, client in ipairs(clients) do
-            vim.notify(client.name .. ' is running (PID: ' .. client.pid .. ')', vim.log.levels.INFO)
+            vim.notify(client.name .. ' is running', vim.log.levels.INFO)
           end
         else
           vim.notify('No LSP clients are running', vim.log.levels.WARN)
@@ -224,7 +224,7 @@ return {
       -- デバッグ用コマンド
       vim.api.nvim_create_user_command('LspDebugInfo', function()
         local filetype = vim.bo.filetype
-        local clients = vim.lsp.get_active_clients { bufnr = 0 }
+        local clients = vim.lsp.get_clients { bufnr = 0 }
 
         vim.notify('Current filetype: ' .. filetype, vim.log.levels.INFO)
         if #clients > 0 then

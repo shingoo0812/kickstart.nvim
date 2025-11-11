@@ -357,6 +357,25 @@ if vim.fn.filereadable(vim.fn.getcwd() .. '/project.godot') == 1 then
   end
   vim.fn.serverstart(addr)
 end
+
+-- :messages を現在のフォルダに保存する（Windows / Linux 両対応）
+vim.keymap.set('n', '<leader>m', function()
+  local msgs = vim.fn.execute 'messages'
+  local lines = vim.split(msgs, '\n')
+
+  -- OSに合わせてファイルパスを作成
+  local sep = package.config:sub(1, 1) -- Windowsなら "\"、Linuxなら "/"
+  local logfile = vim.fn.getcwd() .. sep .. 'messages.log'
+
+  -- 日時を区切りとして追加
+  table.insert(lines, 1, '==== ' .. os.date '%Y-%m-%d %H:%M:%S' .. ' ====')
+
+  -- ファイルに追記 ("a" フラグでappend)
+  vim.fn.writefile(lines, logfile, 'a')
+
+  print('Saved :messages to ' .. logfile)
+end, { desc = 'Save :messages to file' })
+
 -- Custom Keymaps
 local wk = require 'which-key'
 wk.add {
