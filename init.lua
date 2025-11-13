@@ -193,9 +193,6 @@ vim.opt.expandtab = true
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
-
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -207,6 +204,8 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 -- Set alias
 vim.api.nvim_create_user_command('W', 'w', {})
 
+-- Set Configure
+require 'config.shada'
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
 -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
@@ -228,13 +227,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
-    vim.highlight.on_yank()
+    vim.hl.on_yank()
   end,
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+---@diagnostic disable-next-line: undefined-field
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
   local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
@@ -301,18 +301,6 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
 
-  -- require 'plugins.debug',
-  -- require 'plugins.barbar',
-  -- require 'plugins.neo-tree',
-  -- require 'plugins.leap',
-  -- require 'plugins.which-key',
-  -- require 'plugins.gitsigns',
-  -- require 'plugins.gruvbox-material',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
-
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
   --
@@ -340,6 +328,14 @@ require('lazy').setup({
     },
   },
 })
+-- Read Configuration folders
+local config_path = vim.fn.stdpath 'config' .. '/lua/config'
+local files = vim.fn.readdir(config_path)
+for _, file in ipairs(files) do
+  if file:match '%.lua$' then
+    require('config.' .. file:gsub('%.lua$', ''))
+  end
+end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
@@ -389,6 +385,10 @@ wk.add {
     { '<leader>fn', '<cmd>enew<cr>', desc = 'New File' },
     { '<C-S>', '<cmd>silent! update! | redraw<cr>', desc = 'Force write' },
     { '<esc>', '<cmd>nohlsearch<cr>' },
+
+    { '<leader>g', '', desc = 'Diagnostics' },
+    { '<leader>gf', '<cmd>lua vim.diagnostic.open_float()<cr>', desc = 'Show Diagnostics Float' },
+    { '<leader>gl', '<cmd>lua vim.diagnostic.setloclist()<cr>', desc = 'Diagnostics List' },
     -- Pane
     { '<A-m>', ':vertical resize +2<cr>', desc = 'resize pane to left' },
     { '<A-/>', ':vertical resize -2<cr>', desc = 'resize pane to right' },

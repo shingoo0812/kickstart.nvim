@@ -114,37 +114,38 @@ return {
             },
           },
         },
-        -- omnisharp設定をコメントアウト（omnisharp-vimを優先）
-        -- omnisharp = {
-        --   cmd = vim.fn.has 'win32' == 1 and {
-        --     vim.fn.stdpath 'data' .. '/mason/bin/omnisharp.cmd',
-        --   } or {
-        --     vim.fn.stdpath 'data' .. '/mason/bin/omnisharp',
-        --   },
-        --   root_dir = require('lspconfig.util').root_pattern('*.sln', '*.csproj', 'omnisharp.json', '.git'),
-        --   settings = {
-        --     omnisharp = {
-        --       useModernNet = true,
-        --       enableRoslynAnalyzers = true,
-        --       enableImportCompletion = true,
-        --       includePrerelease = false,
-        --       enableMsBuildLoadProjectsOnDemand = false,
-        --       enableEditorConfigSupport = true,
-        --       enableAnalyzersSupport = true,
-        --     },
-        --   },
-        --   on_attach = function(client, bufnr)
-        --     client.server_capabilities.semanticTokensProvider = nil
-        --     local opts = { noremap = true, silent = true, buffer = bufnr }
-        --     vim.keymap.set('n', '<leader>lf', function()
-        --       vim.lsp.buf.format { async = true }
-        --     end, vim.tbl_extend('force', opts, { desc = 'LSP: Format Document' }))
-        --     vim.keymap.set('n', '<leader>lu', function()
-        --       vim.notify('Unity プロジェクト用コマンドを実行中...', vim.log.levels.INFO)
-        --       vim.cmd 'LspRestart'
-        --     end, vim.tbl_extend('force', opts, { desc = 'LSP: Restart for Unity' }))
-        --   end,
-        -- },
+
+        -- csharp-lsの設定
+        csharp_ls = {
+          -- cmdを直接上書きしてProgram Filesのdotnetを使用
+          cmd = function()
+            -- csharp-lsの実行ファイルパスを取得
+            local csharp_ls_path = vim.fn.exepath 'csharp-ls'
+            if csharp_ls_path == '' then
+              -- Masonからのパスを試す
+              csharp_ls_path = vim.fn.stdpath 'data' .. '/mason/bin/csharp-ls'
+              if vim.fn.has 'win32' == 1 then
+                csharp_ls_path = csharp_ls_path .. '.cmd'
+              end
+            end
+
+            return {
+              'cmd',
+              '/C',
+              'set',
+              'DOTNET_ROOT=C:\\Program Files\\dotnet',
+              '&&',
+              'set',
+              'PATH=C:\\Program Files\\dotnet;%PATH%',
+              '&&',
+              csharp_ls_path,
+            }
+          end,
+          handlers = {
+            ['textDocument/definition'] = require('csharpls_extended').handler,
+            ['textDocument/typeDefinition'] = require('csharpls_extended').handler,
+          },
+        },
       }
 
       -- Mason の設定
@@ -157,8 +158,7 @@ return {
         'clang-format',
         'codelldb',
         'pyright',
-        -- omnisharpをコメントアウト（omnisharp-vimを使用するため）
-        -- 'omnisharp',
+        'csharp_ls',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
