@@ -378,6 +378,7 @@ wk.add {
   {
     mode = { 'n' },
     { 'd', '"_d' },
+    { '<leader><leader>x', '<cmd>source %<cr>' },
     { '<leader>f', '', desc = 'File' },
     { '<leader>w', '', desc = 'Vimwiki' },
     { '<leader>q', '<cmd>confirm q<cr>', desc = 'Quit Window' },
@@ -407,8 +408,8 @@ wk.add {
     { '<leader>ks', '<cmd>Copilot suggestion<cr>', desc = 'Copilot Suggestion' },
     --Move Line
     { '<C-a>', 'ggVG' },
-    { '<A-j>', '<cmd>Move .+1<cr>==' },
-    { '<A-k>', '<cmd>Move .-2<cr>==' },
+    { '<A-j>', '<cmd>m .+1<cr>==', desc = 'Move line down' },
+    { '<A-k>', '<cmd>m .-2<cr>==', desc = 'Move line up' },
     { '<C-z>', '^', desc = 'Move to head' },
     { '<C-e>', '$', desc = 'Move to end' },
     { '<leader>r', '<cmd>source $MYVIMRC<cr>', desc = 'init.lua reload' },
@@ -492,6 +493,8 @@ wk.add {
     { 'd', '"_d' },
     { '<C-z>', '^', desc = 'Move to head' },
     { '<C-e>', '$', desc = 'Move to end' },
+    { '<A-j>', ":m '>+1<cr>gv=gv", mode = 'v', desc = 'Move selection down' },
+    { '<A-k>', ":m '<-2<cr>gv=gv", mode = 'v', desc = 'Move selection up' },
   },
   {
     mode = { 'x' },
