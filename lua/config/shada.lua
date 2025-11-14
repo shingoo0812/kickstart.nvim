@@ -1,5 +1,3 @@
--- lua/config/shada.lua
-
 -- ShaDaの一時ファイルをクリアするコマンド
 vim.api.nvim_create_user_command('ClearShada', function()
   local shada_dir = vim.fn.stdpath 'data' .. '/shada'

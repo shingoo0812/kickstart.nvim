@@ -95,7 +95,8 @@ return {
       -- LSP capabilities の設定
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
-
+      capabilities.textDocument.semanticTokens = nil
+      capabilities.textDocument.codeLens = nil
       -- サーバー設定（C#のomnisharpは除外）
       local servers = {
         clangd = {},
@@ -107,9 +108,14 @@ return {
               },
               diagnostics = {
                 globals = { 'vim' },
+                disable = { 'missing-fields' },
               },
               workspace = {
                 library = vim.api.nvim_get_runtime_file('', true),
+                checkThirdParty = false,
+              },
+              telemetry = {
+                enable = false,
               },
             },
           },
@@ -144,6 +150,18 @@ return {
           handlers = {
             ['textDocument/definition'] = require('csharpls_extended').handler,
             ['textDocument/typeDefinition'] = require('csharpls_extended').handler,
+          },
+          init_options = {
+            AutomaticWorkspaceInit = true,
+          },
+          settings = {
+            csharp = {
+              inlayHints = {
+                enableInlayHintsForParameters = false,
+                enableInlayHintsForLiteralParameters = false,
+                enableInlayHintsForIndexerParameters = false,
+              },
+            },
           },
         },
       }
