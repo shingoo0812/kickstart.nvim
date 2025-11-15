@@ -1,0 +1,69 @@
+-- TODO これを導入する
+### 2. **nvim-dap-python** - Python専用デバッグ
+```lua
+{
+  'mfussenegger/nvim-dap-python',
+  dependencies = { 'mfussenegger/nvim-dap' },
+  config = function()
+    require('dap-python').setup('python')
+  end
+}
+```
+**理由**: Houdiniスクリプトやアセット管理システムでの一括リファクタリング
+
+### 5. **mini.ai / mini.indentscope** 
+既にmini.luaがありますが、これらのモジュールも追加:
+```lua
+-- mini.luaに追加
+require('mini.ai').setup()  -- テキストオブジェクトの拡張
+require('mini.indentscope').setup()  -- インデントベースのスコープ可視化
+```
+**理由**: Python/VEXでインデントベースのナビゲーションが便利
+
+### 6. **persistence.nvim** - セッション管理の強化
+```lua
+{
+  'folke/persistence.nvim',
+  event = 'BufReadPre',
+  config = function()
+    require('persistence').setup()
+  end
+}
+```
+**理由**: 既にsession.luaがあるが、より自動化されたセッション復元
+
+### 7. **nvim-notify** - 通知の改善
+```lua
+{
+  'rcarriga/nvim-notify',
+  config = function()
+    vim.notify = require('notify')
+  end
+}
+```
+**理由**: LSP、フォーマッター、lintの通知を美しく表示
+
+### 8. **refactoring.nvim** - リファクタリング支援
+```lua
+{
+  'ThePrimeagen/refactoring.nvim',
+  dependencies = {
+    'nvim-lua/plenary.nvim',
+    'nvim-treesitter/nvim-treesitter',
+  }
+}
+```
+**理由**: Python/C#での変数抽出、関数インライン化など
+
+```
+
+### 10. **neotest** - テストランナー
+```lua
+{
+  'nvim-neotest/neotest',
+  dependencies = {
+    'nvim-neotest/neotest-python',
+    'Issafalcon/neotest-dotnet',  -- C#用
+  }
+}
+```

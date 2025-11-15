@@ -42,9 +42,9 @@ vim.api.nvim_create_user_command('ResetShada', function()
 end, { desc = 'Reset ShaDa file (creates backup)' })
 
 -- キーマップ
-vim.keymap.set('n', '<leader>x', '', { desc = 'Shada' })
-vim.keymap.set('n', '<leader>xc', '<cmd>ClearShada<cr>', { desc = 'Clear ShaDa temp files' })
-vim.keymap.set('n', '<leader>xr', '<cmd>ResetShada<cr>', { desc = 'Reset ShaDa' })
+vim.keymap.set('n', '<leader><leader>s', '', { desc = 'Shada' })
+vim.keymap.set('n', '<leader><leader>sc', '<cmd>ClearShada<cr>', { desc = 'Clear ShaDa temp files' })
+vim.keymap.set('n', '<leader><leader>sr', '<cmd>ResetShada<cr>', { desc = 'Reset ShaDa' })
 
 -- 起動時に一時ファイルが残っていたら自動削除
 vim.api.nvim_create_autocmd('VimEnter', {
