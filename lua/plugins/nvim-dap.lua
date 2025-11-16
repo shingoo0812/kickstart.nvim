@@ -3,14 +3,17 @@ return {
   dependencies = {
     'rcarriga/nvim-dap-ui',
     'nvim-neotest/nvim-nio',
-    'nvim-lua/plenary.nvim', -- nvim-dap-ui で必要な依存関係
+    'nvim-lua/plenary.nvim',
     'williamboman/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
     'leoluz/nvim-dap-go',
+    'mfussenegger/nvim-dap-python',
   },
   keys = function(_, keys)
     local dap = require 'dap'
     local dapui = require 'dapui'
+    local dap_python = require 'dap-python'
+
     return {
       { '<F5>', dap.continue, desc = 'Debug: Start/Continue' },
       { '<F1>', dap.step_into, desc = 'Debug: Step Into' },
@@ -31,6 +34,10 @@ return {
         end,
         desc = 'Debug: Set Breakpoint',
       },
+      -- Python用のキーバインド追加
+      { '<leader>dpm', dap_python.test_method, desc = 'Debug: Python Test Method' },
+      { '<leader>dpc', dap_python.test_class, desc = 'Debug: Python Test Class' },
+      { '<leader>dps', dap_python.debug_selection, desc = 'Debug: Python Selection', mode = 'v' },
       { '<F7>', dapui.toggle, desc = 'Debug: See last session result.' },
       unpack(keys),
     }
@@ -38,7 +45,8 @@ return {
   config = function()
     local dap = require 'dap'
     local dapui = require 'dapui'
-    local neotree_width = 40 -- Neo-treeの幅を保持
+    local dap_python = require 'dap-python'
+    local neotree_width = 40
 
     require('mason-nvim-dap').setup {
       automatic_installation = true,
@@ -71,7 +79,6 @@ return {
       },
     }
 
-    -- DapUIの開始・終了に合わせてNeo-treeの幅を調整
     local function reset_neotree_width()
       local status_ok, _ = pcall(vim.cmd, 'Neotree close')
       if not status_ok then
@@ -96,66 +103,60 @@ return {
       reset_neotree_width()
     end
 
-    -- Python config
-    dap.adapters.python = function(cb, config)
-      -- Detect virtual environment python using VIRTUAL_ENV environment variable
-      local python_path
+    -- Python setup with nvim-dap-python
+    -- 仮想環境のPythonパスを自動検出
+    local function get_python_path()
       local venv = os.getenv 'VIRTUAL_ENV'
-
       if venv then
-        -- If VIRTUAL_ENV is set, use that
         if vim.fn.has 'win32' == 1 then
-          python_path = venv .. '\\Scripts\\python.exe'
+          return venv .. '\\Scripts\\python.exe'
         else
-          python_path = venv .. '/bin/python'
-        end
-      else
-        -- Fallback: Check common virtual environment locations
-        local cwd = vim.fn.getcwd()
-
-        -- For Windows environment
-        if vim.fn.executable(cwd .. '\\.qtcreator\\Python_3_13_7venv\\Scripts\\python.exe') == 1 then
-          python_path = cwd .. '\\.qtcreator\\Python_3_13_7venv\\Scripts\\python.exe'
-        elseif vim.fn.executable(cwd .. '\\venv\\Scripts\\python.exe') == 1 then
-          python_path = cwd .. '\\venv\\Scripts\\python.exe'
-        elseif vim.fn.executable(cwd .. '\\.venv\\Scripts\\python.exe') == 1 then
-          python_path = cwd .. '\\.venv\\Scripts\\python.exe'
-        -- For WSL/Linux environment
-        elseif vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
-          python_path = cwd .. '/venv/bin/python'
-        elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
-          python_path = cwd .. '/.venv/bin/python'
-        else
-          python_path = 'python3'
+          return venv .. '/bin/python'
         end
       end
 
-      cb {
-        type = 'executable',
-        command = python_path,
-        args = { '-m', 'debugpy.adapter' },
-      }
+      local cwd = vim.fn.getcwd()
+      if vim.fn.has 'win32' == 1 then
+        local paths = {
+          cwd .. '\\.qtcreator\\Python_3_13_7venv\\Scripts\\python.exe',
+          cwd .. '\\venv\\Scripts\\python.exe',
+          cwd .. '\\.venv\\Scripts\\python.exe',
+        }
+        for _, path in ipairs(paths) do
+          if vim.fn.executable(path) == 1 then
+            return path
+          end
+        end
+      else
+        local paths = {
+          cwd .. '/venv/bin/python',
+          cwd .. '/.venv/bin/python',
+        }
+        for _, path in ipairs(paths) do
+          if vim.fn.executable(path) == 1 then
+            return path
+          end
+        end
+      end
+
+      return 'python3'
     end
 
-    dap.configurations.python = {
-      {
-        type = 'python',
-        request = 'launch',
-        name = 'Launch file',
-        program = '${file}',
-        console = 'integratedTerminal',
-      },
-      {
-        type = 'python',
-        request = 'launch',
-        name = 'Launch FastAPI',
-        program = '${workspaceFolder}/main.py',
-        args = {},
-        console = 'integratedTerminal',
-      },
-    }
+    -- nvim-dap-pythonのセットアップ
+    dap_python.setup(get_python_path())
 
-    -- GDScript config
+    -- 既存のPython設定を削除し、nvim-dap-pythonに任せる
+    -- ただし、FastAPI用の設定は追加で残す
+    table.insert(dap.configurations.python, {
+      type = 'python',
+      request = 'launch',
+      name = 'Launch FastAPI',
+      program = '${workspaceFolder}/main.py',
+      args = {},
+      console = 'integratedTerminal',
+    })
+
+    -- GDScript config (そのまま)
     dap.adapters.godot = {
       type = 'server',
       host = '127.0.0.1',
@@ -171,7 +172,7 @@ return {
       },
     }
 
-    -- godot debug setup
+    -- Go debug setup (そのまま)
     require('dap-go').setup {
       delve = {
         detached = vim.fn.has 'win32' == 0,

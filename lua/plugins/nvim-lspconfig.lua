@@ -108,7 +108,7 @@ return {
               },
               diagnostics = {
                 globals = { 'vim' },
-                disable = { 'missing-fields' },
+                disable = { 'missing-fields', 'inject-field' },
               },
               workspace = {
                 library = vim.api.nvim_get_runtime_file('', true),
@@ -209,8 +209,34 @@ return {
       end
       vim.lsp.config.gdscript = gdscript_config
 
+      local function get_python_path(venv_path)
+        if vim.fn.has 'win32' == 1 or vim.fn.has 'win64' == 1 then
+          return venv_path .. '/Scripts/python.exe'
+        else
+          return venv_path .. '/bin/python'
+        end
+      end
       -- Python
-      vim.lsp.config.pyright = {}
+      vim.lsp.config.pyright = {
+        capabilities = capabilities,
+        settings = {
+          python = {
+            pythonPath = get_python_path(vim.fn.getcwd() .. '/.venv'),
+            analysis = {
+              autoSearchPaths = true,
+              useLibraryCodeForTypes = true,
+              diagnosticMode = 'workspace',
+              typeCheckingMode = 'basic',
+            },
+          },
+        },
+        before_init = function(_, config)
+          local venv_path = vim.fn.getcwd() .. '/.venv'
+          if vim.fn.isdirectory(venv_path) == 1 then
+            config.settings.python.pythonPath = get_python_path(venv_path)
+          end
+        end,
+      }
 
       -- Unity プロジェクト用のコマンド（既存のまま）
       vim.api.nvim_create_user_command('ModifyCSProjFile', function()

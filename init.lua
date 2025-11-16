@@ -82,6 +82,13 @@ I hope you enjoy your Neovim journey,
 
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
+--Fold Settings(nvim-ufo)
+vim.o.foldenable = false -- 折りたたみ有効
+vim.o.foldlevel = 99 -- 全展開状態に設定
+vim.o.foldlevelstart = 99 -- 起動時も全展開
+vim.o.foldmethod = 'expr' -- exprで折りたたみ
+vim.o.foldexpr = "v:lua.require('ufo').foldexpr()" -- UFOのfoldexprを使用
+vim.o.foldcolumn = '1' -- 左側に折りたたみ列表示
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -412,7 +419,6 @@ wk.add {
     { '<A-k>', '<cmd>m .-2<cr>==', desc = 'Move line up' },
     { '<C-z>', '^', desc = 'Move to head' },
     { '<C-e>', '$', desc = 'Move to end' },
-    { '<leader>r', '<cmd>source $MYVIMRC<cr>', desc = 'init.lua reload' },
     {
       '<leader>fr',
       function()
