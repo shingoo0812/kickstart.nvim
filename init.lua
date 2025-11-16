@@ -329,13 +329,12 @@ wk.add {
     { '<leader>w', '', desc = 'Vimwiki' },
     { '<leader>q', '<cmd>confirm q<cr>', desc = 'Quit Window' },
     { '<leader>Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
-    { '<leader>fn', '<cmd>enew<cr>', desc = 'New File' },
     { '<C-S>', '<cmd>silent! update! | redraw<cr>', desc = 'Force write' },
     { '<esc>', '<cmd>nohlsearch<cr>' },
 
-    { '<leader>g', '', desc = 'Diagnostics' },
-    { '<leader>gf', '<cmd>lua vim.diagnostic.open_float()<cr>', desc = 'Show Diagnostics Float' },
-    { '<leader>gl', '<cmd>lua vim.diagnostic.setloclist()<cr>', desc = 'Diagnostics List' },
+    -- { '<leader>g', '', desc = 'Diagnostics' },
+    -- { '<leader>gf', '<cmd>lua vim.diagnostic.open_float()<cr>', desc = 'Show Diagnostics Float' },
+    -- { '<leader>gl', '<cmd>lua vim.diagnostic.setloclist()<cr>', desc = 'Diagnostics List' },
     -- Pane
     { '<A-m>', ':vertical resize +2<cr>', desc = 'resize pane to left' },
     { '<A-/>', ':vertical resize -2<cr>', desc = 'resize pane to right' },
@@ -344,64 +343,20 @@ wk.add {
     { '<A-->', ':vs<cr>', desc = 'Sprit Horizontal Pane' },
     { '<A-+>', ':sv<cr>', desc = 'Sprit Virtical Pane' },
     -- Copilot
-    { '<leader>k', '', desc = 'Copilot' },
-    { '<C-[>', ':Copilot suggestion<cr>gc', desc = 'Copilot suggestion' },
-    { '<leader>kc', '<cmd>CopilotChat<cr>', desc = 'CopilotChat Open' },
-    { '<leader>kx', '<cmd>CopilotChatClose<cr>', desc = 'CopilotChat Close' },
-    { '<leader>kf', '<cmd>CopilotChatFix<cr>', desc = 'CopilotChatFix Open' },
-    { '<leader>ke', '<cmd>Copilot enable<cr>', desc = 'Copilot Enable' },
-    { '<leader>kd', '<cmd>Copilot disable<cr>', desc = 'Copilot Disable' },
-    { '<leader>ks', '<cmd>Copilot suggestion<cr>', desc = 'Copilot Suggestion' },
+    -- { '<leader>k', '', desc = 'Copilot' },
+    -- { '<C-[>', ':Copilot suggestion<cr>gc', desc = 'Copilot suggestion' },
+    -- { '<leader>kc', '<cmd>CopilotChat<cr>', desc = 'CopilotChat Open' },
+    -- { '<leader>kx', '<cmd>CopilotChatClose<cr>', desc = 'CopilotChat Close' },
+    -- { '<leader>kf', '<cmd>CopilotChatFix<cr>', desc = 'CopilotChatFix Open' },
+    -- { '<leader>ke', '<cmd>Copilot enable<cr>', desc = 'Copilot Enable' },
+    -- { '<leader>kd', '<cmd>Copilot disable<cr>', desc = 'Copilot Disable' },
+    -- { '<leader>ks', '<cmd>Copilot suggestion<cr>', desc = 'Copilot Suggestion' },
     --Move Line
     { '<C-a>', 'ggVG' },
     { '<A-j>', '<cmd>m .+1<cr>==', desc = 'Move line down' },
     { '<A-k>', '<cmd>m .-2<cr>==', desc = 'Move line up' },
     { '<C-z>', '^', desc = 'Move to head' },
     { '<C-e>', '$', desc = 'Move to end' },
-    {
-      '<leader>fr',
-      function()
-        -- Get current_path as absolute path
-        local current_path = vim.fn.expand '%:p'
-        -- Input to new_name
-        local new_name = vim.fn.input('New name:', vim.fn.expand '%:p:h' .. '/', 'file')
-
-        if new_name ~= '' and new_name ~= current_path then
-          -- Save as new file
-          vim.cmd('saveas ' .. vim.fn.fnameescape(new_name))
-          -- Delete current file
-          vim.fn.delete(current_path)
-          vim.cmd 'BufferClose'
-          -- Open to new file
-          vim.cmd('e ' .. vim.fn.fnameescape(new_name))
-          vim.cmd 'Neotree close'
-          vim.cmd 'Neotree show'
-          print('File renamed to ' .. new_name)
-        else
-          print 'Renaming canceled or file name is the same.'
-        end
-      end,
-      desc = 'File Rename',
-    },
-    {
-      '<leader>fd',
-      function()
-        local current_path = vim.fn.expand '%:p'
-
-        local confirm = vim.fn.input 'Delete file? (y/n): '
-
-        if confirm == 'y' then
-          vim.fn.delete(current_path)
-          vim.cmd 'BufferClose'
-          vim.cmd 'Neotree close'
-          vim.cmd 'Neotree show'
-          print('File deleted: ' .. current_path)
-        else
-          print 'File deletion canceled.'
-        end
-      end,
-      desc = 'File Delete',
-    },
     { '<leader>fc', '<cmd>BufferClose<cr>', desc = 'Buffer Close' },
     -- { '<leader>fo', '<cmd>e ' .. vim.fn.expand '%:p:h' .. '<cr>', desc = 'Open Current File Location' },
     {

@@ -54,6 +54,7 @@ return {
       jump_to(4)
     end)
 
+    keymap('n', '<leader>h', function() end, { desc = 'Harpoon' })
     keymap('n', '<leader>h1', function()
       jump_to(1)
     end, { desc = 'Jump to Harpoon mark 1' })

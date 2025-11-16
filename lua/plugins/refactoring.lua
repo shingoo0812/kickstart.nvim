@@ -10,6 +10,12 @@ return {
 
     keys = {
       {
+        '<leader>r',
+        function() end,
+        mode = { 'n', 'x' },
+        desc = 'Refactoring Menu',
+      },
+      {
         '<leader>rr',
         function()
           require('refactoring').select_refactor()

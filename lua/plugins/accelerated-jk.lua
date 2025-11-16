@@ -1,5 +1,17 @@
 return {
   'rainbowhxch/accelerated-jk.nvim',
-  vim.api.nvim_set_keymap('n', 'j', '<Plug>(accelerated_jk_gj)', {}),
-  vim.api.nvim_set_keymap('n', 'k', '<Plug>(accelerated_jk_gk)', {}),
+  keys = {
+    {
+      'j',
+      '<Plug>(accelerated_jk_gj)',
+      desc = 'Accelerated j down',
+      mode = 'n',
+    },
+    {
+      'k',
+      '<Plug>(accelerated_jk_gk)',
+      desc = 'Accelerated k up',
+      mode = 'n',
+    },
+  },
 }
