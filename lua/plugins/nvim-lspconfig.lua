@@ -15,6 +15,8 @@ return {
       { 'j-hui/fidget.nvim', opts = {} },
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
+      -- null-lsを削除（conform.nvimを使用）
+      -- 'jose-elias-alvarez/null-ls.nvim',
     },
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
@@ -97,6 +99,7 @@ return {
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
       capabilities.textDocument.semanticTokens = nil
       capabilities.textDocument.codeLens = nil
+
       -- サーバー設定（C#のomnisharpは除外）
       local servers = {
         clangd = {},
@@ -119,6 +122,11 @@ return {
               },
             },
           },
+          on_attach = function(client, bufnr)
+            -- フォーマット機能は conform.nvim に任せる
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+          end,
         },
 
         -- csharp-lsの設定
@@ -166,12 +174,14 @@ return {
         },
       }
 
-      -- Mason の設定
+      -- null-lsの設定を削除（conform.nvimで代替）
+
+      -- Setup Mason and LSP servers
       require('mason').setup()
 
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'stylua',
+        -- 'stylua', -- conform.nvimで使用するため削除
         'clangd',
         'clang-format',
         'codelldb',
@@ -193,8 +203,11 @@ return {
       -- Clangd の個別設定
       vim.lsp.config.clangd = {
         cmd = { 'C:\\Program Files\\LLVM\\bin\\clangd.exe' },
-        on_attach = function()
+        on_attach = function(client, bufnr)
           vim.keymap.set('n', 'K', vim.lsp.buf.hover, { buffer = 0 })
+          -- フォーマット機能は conform.nvim に任せる
+          client.server_capabilities.documentFormattingProvider = false
+          client.server_capabilities.documentRangeFormattingProvider = false
         end,
         capabilities = capabilities,
       }
@@ -216,6 +229,7 @@ return {
           return venv_path .. '/bin/python'
         end
       end
+
       -- Python
       vim.lsp.config.pyright = {
         capabilities = capabilities,
@@ -237,51 +251,6 @@ return {
           end
         end,
       }
-
-      -- Unity プロジェクト用のコマンド（既存のまま）
-      vim.api.nvim_create_user_command('ModifyCSProjFile', function()
-        if vim.fn.has 'win32' == 1 then
-          vim.fn.system 'findstr /s /i "*.csproj" | sed -i "s|C:\\|/mnt/c/|g"'
-          vim.fn.system 'findstr /s /i "*.csproj" | sed -i "s|D:\\|/mnt/d/|g"'
-        else
-          vim.fn.system 'find . -maxdepth 2 -name "*.csproj" | xargs sed -i -e "s/C:/\\/mnt\\/c/g"'
-          vim.fn.system 'find . -maxdepth 2 -name "*.csproj" | xargs sed -i -e "s/D:/\\/mnt\\/d/g"'
-        end
-
-        if vim.fn.exists ':YcmCompleter' == 1 then
-          vim.cmd 'YcmCompleter ReloadSolution'
-        end
-      end, {})
-
-      -- LSP用の追加コマンド（C#以外用）
-      vim.api.nvim_create_user_command('LspStatus', function()
-        local clients = vim.lsp.get_clients()
-        if #clients > 0 then
-          for _, client in ipairs(clients) do
-            vim.notify(client.name .. ' is running', vim.log.levels.INFO)
-          end
-        else
-          vim.notify('No LSP clients are running', vim.log.levels.WARN)
-        end
-      end, { desc = 'Check LSP status for all languages except C#' })
-
-      -- デバッグ用コマンド
-      vim.api.nvim_create_user_command('LspDebugInfo', function()
-        local filetype = vim.bo.filetype
-        local clients = vim.lsp.get_clients { bufnr = 0 }
-
-        vim.notify('Current filetype: ' .. filetype, vim.log.levels.INFO)
-        if #clients > 0 then
-          for _, client in ipairs(clients) do
-            vim.notify('Active LSP: ' .. client.name, vim.log.levels.INFO)
-          end
-        else
-          vim.notify('No LSP attached to current buffer', vim.log.levels.WARN)
-          if filetype == 'cs' then
-            vim.notify('C# files use OmniSharp-vim instead of LSP', vim.log.levels.INFO)
-          end
-        end
-      end, { desc = 'Debug LSP information for current buffer' })
     end,
   },
 }

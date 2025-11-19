@@ -18,9 +18,21 @@
 ========                                                     ========
 =====================================================================
 =====================================================================
-
-
 --]]
+
+-- Read Configuration folders(./lua/config/*.lua)
+local config_path = vim.fn.stdpath 'config' .. '/lua/config'
+local files = vim.fn.readdir(config_path)
+for _, file in ipairs(files) do
+  if file:match '%.lua$' then
+    local ok, module = pcall(require, 'config.' .. file:gsub('%.lua$', ''))
+    if ok and type(module) == 'table' and module.setup then
+      module.setup()
+    end
+  end
+end
+-- local test_func = require 'config.functions'
+-- print(test_func.functions.utils.test())
 
 vim.o.foldenable = false -- 折りたたみ有効
 vim.o.foldlevel = 99 -- 全展開状態に設定
@@ -53,7 +65,8 @@ vim.opt.mouse = 'a'
 
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
-
+-- Vimwikiディレクトリ外のmarkdownファイルをvimwikiとして扱わないようにする
+vim.g.vimwiki_global_ext = 0
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -62,6 +75,7 @@ vim.opt.showmode = false
 --   vim.opt.clipboard = 'unnamedplus'
 -- end)
 
+-- VSCode Key binding
 if vim.g.vscode then
   vim.opt.clipboard = 'unnamedplus'
   vim.keymap.set('n', 'd', '"_d')
@@ -71,9 +85,6 @@ if vim.g.vscode then
   vim.keymap.set('v', 'd', '"_d')
   vim.keymap.set('v', '<C-z>', '^')
   vim.keymap.set('v', '<C-e>', '$')
-  vim.api.nvim_create_user_command('TestHello', function()
-    print 'Hello from Neovim!'
-  end, {})
   -- yとpのマッピングは削除（keybindings.jsonで処理）
   -- VSCodeのキーバインドに任せる
 else
@@ -146,9 +157,6 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-
--- Set alias
-vim.api.nvim_create_user_command('W', 'w', {})
 
 -- Set Configure
 require 'config.shada'
@@ -274,14 +282,6 @@ require('lazy').setup({
     },
   },
 })
--- Read Configuration folders
-local config_path = vim.fn.stdpath 'config' .. '/lua/config'
-local files = vim.fn.readdir(config_path)
-for _, file in ipairs(files) do
-  if file:match '%.lua$' then
-    require('config.' .. file:gsub('%.lua$', ''))
-  end
-end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
@@ -329,6 +329,7 @@ wk.add {
     { '<leader>w', '', desc = 'Vimwiki' },
     { '<leader>q', '<cmd>confirm q<cr>', desc = 'Quit Window' },
     { '<leader>Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
+    { ':Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
     { '<C-S>', '<cmd>silent! update! | redraw<cr>', desc = 'Force write' },
     { '<esc>', '<cmd>nohlsearch<cr>' },
 

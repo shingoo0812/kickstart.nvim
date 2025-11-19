@@ -1,3 +1,4 @@
+-- PlatformIOがインストールされていないため無効化
 return {
   'anurag3301/nvim-platformio.lua',
   dependencies = {

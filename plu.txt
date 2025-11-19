@@ -23,15 +23,3 @@
 ```
 **理由**: Python/C#での変数抽出、関数インライン化など
 
-```
-
-### 10. **neotest** - テストランナー
-```lua
-{
-  'nvim-neotest/neotest',
-  dependencies = {
-    'nvim-neotest/neotest-python',
-    'Issafalcon/neotest-dotnet',  -- C#用
-  }
-}
-```

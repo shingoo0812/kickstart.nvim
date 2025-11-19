@@ -18,7 +18,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
       end,
     },
     { 'nvim-telescope/telescope-ui-select.nvim' },
-
+    { 'rcarriga/nvim-notify' },
     -- Useful for getting pretty icons, but requires a Nerd Font.
     -- { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
   },
@@ -42,6 +42,8 @@ return { -- Fuzzy Finder (files, lsp, etc)
       actions.select_all(prompt_bufnr)
       open_selected(prompt_bufnr)
     end
+    -- Enable telescope notify extension
+    require('telescope').load_extension 'notify'
     -- Telescope is a fuzzy finder that comes with a lot of different things that
     -- it can fuzzy find! It's more than just a "file finder", it can search
     -- many different aspects of Neovim, your workspace, LSP, and more!

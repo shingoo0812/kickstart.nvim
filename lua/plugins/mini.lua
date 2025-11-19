@@ -7,7 +7,19 @@ return { -- Collection of various small independent plugins/modules
     --  - va)  - [V]isually select [A]round [)]paren
     --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
     --  - ci'  - [C]hange [I]nside [']quote
-    require('mini.ai').setup { n_lines = 500 }
+    require('mini.ai').setup {
+      n_lines = 500,
+      custom_textobjects = {
+        f = function()
+          local s = vim.fn.searchpos('(', 'cn')
+          local e = vim.fn.searchpos(')', 'cn')
+          if s[1] == 0 or e[1] == 0 then
+            return
+          end
+          return { s[1], s[2], e[1], e[2] }
+        end,
+      },
+    }
     -- require('mini.indentscope').setup { symbol = '|', draw = { delay = 0 } }
 
     -- Add/delete/replace surroundings (brackets, quotes, etc.)
