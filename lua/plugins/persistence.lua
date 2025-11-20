@@ -7,6 +7,11 @@ return {
     },
     keys = {
       {
+        '<leader>S',
+        function() end,
+        desc = 'Session Management',
+      },
+      {
         '<leader>Ss',
         function()
           require('persistence').load()

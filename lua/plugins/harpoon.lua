@@ -22,6 +22,8 @@ return {
     end, { desc = 'Add file to Harpoon' })
 
     -- Toggle Harpoon quick menu
+    keymap('n', '<leader>h', function() end, { desc = 'Harpoon' })
+
     keymap('n', '<leader>hl', function()
       harpoon.ui:toggle_quick_menu(harpoon:list())
     end, { desc = 'Toggle Harpoon menu' })

@@ -5,10 +5,10 @@ return {
   },
   config = function()
     local keys = {
-      { '<leader>tr', '', desc = 'Translate Replace' },
+      { '<leader><leader>t', '', desc = 'Translate Replace' },
       -- Replace to Japanese
       {
-        '<leader>trj',
+        '<leader><leader>tj',
         function()
           vim.api.nvim_feedkeys('vg_', 'n', false)
           -- Execute the conversion command after a short delay.
@@ -21,7 +21,7 @@ return {
       },
       -- Replace to English
       {
-        '<leader>tre',
+        '<leader><leader>te',
         function()
           vim.api.nvim_feedkeys('vg_', 'n', false)
           -- Run translator command after a short delay

@@ -25,7 +25,7 @@ return {
       { '<leader>d3', dap.step_over, desc = 'Debug: Step Over(F2)' },
       { '<leader>d4', dap.step_out, desc = 'Debug: Step Out(F3)' },
       { '<leader>dt', dap.toggle_breakpoint, desc = 'Debug: Toggle Breakpoint' },
-      { '<leader>du', '<cmd>lua dapui.toggle()<cr>', desc = 'Toggle Dap UI' },
+      { '<leader>du', '<cmd>lua require("dapui").toggle()<cr>', desc = 'Toggle Dap UI' },
       { '<leader>de', ':DapTerminate<cr>', desc = 'DAP End' },
       {
         '<leader>db',
@@ -51,7 +51,7 @@ return {
     require('mason-nvim-dap').setup {
       automatic_installation = true,
       handlers = {},
-      ensure_installed = {},
+      ensure_installed = { 'debugpy' },
     }
 
     vim.keymap.set('n', '<F5>', dap.continue, { desc = 'Debug: Start/Continue' })
@@ -103,60 +103,54 @@ return {
       reset_neotree_width()
     end
 
-    -- Python setup with nvim-dap-python
-    -- 仮想環境のPythonパスを自動検出
-    local function get_python_path()
-      local venv = os.getenv 'VIRTUAL_ENV'
-      if venv then
-        if vim.fn.has 'win32' == 1 then
-          return venv .. '\\Scripts\\python.exe'
-        else
-          return venv .. '/bin/python'
-        end
-      end
+    -- ========================================
+    -- Python DAP Setup - Mason's debugpy + uv venv
+    -- ========================================
 
+    -- Use Mason's debugpy Python for running the debugger
+    local mason_path = vim.fn.stdpath 'data' .. '/mason/packages/debugpy/venv'
+    local debugpy_python = vim.fn.has 'win32' == 1 and mason_path .. '/Scripts/python.exe' or mason_path .. '/bin/python'
+
+    -- Setup with Mason's Python
+    dap_python.setup(debugpy_python)
+
+    -- Get project's Python (uv or standard venv) for code execution
+    local function get_project_python()
       local cwd = vim.fn.getcwd()
-      if vim.fn.has 'win32' == 1 then
-        local paths = {
-          cwd .. '\\.qtcreator\\Python_3_13_7venv\\Scripts\\python.exe',
-          cwd .. '\\venv\\Scripts\\python.exe',
-          cwd .. '\\.venv\\Scripts\\python.exe',
-        }
-        for _, path in ipairs(paths) do
-          if vim.fn.executable(path) == 1 then
-            return path
-          end
-        end
-      else
-        local paths = {
-          cwd .. '/venv/bin/python',
-          cwd .. '/.venv/bin/python',
-        }
-        for _, path in ipairs(paths) do
-          if vim.fn.executable(path) == 1 then
-            return path
-          end
+      local paths = {
+        cwd .. '\\.venv\\Scripts\\python.exe', -- Windows uv/venv
+        cwd .. '/.venv/bin/python', -- Linux/macOS uv/venv
+        cwd .. '\\venv\\Scripts\\python.exe',
+        cwd .. '/venv/bin/python',
+      }
+      for _, path in ipairs(paths) do
+        if vim.fn.executable(path) == 1 then
+          return path
         end
       end
-
-      return 'python3'
+      return nil
     end
 
-    -- nvim-dap-pythonのセットアップ
-    dap_python.setup(get_python_path())
+    -- Override Python configurations to use project's Python for execution
+    local project_python = get_project_python()
+    if project_python then
+      for _, config in pairs(dap.configurations.python) do
+        config.pythonPath = project_python
+      end
+    end
 
-    -- 既存のPython設定を削除し、nvim-dap-pythonに任せる
-    -- ただし、FastAPI用の設定は追加で残す
+    -- FastAPI用の設定を追加
     table.insert(dap.configurations.python, {
       type = 'python',
       request = 'launch',
       name = 'Launch FastAPI',
       program = '${workspaceFolder}/main.py',
+      pythonPath = project_python,
       args = {},
       console = 'integratedTerminal',
     })
 
-    -- GDScript config (そのまま)
+    -- GDScript config
     dap.adapters.godot = {
       type = 'server',
       host = '127.0.0.1',
@@ -172,7 +166,7 @@ return {
       },
     }
 
-    -- Go debug setup (そのまま)
+    -- Go debug setup
     require('dap-go').setup {
       delve = {
         detached = vim.fn.has 'win32' == 0,
