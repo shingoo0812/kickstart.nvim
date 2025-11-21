@@ -4,4 +4,6 @@ test.sh
 nvim
 
 spell/
+docker/.env 
+docker/*.log
 lazy-lock.json
