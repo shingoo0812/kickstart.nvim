@@ -1,0 +1,125 @@
+# ============================================================================
+# Docker Compose configuration for Neovim Development Environment
+# ============================================================================
+# Usage:
+#   docker-compose run --rm neovim           # Start Neovim
+#   docker-compose run --rm neovim file.py   # Open specific file
+#   docker-compose run --rm shell            # Open shell
+# ============================================================================
+
+version: '3.8'
+
+services:
+  # --------------------------------------------------------------------------
+  # Main Neovim service
+  # --------------------------------------------------------------------------
+  neovim:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: neovim-dev
+    
+    # Mount volumes
+    volumes:
+      # Neovim configuration (read-only recommended)
+      # Windows: Use full path like C:\Users\YourName\AppData\Local\nvim
+      # Linux/Mac: Use ~/.config/nvim
+      - ${NVIM_CONFIG_PATH:-~/.config/nvim}:/root/.config/nvim:ro
+      
+      # Workspace directory (your projects)
+      # Change this to your actual projects directory
+      - ${WORKSPACE_PATH:-~/projects}:/workspace
+      
+      # Plugin data (persisted in Docker volume)
+      - nvim-data:/root/.local/share/nvim
+      
+      # Plugin state (persisted in Docker volume)
+      - nvim-state:/root/.local/state/nvim
+      
+      # Cache (persisted in Docker volume)
+      - nvim-cache:/root/.cache/nvim
+      
+      # Optional: Mount additional directories
+      # - ~/Documents:/documents:ro
+      # - ~/.ssh:/root/.ssh:ro  # For Git operations
+      # - ~/.gitconfig:/root/.gitconfig:ro
+
+    # Environment variables
+    environment:
+      - TERM=xterm-256color
+      - COLORTERM=truecolor
+      - LANG=en_US.UTF-8
+      - LC_ALL=en_US.UTF-8
+      - PYTHONIOENCODING=utf-8
+      - WORKSPACE=/workspace
+      
+      # Optional: Add your environment variables here
+      # - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+
+    # Interactive terminal
+    stdin_open: true
+    tty: true
+    
+    # Network settings
+    network_mode: bridge
+    
+    # Resource limits (optional - adjust based on your needs)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '2'
+    #       memory: 4G
+    #     reservations:
+    #       cpus: '1'
+    #       memory: 2G
+
+  # --------------------------------------------------------------------------
+  # Shell service (for debugging or running commands)
+  # --------------------------------------------------------------------------
+  shell:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: neovim-shell
+    
+    volumes:
+      - ${NVIM_CONFIG_PATH:-~/.config/nvim}:/root/.config/nvim:ro
+      - ${WORKSPACE_PATH:-~/projects}:/workspace
+      - nvim-data:/root/.local/share/nvim
+      - nvim-state:/root/.local/state/nvim
+      - nvim-cache:/root/.cache/nvim
+    
+    environment:
+      - TERM=xterm-256color
+      - LANG=en_US.UTF-8
+      - LC_ALL=en_US.UTF-8
+    
+    stdin_open: true
+    tty: true
+    
+    entrypoint: ["/bin/bash"]
+    command: []
+
+# ============================================================================
+# Named volumes for persistent data
+# ============================================================================
+volumes:
+  # Plugin data volume (Mason, Lazy.nvim installed plugins, etc.)
+  nvim-data:
+    driver: local
+    
+  # Plugin state volume (session data, etc.)
+  nvim-state:
+    driver: local
+    
+  # Cache volume (treesitter parsers, etc.)
+  nvim-cache:
+    driver: local
+
+# ============================================================================
+# Networks (optional - default bridge network is used)
+# ============================================================================
+# networks:
+#   neovim-net:
+#     driver: bridge
