@@ -101,6 +101,8 @@ RUN pip3 install --no-cache-dir --break-system-packages \
     # Python LSP servers
     python-lsp-server[all] \
     pylsp-mypy \
+    # Formatters
+    black \
     isort \
     autopep8 \
     # Linters
@@ -120,18 +122,16 @@ RUN npm install -g \
     typescript \
     typescript-language-server \
     prettier
-    vscode-langservers-extracted \
+
 # ============================================================================
-# Install Go (for Go LSP and DAP) - Optional, uncomment if needed
+# Install Lua LSP
 # ============================================================================
-# ENV GO_VERSION=1.23.4
-# RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
-#     tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
-#     rm go${GO_VERSION}.linux-amd64.tar.gz
-# 
-# ENV PATH="/usr/local/go/bin:/root/go/bin:${PATH}"
-# ENV GOPATH="/root/go"
-# 
+# RUN luarocks install --server=https://luarocks.org/dev lua-lsp
+
+# ============================================================================
+# Setup workspace
+# ============================================================================
+WORKDIR /workspace
 # # Install Go tools
 # RUN go install golang.org/x/tools/gopls@latest && \
 #     go install github.com/go-delve/delve/cmd/dlv@latest
