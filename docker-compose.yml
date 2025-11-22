@@ -28,6 +28,9 @@ services:
       # This allows Lazy.nvim to update the lock file
       - ../lazy-lock.json:/root/.config/nvim/lazy-lock.json:rw
       
+      # Mount setup-tools.sh script (read-only)
+      - ./setup-tools.sh:/usr/local/bin/setup-tools.sh:ro
+      
       # Mount workspace directory (configurable via .env file)
       # Default: /home/shingo/projects on WSL2
       - ${WORKSPACE_PATH:-/home/shingo/projects}:/workspace
@@ -35,9 +38,6 @@ services:
       # Optional: Mount additional directories as needed
       # - ${HOME}/.ssh:/root/.ssh:ro  # SSH keys for git operations
       # - ${HOME}/.gitconfig:/root/.gitconfig:ro  # Git configuration
-    
-    # Working directory inside container
-    working_dir: /workspace
     
     # Environment variables
     environment:
