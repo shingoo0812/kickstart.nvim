@@ -184,8 +184,8 @@ RUN mkdir -p /root/.config/nvim \
 # Install Lazy.nvim plugin manager (will auto-install on first run)
 # ============================================================================
 # Note: Plugins will be installed on first Neovim launch from mounted config
-RUN git clone --filter=blob:none https://github.com/folke/lazy.nvim.git --branch=stable \
-    /root/.local/share/nvim/lazy/lazy.nvim
+# RUN git clone --filter=blob:none https://github.com/folke/lazy.nvim.git --branch=stable \
+#     /root/.local/share/nvim/lazy/lazy.nvim
 
 # ============================================================================
 # Environment setup
