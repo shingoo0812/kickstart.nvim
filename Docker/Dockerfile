@@ -98,9 +98,9 @@ RUN nvim --version
 # Install Python packages (for Python LSP, formatters, and tools)
 # ============================================================================
 RUN pip3 install --no-cache-dir --break-system-packages \
+    # Python LSP servers
+    python-lsp-server[all] \
     pylsp-mypy \
-    # Formatters
-    black \
     isort \
     autopep8 \
     # Linters
@@ -212,7 +212,26 @@ RUN for i in 1 2 3 4 5; do \
 ENV PYTHONIOENCODING=utf-8
 ENV EDITOR=nvim
 
-# ============================================================================
+# Create a startup script for convenience
+RUN echo '#!/bin/bash\n\
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
+echo "🚀 Neovim Docker Environment"\n\
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
+echo ""\n\
+echo "📂 Workspace:     /workspace"\n\
+echo "⚙️  Config:        /root/.config/nvim"\n\
+echo "🔌 Plugins:       /root/.local/share/nvim/lazy"\n\
+echo ""\n\
+# Check versions\n\
+echo "📦 Versions:"\n\
+nvim --version | head -n 1\n\
+node --version | xargs echo "   Node.js:"\n\
+python3 --version | xargs echo "   Python: "\n\
+go version | cut -d" " -f3 | xargs echo "   Go:     "\n\
+echo ""\n\
+# Check if nvim config is mounted\n\
+if [ ! -f "/root/.config/nvim/init.lua" ]; then\n\
+    echo "⚠️  WARNING: Neovim config not found!"\n\
     echo ""\n\
     echo "Make sure to mount your config directory:"\n\
     echo "  docker-compose run --rm neovim"\n\
@@ -239,3 +258,15 @@ echo ""\n\
 exec nvim "$@"' > /usr/local/bin/start-nvim && \
     chmod +x /usr/local/bin/start-nvim
 
+# ============================================================================
+# Entry point
+# ============================================================================
+ENTRYPOINT ["/usr/local/bin/start-nvim"]
+CMD []
+
+# ============================================================================
+# Build information
+# ============================================================================
+LABEL maintainer="SHINGO"
+LABEL description="Complete Neovim development environment with LSP, formatters, and tools"
+LABEL version="1.0"
