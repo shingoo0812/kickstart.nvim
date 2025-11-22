@@ -131,12 +131,12 @@ RUN npm install -g \
 # ============================================================================
 # Setup workspace
 # ============================================================================
-WORKDIR /workspace
-# # Install Go tools
-# RUN go install golang.org/x/tools/gopls@latest && \
-#     go install github.com/go-delve/delve/cmd/dlv@latest
 
-# ============================================================================
+# Create Neovim config and data directories
+RUN mkdir -p /root/.config/nvim \
+             /root/.local/share/nvim \
+             /root/.local/state/nvim \
+             /root/.cache/nvim
 # Install Rust and Rust analyzer - Optional, uncomment if needed
 # ============================================================================
 # RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
