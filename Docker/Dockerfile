@@ -114,34 +114,34 @@ RUN pip3 install --no-cache-dir --break-system-packages \
     pydocstyle
 
 # ============================================================================
-# Install Node.js packages globally (LSP servers and formatters)
+# Install Node.js packages globally (only essentials, rest via Mason)
 # ============================================================================
 RUN npm install -g \
-    # LSP servers
     typescript \
     typescript-language-server \
+    prettier
     vscode-langservers-extracted \
-    bash-language-server \
-    yaml-language-server \
-    dockerfile-language-server-nodejs \
-    vim-language-server \
-    # Formatters
-    prettier \
-    eslint \
-    # Additional tools
-    neovim \
-    tree-sitter-cli
+# ============================================================================
+# Install Go (for Go LSP and DAP) - Optional, uncomment if needed
+# ============================================================================
+# ENV GO_VERSION=1.23.4
+# RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
+#     tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
+#     rm go${GO_VERSION}.linux-amd64.tar.gz
+# 
+# ENV PATH="/usr/local/go/bin:/root/go/bin:${PATH}"
+# ENV GOPATH="/root/go"
+# 
+# # Install Go tools
+# RUN go install golang.org/x/tools/gopls@latest && \
+#     go install github.com/go-delve/delve/cmd/dlv@latest
 
 # ============================================================================
-# Install Go (for Go LSP and DAP)
+# Install Rust and Rust analyzer - Optional, uncomment if needed
 # ============================================================================
-ENV GO_VERSION=1.23.4
-RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
-    rm go${GO_VERSION}.linux-amd64.tar.gz
-
-ENV PATH="/usr/local/go/bin:/root/go/bin:${PATH}"
-ENV GOPATH="/root/go"
+# RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+# ENV PATH="/root/.cargo/bin:${PATH}"
+# RUN rustup component add rust-analyzer
 
 # Install Go tools
 RUN go install golang.org/x/tools/gopls@latest && \
@@ -150,14 +150,14 @@ RUN go install golang.org/x/tools/gopls@latest && \
 # ============================================================================
 # Install Rust and Rust analyzer
 # ============================================================================
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-RUN rustup component add rust-analyzer
-
+# Install additional CLI tools - Optional, uncomment if needed
 # ============================================================================
-# Install Lua LSP
-# ============================================================================
-# RUN luarocks install --server=https://luarocks.org/dev lua-lsp
+# LazyGit
+# RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*') && \
+#     curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" && \
+#     tar xf lazygit.tar.gz lazygit && \
+#     install lazygit /usr/local/bin && \
+#     rm lazygit lazygit.tar.gz
 
 # ============================================================================
 # Install additional CLI tools
