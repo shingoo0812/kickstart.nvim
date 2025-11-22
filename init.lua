@@ -81,10 +81,10 @@ if vim.g.vscode then
   vim.keymap.set('n', 'd', '"_d')
   vim.keymap.set('n', 'dd', '"_dd')
   vim.keymap.set('n', '<C-z>', '^')
-  vim.keymap.set('n', '<C-e>', '$')
+  vim.keymap.set('n', '<C-e>', '$h')
   vim.keymap.set('v', 'd', '"_d')
   vim.keymap.set('v', '<C-z>', '^')
-  vim.keymap.set('v', '<C-e>', '$')
+  vim.keymap.set('v', '<C-e>', '$h')
   -- yとpのマッピングは削除（keybindings.jsonで処理）
   -- VSCodeのキーバインドに任せる
 else
