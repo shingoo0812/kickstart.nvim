@@ -84,16 +84,16 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 RUN node --version && npm --version
 
 # ============================================================================
-# Install latest Neovim from official release (optional - if you want latest)
+# Install latest Neovim from official release (required for dropbar.nvim 0.11.0+)
 # ============================================================================
-# Uncomment below to use latest Neovim instead of Ubuntu package
-# RUN curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz && \
-#     tar -C /opt -xzf nvim-linux64.tar.gz && \
-#     ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim && \
-#     rm nvim-linux64.tar.gz
+RUN curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz && \
+    tar -C /opt -xzf nvim-linux64.tar.gz && \
+    ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim && \
+    rm nvim-linux64.tar.gz
 
-# ============================================================================
-# Install Python packages (for Python LSP, formatters, and tools)
+# Verify Neovim version
+RUN nvim --version
+
 # ============================================================================
 RUN pip3 install --no-cache-dir --break-system-packages \
     # Python LSP servers
@@ -181,44 +181,61 @@ RUN mkdir -p /root/.config/nvim \
              /root/.cache/nvim
 
 # ============================================================================
-# Install Lazy.nvim plugin manager (will auto-install on first run)
+# Configure Git for better network handling
 # ============================================================================
-# Note: Plugins will be installed on first Neovim launch from mounted config
-# RUN git clone --filter=blob:none https://github.com/folke/lazy.nvim.git --branch=stable \
-#     /root/.local/share/nvim/lazy/lazy.nvim
+RUN git config --global http.postBuffer 524288000 && \
+    git config --global http.lowSpeedLimit 1000 && \
+    git config --global http.lowSpeedTime 600
 
 # ============================================================================
-# Environment setup
+# Install Lazy.nvim plugin manager with retry logic
 # ============================================================================
-ENV PYTHONIOENCODING=utf-8
-ENV EDITOR=nvim
-
+RUN for i in 1 2 3 4 5; do \
+        echo "Attempt $i: Cloning lazy.nvim..." && \
+        git clone --filter=blob:none --depth=1 \
 # Create a startup script for convenience
 RUN echo '#!/bin/bash\n\
-echo "🚀 Starting Neovim Docker Environment..."\n\
-echo "📂 Workspace: /workspace"\n\
-echo "⚙️  Config: /root/.config/nvim"\n\
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
+echo "🚀 Neovim Docker Environment"\n\
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
+echo ""\n\
+echo "📂 Workspace:     /workspace"\n\
+echo "⚙️  Config:        /root/.config/nvim"\n\
+echo "🔌 Plugins:       /root/.local/share/nvim/lazy"\n\
+echo ""\n\
+# Check versions\n\
+echo "📦 Versions:"\n\
+nvim --version | head -n 1\n\
+node --version | xargs echo "   Node.js:"\n\
+python3 --version | xargs echo "   Python: "\n\
+go version | cut -d\" \" -f3 | xargs echo "   Go:     "\n\
 echo ""\n\
 # Check if nvim config is mounted\n\
 if [ ! -f "/root/.config/nvim/init.lua" ]; then\n\
-    echo "⚠️  Warning: Neovim config not found!"\n\
+    echo "⚠️  WARNING: Neovim config not found!"\n\
+    echo ""\n\
     echo "Make sure to mount your config directory:"\n\
+    echo "  docker-compose run --rm neovim"\n\
+    echo ""\n\
+    echo "Or manually:"\n\
     echo "  -v ~/.config/nvim:/root/.config/nvim:ro"\n\
     echo ""\n\
+else\n\
+    echo "✓ Neovim config mounted successfully"\n\
+    echo ""\n\
 fi\n\
+# Check lazy.nvim\n\
+if [ -d "/root/.local/share/nvim/lazy/lazy.nvim" ]; then\n\
+    echo "✓ Lazy.nvim plugin manager ready"\n\
+else\n\
+    echo "⚠️  WARNING: Lazy.nvim not found!"\n\
+fi\n\
+echo ""\n\
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
+echo "💡 First time? Run :Lazy sync inside Neovim to install plugins"\n\
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
+echo ""\n\
 # Launch Neovim\n\
 exec nvim "$@"' > /usr/local/bin/start-nvim && \
     chmod +x /usr/local/bin/start-nvim
 
-# ============================================================================
-# Entry point
-# ============================================================================
-ENTRYPOINT ["/usr/local/bin/start-nvim"]
-CMD []
-
-# ============================================================================
-# Build information
-# ============================================================================
-LABEL maintainer="SHINGO"
-LABEL description="Complete Neovim development environment with LSP, formatters, and tools"
-LABEL version="1.0"

@@ -1,0 +1,99 @@
+# ============================================================================
+# Neovim Development Environment - Docker Compose Configuration
+# ============================================================================
+# This docker-compose file sets up a complete Neovim development environment
+# with all configurations and workspace mounted from the host system
+# ============================================================================
+
+services:
+  neovim:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    image: neovim-dev:latest
+    container_name: neovim-dev
+    
+    # Interactive terminal required for Neovim
+    stdin_open: true
+    tty: true
+    
+    # Volume mounts
+    volumes:
+      # Mount Neovim config (read-only to prevent accidental modifications)
+      # Using relative path from Docker directory: ../  points to nvim config root
+      - ..:/root/.config/nvim:ro
+      
+      # Mount lazy-lock.json separately as read-write for plugin management
+      # This allows Lazy.nvim to update the lock file
+      - ../lazy-lock.json:/root/.config/nvim/lazy-lock.json:rw
+      
+      # Mount workspace directory (configurable via .env file)
+      # Default: /home/shingo/projects on WSL2
+      - ${WORKSPACE_PATH:-/home/shingo/projects}:/workspace
+      
+      # Optional: Mount additional directories as needed
+      # - ${HOME}/.ssh:/root/.ssh:ro  # SSH keys for git operations
+      # - ${HOME}/.gitconfig:/root/.gitconfig:ro  # Git configuration
+    
+    # Working directory inside container
+    working_dir: /workspace
+    
+    # Environment variables
+    environment:
+      # Ensure UTF-8 encoding
+      - LANG=en_US.UTF-8
+      - LC_ALL=en_US.UTF-8
+      - PYTHONIOENCODING=utf-8
+      
+      # Set Neovim as default editor
+      - EDITOR=nvim
+      
+      # Terminal settings
+      - TERM=xterm-256color
+      
+      # Optional: Add custom environment variables from .env
+      # - CUSTOM_VAR=${CUSTOM_VAR}
+    
+    # Network settings (optional - useful for web development)
+    # ports:
+    #   - "3000:3000"  # Example: for web dev servers
+    #   - "8080:8080"  # Example: for API servers
+    
+    # Security options
+    security_opt:
+      - seccomp:unconfined  # Required for some debugging tools
+    
+    # Resource limits (optional - adjust based on your needs)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '4'
+    #       memory: 8G
+    #     reservations:
+    #       cpus: '2'
+    #       memory: 4G
+
+# ============================================================================
+# Usage Examples:
+# ============================================================================
+# 
+# Build the image:
+#   docker-compose build
+# 
+# Run Neovim:
+#   docker-compose run --rm neovim
+# 
+# Run Neovim with a specific file:
+#   docker-compose run --rm neovim /workspace/myfile.py
+# 
+# Run a shell instead of Neovim:
+#   docker-compose run --rm --entrypoint /bin/bash neovim
+# 
+# Clean up:
+#   docker-compose down
+#   docker image rm neovim-dev:latest
+# 
+# ============================================================================
+
+
