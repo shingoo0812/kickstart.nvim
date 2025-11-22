@@ -1,272 +1,118 @@
-# ============================================================================
-# Neovim Development Environment Docker Image
-# ============================================================================
-# This Dockerfile creates a complete Neovim development environment
-# with all necessary LSP servers, formatters, linters, and tools
-# ============================================================================
-
+# ------------------------------------------------------------
+# Neovim dev image for: Python, C++, C#, Lua, Node/TypeScript
+# - Mason will manage LSPs / formatters at runtime (do NOT npm -g a lot)
+# - Includes compilers, dotnet sdk, nodejs, lua, python essentials
+# ------------------------------------------------------------
 FROM ubuntu:24.04
 
-# Prevent interactive prompts during package installation
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TERM=xterm-256color
-ENV LANG=en_US.UTF-8
-ENV LC_ALL=en_US.UTF-8
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    TERM=xterm-256color \
+    PYTHONUNBUFFERED=1 \
+    EDITOR=nvim
 
-# ============================================================================
-# System packages and basic tools
-# ============================================================================
-RUN apt-get update && apt-get install -y \
-    # Core utilities
-    curl \
-    wget \
-    git \
-    build-essential \
-    unzip \
-    tar \
-    gzip \
-    locales \
-    software-properties-common \
-    # Neovim dependencies
-    neovim \
-    # Search and file tools (used by Telescope and plugins)
-    ripgrep \
-    fd-find \
-    fzf \
-    # Clipboard tools
-    xclip \
-    xsel \
-    # Python development
-    python3 \
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    # Additional development tools
-    make \
-    cmake \
-    ninja-build \
-    gettext \
-    # C/C++ development
-    gcc \
-    g++ \
-    clang \
-    clang-format \
-    # Language specific tools
-    lua5.4 \
-    luarocks \
-    # Database clients
-    postgresql-client \
-    sqlite3 \
-    # Version control
+# Create non-root user
+ARG USER=dev
+ARG UID=1000
+ARG GID=1000
+
+RUN groupadd -g ${GID} ${USER} || true && \
+    useradd -m -u ${UID} -g ${GID} -s /usr/bin/zsh ${USER} || true
+
+# -------- base packages ---------------------------------------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates curl wget gnupg lsb-release apt-transport-https \
+    build-essential git make cmake ninja-build unzip tar gzip \
+    locales sudo procps \
+    # search / file tools
+    ripgrep fd-find fzf \
+    # clipboard (useful when running GUI clients under WSL/X11)
+    xclip xsel \
+    # python
+    python3 python3-venv python3-pip python3-dev \
+    # lua
+    lua5.4 luarocks \
+    # C/C++ toolchains
+    gcc g++ clang clang-format \
+    # db clients
+    sqlite3 postgresql-client \
+    # git lfs
     git-lfs \
-    # Utilities for LSP and plugins
-    ca-certificates \
-    gnupg \
+    # minimal fonts/tools for terminals if needed
+    fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
 
-# Generate locale
-RUN locale-gen en_US.UTF-8
+# fd binary link (Debian package name fdfind)
+RUN ln -s $(which fdfind) /usr/local/bin/fd || true
 
-# ============================================================================
-# Create symbolic links for fd-find
-# ============================================================================
-RUN ln -s $(which fdfind) /usr/local/bin/fd
-
-
-# ============================================================================
-# Install Node.js 20.x (LTS)
-# ============================================================================
+# ---------------- Node.js 20 (set npm jobs small for builds) ----------------
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y nodejs && \
+    apt-get update && apt-get install -y nodejs --no-install-recommends && \
+    npm config set jobs 2 && \
+    npm config set fund false && npm config set audit false && \
     rm -rf /var/lib/apt/lists/*
 
-# Verify Node.js version
-RUN node --version && npm --version
-
-# ============================================================================
-# Install latest Neovim from official release (required for dropbar.nvim 0.11.0+)
-# ============================================================================
-RUN curl -L -o nvim-linux64.tar.gz https://github.com/neovim/neovim/releases/download/v0.10.2/nvim-linux64.tar.gz && \
-    tar -C /opt -xzf nvim-linux64.tar.gz && \
+# ---------------- Neovim (official release tarball) ----------------
+ARG NVIM_VERSION=v0.10.2
+RUN curl -L -o /tmp/nvim-linux64.tar.gz \
+      https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux64.tar.gz && \
+    tar -C /opt -xzf /tmp/nvim-linux64.tar.gz && \
     ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim && \
-    rm nvim-linux64.tar.gz
+    rm /tmp/nvim-linux64.tar.gz
 
-# Verify Neovim version
-RUN nvim --version
-
-# ============================================================================
-# Install Python packages (for Python LSP, formatters, and tools)
-# ============================================================================
-RUN pip3 install --no-cache-dir --break-system-packages \
-    # Python LSP servers
-    python-lsp-server[all] \
-    pylsp-mypy \
-    # Formatters
-    black \
-    isort \
-    autopep8 \
-    # Linters
-    flake8 \
-    pylint \
-    mypy \
-    # DAP (Debug Adapter Protocol)
-    debugpy \
-    # Additional Python tools
+# -------- Python essentials (keep minimal) -------------------------------
+RUN pip3 install --no-cache-dir \
     pynvim \
-    pydocstyle
+    debugpy \
+    black \
+    isort
 
-# ============================================================================
-# Install Node.js packages globally (only essentials, rest via Mason)
-# ============================================================================
-RUN npm install -g \
-    typescript \
-    typescript-language-server \
-    prettier
+# -------- LuaRocks example (optional) ------------------------------------
+RUN luarocks --version || true
+# (You can install lua tools via luarocks when needed)
 
-# ============================================================================
-# Install Lua LSP
-# ============================================================================
-# RUN luarocks install --server=https://luarocks.org/dev lua-lsp
+# -------- .NET SDK (C#) ---------------------------------------------------
+# Use Microsoft apt repo for dotnet (Ubuntu 24.04)
+RUN curl -fsSL https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb -o /tmp/packages-microsoft-prod.deb && \
+    dpkg -i /tmp/packages-microsoft-prod.deb && \
+    rm /tmp/packages-microsoft-prod.deb && \
+    apt-get update && apt-get install -y dotnet-sdk-8.0 --no-install-recommends && \
+    rm -rf /var/lib/apt/lists/*
 
-# ============================================================================
-# Setup workspace
-# ============================================================================
+# -------- Optional: install basic tooling (lazygit) -----------------------
+ARG LAZYGIT_VER=0.46.1
+RUN curl -sL "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VER}/lazygit_${LAZYGIT_VER}_Linux_x86_64.tar.gz" -o /tmp/lazygit.tar.gz && \
+    tar -xzf /tmp/lazygit.tar.gz -C /tmp && \
+    install /tmp/lazygit /usr/local/bin/lazygit && \
+    rm -rf /tmp/lazygit* || true
+
+# -------- Git config optimization (single place) -------------------------
+RUN git config --system http.postBuffer 524288000 && \
+    git config --system http.lowSpeedLimit 1000 && \
+    git config --system http.lowSpeedTime 600
+
+# -------- Create workspace & default nvim dirs for root+dev user ---------
+RUN mkdir -p /workspace /root/.config/nvim /root/.local/share/nvim /root/.cache/nvim && \
+    chown -R ${USER}:${USER} /workspace /root/.config /root/.local /root/.cache
+
 WORKDIR /workspace
 
-# Create Neovim config and data directories
-RUN mkdir -p /root/.config/nvim \
-             /root/.local/share/nvim \
-             /root/.local/state/nvim \
-             /root/.cache/nvim
+# -------- Switch to non-root user for normal use --------------------------
+USER ${USER}
+ENV HOME=/home/${USER}
+RUN mkdir -p ${HOME}/.config/nvim ${HOME}/.local/share/nvim ${HOME}/.cache/nvim
 
-# ============================================================================
-# Configure Git for better network handling
-# ============================================================================
-RUN git config --global http.postBuffer 524288000 && \
-    git config --global http.lowSpeedLimit 1000 && \
-    git config --global http.lowSpeedTime 600
+# -------- Helper script to start nvim (so you can mount configs) ----------
+COPY --chown=${USER}:${USER} --chmod=0755 <<'EOT' /usr/local/bin/start-nvim
+#!/bin/bash
+echo "Neovim dev container: workspace=/workspace"
+echo "If you use Mason, run :Mason in Neovim to install LSPs"
+exec nvim "$@"
+EOT
 
-
-# ============================================================================
-# Install Rust and Rust analyzer
-# ============================================================================
-# Install additional CLI tools - Optional, uncomment if needed
-# ============================================================================
-# LazyGit
-# RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*') && \
-#     curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" && \
-#     tar xf lazygit.tar.gz lazygit && \
-#     install lazygit /usr/local/bin && \
-#     rm lazygit lazygit.tar.gz
-
-# ============================================================================
-# Install additional CLI tools
-# ============================================================================
-# LazyGit
-RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*') && \
-    curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" && \
-    tar xf lazygit.tar.gz lazygit && \
-    install lazygit /usr/local/bin && \
-    rm lazygit lazygit.tar.gz
-
-# ============================================================================
-# Setup workspace
-# ============================================================================
-WORKDIR /workspace
-
-# Create Neovim config and data directories
-RUN mkdir -p /root/.config/nvim \
-             /root/.local/share/nvim \
-             /root/.local/state/nvim \
-             /root/.cache/nvim
-
-# ============================================================================
-# Configure Git for better network handling
-# ============================================================================
-RUN git config --global http.postBuffer 524288000 && \
-    git config --global http.lowSpeedLimit 1000 && \
-    git config --global http.lowSpeedTime 600
-
-# ============================================================================
-# Install Lazy.nvim plugin manager with retry logic
-# ============================================================================
-RUN for i in 1 2 3 4 5; do \
-        echo "Attempt $i: Cloning lazy.nvim..." && \
-        git clone --filter=blob:none --depth=1 \
-            https://github.com/folke/lazy.nvim.git --branch=stable \
-            /root/.local/share/nvim/lazy/lazy.nvim && \
-        echo "✓ Successfully cloned lazy.nvim" && \
-        break || { \
-            echo "✗ Failed attempt $i, retrying in 5 seconds..." && \
-            sleep 5; \
-        } \
-    done && \
-    if [ ! -d "/root/.local/share/nvim/lazy/lazy.nvim" ]; then \
-        echo "ERROR: Failed to clone lazy.nvim after 5 attempts" && \
-        exit 1; \
-    fi
-
-# ============================================================================
-# Environment setup
-# ============================================================================
-ENV PYTHONIOENCODING=utf-8
-ENV EDITOR=nvim
-
-# Create a startup script for convenience
-RUN echo '#!/bin/bash\n\
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
-echo "🚀 Neovim Docker Environment"\n\
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
-echo ""\n\
-echo "📂 Workspace:     /workspace"\n\
-echo "⚙️  Config:        /root/.config/nvim"\n\
-echo "🔌 Plugins:       /root/.local/share/nvim/lazy"\n\
-echo ""\n\
-# Check versions\n\
-echo "📦 Versions:"\n\
-nvim --version | head -n 1\n\
-node --version | xargs echo "   Node.js:"\n\
-python3 --version | xargs echo "   Python: "\n\
-
-echo ""\n\
-# Check if nvim config is mounted\n\
-if [ ! -f "/root/.config/nvim/init.lua" ]; then\n\
-    echo "⚠️  WARNING: Neovim config not found!"\n\
-    echo ""\n\
-    echo "Make sure to mount your config directory:"\n\
-    echo "  docker-compose run --rm neovim"\n\
-    echo ""\n\
-    echo "Or manually:"\n\
-    echo "  -v ~/.config/nvim:/root/.config/nvim:ro"\n\
-    echo ""\n\
-else\n\
-    echo "✓ Neovim config mounted successfully"\n\
-    echo ""\n\
-fi\n\
-# Check lazy.nvim\n\
-if [ -d "/root/.local/share/nvim/lazy/lazy.nvim" ]; then\n\
-    echo "✓ Lazy.nvim plugin manager ready"\n\
-else\n\
-    echo "⚠️  WARNING: Lazy.nvim not found!"\n\
-fi\n\
-echo ""\n\
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
-echo "💡 First time? Run :Lazy sync inside Neovim to install plugins"\n\
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
-echo ""\n\
-# Launch Neovim\n\
-exec nvim "$@"' > /usr/local/bin/start-nvim && \
-    chmod +x /usr/local/bin/start-nvim
-
-# ============================================================================
-# Entry point
-# ============================================================================
+# make start-nvim executable (COPY already set + permissions)
+# ENTRYPOINT and default CMD
 ENTRYPOINT ["/usr/local/bin/start-nvim"]
 CMD []
 
-# ============================================================================
-# Build information
-# ============================================================================
-LABEL maintainer="SHINGO"
-LABEL description="Complete Neovim development environment with LSP, formatters, and tools"
-LABEL version="1.0"
