@@ -35,7 +35,7 @@ return {
 
         -- 削除時の確認
         delete_to_trash = false, -- trueにするとゴミ箱に移動（要trash-cli）
-        skip_confirm_for_simple_edits = false,
+        skip_confirm_for_simple_edits = true,
 
         -- プロンプトの設定
         prompt_save_on_select_new_entry = true,

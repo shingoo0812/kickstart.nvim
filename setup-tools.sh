@@ -36,79 +36,79 @@ print_error() {
 print_warning() {
     echo -e "${YELLOW}⚠${NC} $1"
 }
+# ============================================================================
+# Base Installation (Node.js + Neovim + Lazy.nvim)
+# ============================================================================
 
-print_info() {
-    echo -e "${BLUE}ℹ${NC} $1"
+install_base() {
+    print_header "Installing Base Environment (Node.js + Neovim + Lazy.nvim)"
+    
+    # ========================================================================
+    # Node.js 20.x Installation
+    # ========================================================================
+    print_info "Installing Node.js 20.x LTS..."
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    apt-get install -y nodejs
+    rm -rf /var/lib/apt/lists/*
+    
+    print_success "Node.js installed: $(node --version)"
+    print_success "npm installed: $(npm --version)"
+    
+    # ========================================================================
+    # Neovim Installation
+    # ========================================================================
+    print_info "Installing Neovim 0.10.2..."
+    curl -L -o /tmp/nvim-linux64.tar.gz https://github.com/neovim/neovim/releases/download/v0.10.2/nvim-linux64.tar.gz
+    tar -C /opt -xzf /tmp/nvim-linux64.tar.gz
+    ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
+    rm /tmp/nvim-linux64.tar.gz
+    
+    print_success "Neovim installed: $(nvim --version | head -n 1)"
+    
+    # ========================================================================
+    # pynvim Installation
+    # ========================================================================
+    print_info "Installing pynvim..."
+    pip3 install --no-cache-dir --break-system-packages pynvim
+    
+    print_success "pynvim installed"
+    
+    # ========================================================================
+    # Lazy.nvim Installation
+    # ========================================================================
+    print_info "Installing Lazy.nvim plugin manager..."
+    
+    for i in 1 2 3 4 5; do
+        echo "Attempt $i: Cloning lazy.nvim..."
+        if git clone --filter=blob:none --depth=1 \
+            https://github.com/folke/lazy.nvim.git --branch=stable \
+            /root/.local/share/nvim/lazy/lazy.nvim; then
+            print_success "Lazy.nvim cloned successfully"
+            break
+        else
+            if [ $i -lt 5 ]; then
+                print_warning "Failed attempt $i, retrying in 5 seconds..."
+                sleep 5
+            else
+                print_error "Failed to clone lazy.nvim after 5 attempts"
+                return 1
+            fi
+        fi
+    done
+    
+    print_success "Base environment installed successfully!"
+    echo ""
+    print_info "Next steps:"
+    echo "  1. Exit and restart the container"
+    echo "  2. Run: nvim"
+    echo "  3. Inside Neovim run: :Lazy sync"
+    echo "  4. Install dev tools: setup-tools.sh [python|node|go|rust|all]"
 }
 
 # ============================================================================
 # Python Tools Installation
 # ============================================================================
 
-install_python_tools() {
-    print_header "Installing Python Development Tools"
-    
-    print_info "Installing Python LSP servers and formatters..."
-    pip3 install --no-cache-dir --break-system-packages \
-        python-lsp-server[all] \
-        pylsp-mypy \
-        black \
-        isort \
-        autopep8 \
-        flake8 \
-        pylint \
-        mypy \
-        debugpy \
-        pydocstyle
-    
-    print_success "Python tools installed successfully"
-}
-
-# ============================================================================
-# Node.js/TypeScript Tools Installation
-# ============================================================================
-
-install_node_tools() {
-    print_header "Installing Node.js/TypeScript Development Tools"
-    
-    print_info "Installing LSP servers and formatters..."
-    npm install -g \
-        typescript \
-        typescript-language-server \
-        vscode-langservers-extracted \
-        bash-language-server \
-        yaml-language-server \
-        dockerfile-language-server-nodejs \
-        vim-language-server \
-        prettier \
-        eslint \
-        tree-sitter-cli
-    
-    print_success "Node.js tools installed successfully"
-}
-
-# ============================================================================
-# Go Tools Installation
-# ============================================================================
-
-install_go_tools() {
-    print_header "Installing Go Development Tools"
-    
-    # Check if Go is already installed
-    if command -v go &> /dev/null; then
-        print_warning "Go is already installed: $(go version)"
-        print_info "Installing Go tools only..."
-        go install golang.org/x/tools/gopls@latest
-        go install github.com/go-delve/delve/cmd/dlv@latest
-        print_success "Go tools installed successfully"
-        return
-    fi
-    
-    print_info "Installing Go..."
-    GO_VERSION="1.23.4"
-    wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
-    tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
-    rm go${GO_VERSION}.linux-amd64.tar.gz
     
     # Update PATH for current session
     export PATH="/usr/local/go/bin:/root/go/bin:${PATH}"
@@ -273,4 +273,79 @@ case "${1:-help}" in
         ;;
 esac
 
+
+show_usage() {
+    echo "Usage: setup-tools.sh [option]"
+    echo ""
+    echo "Options:"
+    echo "  base     - Install base environment (Node.js + Neovim + Lazy.nvim) - RUN THIS FIRST"
+    echo "  python   - Install Python development tools"
+    echo "  node     - Install Node.js/TypeScript development tools"
+    echo "  go       - Install Go development tools"
+    echo "  rust     - Install Rust development tools"
+    echo "  csharp   - Install C# development tools"
+    echo "  lazygit  - Install LazyGit"
+    echo "  all      - Install base + all development tools"
+    echo "  help     - Show this help message"
+    echo ""
+    echo "Recommended workflow:"
+    echo "  1. setup-tools.sh base"
+    echo "  2. Exit container and restart"
+    echo "  3. setup-tools.sh python (or other tools as needed)"
+    echo ""
+}
+
+# Main execution
+case "${1:-help}" in
+    base)
+        install_base
+        ;;
+    python)
+        install_python_tools
+        ;;
+    node)
+        install_node_tools
+        ;;
+    go)
+        install_go_tools
+        ;;
+    rust)
+        install_rust_tools
+        ;;
+    csharp)
+        install_csharp_tools
+        ;;
+    lazygit)
+        install_lazygit
+        ;;
+    all)
+        print_header "Installing Base + All Development Tools"
+        install_base
+        echo ""
+        install_python_tools
+        echo ""
+        install_node_tools
+        echo ""
+        install_go_tools
+        echo ""
+        install_rust_tools
+        echo ""
+        install_csharp_tools
+        echo ""
+        install_lazygit
+        echo ""
+        print_success "All tools installed successfully!"
+        echo ""
+        print_info "Please exit and restart the container, then run: nvim"
+        ;;
+    help|--help|-h)
+        show_usage
+        ;;
+    *)
+        print_error "Unknown option: $1"
+        echo ""
+        show_usage
+        exit 1
+        ;;
+esac
 
