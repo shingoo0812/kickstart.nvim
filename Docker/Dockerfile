@@ -128,13 +128,13 @@ RUN npm install -g \
 # ============================================================================
 # RUN luarocks install --server=https://luarocks.org/dev lua-lsp
 
-# ============================================================================
-# Setup workspace
-# ============================================================================
+WORKDIR /workspace
 
 # Create Neovim config and data directories
 RUN mkdir -p /root/.config/nvim \
              /root/.local/share/nvim \
+             /root/.local/state/nvim \
+             /root/.cache/nvim
              /root/.local/state/nvim \
              /root/.cache/nvim
 # Install Rust and Rust analyzer - Optional, uncomment if needed
@@ -144,8 +144,8 @@ RUN mkdir -p /root/.config/nvim \
 # RUN rustup component add rust-analyzer
 
 # Install Go tools
-RUN go install golang.org/x/tools/gopls@latest && \
-    go install github.com/go-delve/delve/cmd/dlv@latest
+
+
 
 # ============================================================================
 # Install Rust and Rust analyzer
@@ -227,7 +227,7 @@ echo "📦 Versions:"\n\
 nvim --version | head -n 1\n\
 node --version | xargs echo "   Node.js:"\n\
 python3 --version | xargs echo "   Python: "\n\
-go version | cut -d" " -f3 | xargs echo "   Go:     "\n\
+
 echo ""\n\
 # Check if nvim config is mounted\n\
 if [ ! -f "/root/.config/nvim/init.lua" ]; then\n\
