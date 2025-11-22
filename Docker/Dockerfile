@@ -49,7 +49,6 @@ RUN ln -s $(which fdfind) /usr/local/bin/fd || true
 # ---------------- Node.js 20 (set npm jobs small for builds) ----------------
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
     apt-get update && apt-get install -y nodejs --no-install-recommends && \
-    npm config set jobs 2 && \
     npm config set fund false && npm config set audit false && \
     rm -rf /var/lib/apt/lists/*
 
