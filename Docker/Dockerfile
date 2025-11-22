@@ -157,7 +157,7 @@ RUN rustup component add rust-analyzer
 # ============================================================================
 # Install Lua LSP
 # ============================================================================
-RUN luarocks install --server=https://luarocks.org/dev lua-lsp
+# RUN luarocks install --server=https://luarocks.org/dev lua-lsp
 
 # ============================================================================
 # Install additional CLI tools
