@@ -3,7 +3,7 @@
 # Neovim Development Tools Setup Script
 # ============================================================================
 # This script installs development tools on-demand inside the Docker container.
-# Usage: setup-tools.sh [python|node|go|rust|csharp|all]
+# Usage: setup-tools.sh [base|python|node|go|rust|csharp|lazygit|all]
 # ============================================================================
 
 set -e  # Exit on error
@@ -36,6 +36,11 @@ print_error() {
 print_warning() {
     echo -e "${YELLOW}⚠${NC} $1"
 }
+
+print_info() {
+    echo -e "${BLUE}ℹ${NC} $1"
+}
+
 # ============================================================================
 # Base Installation (Node.js + Neovim + Lazy.nvim)
 # ============================================================================
@@ -109,6 +114,70 @@ install_base() {
 # Python Tools Installation
 # ============================================================================
 
+install_python_tools() {
+    print_header "Installing Python Development Tools"
+    
+    print_info "Installing Python LSP servers and formatters..."
+    pip3 install --no-cache-dir --break-system-packages \
+        python-lsp-server[all] \
+        pylsp-mypy \
+        black \
+        isort \
+        autopep8 \
+        flake8 \
+        pylint \
+        mypy \
+        debugpy \
+        pydocstyle
+    
+    print_success "Python tools installed successfully"
+}
+
+# ============================================================================
+# Node.js/TypeScript Tools Installation
+# ============================================================================
+
+install_node_tools() {
+    print_header "Installing Node.js/TypeScript Development Tools"
+    
+    print_info "Installing LSP servers and formatters..."
+    npm install -g \
+        typescript \
+        typescript-language-server \
+        vscode-langservers-extracted \
+        bash-language-server \
+        yaml-language-server \
+        dockerfile-language-server-nodejs \
+        vim-language-server \
+        prettier \
+        eslint \
+        tree-sitter-cli
+    
+    print_success "Node.js tools installed successfully"
+}
+
+# ============================================================================
+# Go Tools Installation
+# ============================================================================
+
+install_go_tools() {
+    print_header "Installing Go Development Tools"
+    
+    # Check if Go is already installed
+    if command -v go &> /dev/null; then
+        print_warning "Go is already installed: $(go version)"
+        print_info "Installing Go tools only..."
+        go install golang.org/x/tools/gopls@latest
+        go install github.com/go-delve/delve/cmd/dlv@latest
+        print_success "Go tools installed successfully"
+        return
+    fi
+    
+    print_info "Installing Go..."
+    GO_VERSION="1.23.4"
+    wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz
+    tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
+    rm go${GO_VERSION}.linux-amd64.tar.gz
     
     # Update PATH for current session
     export PATH="/usr/local/go/bin:/root/go/bin:${PATH}"
@@ -152,6 +221,7 @@ install_rust_tools() {
     echo 'export PATH="/root/.cargo/bin:${PATH}"' >> /root/.bashrc
     
     print_info "Installing rust-analyzer..."
+    source /root/.cargo/env
     rustup component add rust-analyzer
     
     print_success "Rust and tools installed successfully"
@@ -210,69 +280,6 @@ install_lazygit() {
 # ============================================================================
 # Main Script
 # ============================================================================
-
-show_usage() {
-    echo "Usage: setup-tools.sh [option]"
-    echo ""
-    echo "Options:"
-    echo "  python   - Install Python development tools"
-    echo "  node     - Install Node.js/TypeScript development tools"
-    echo "  go       - Install Go development tools"
-    echo "  rust     - Install Rust development tools"
-    echo "  csharp   - Install C# development tools"
-    echo "  lazygit  - Install LazyGit"
-    echo "  all      - Install all development tools"
-    echo "  help     - Show this help message"
-    echo ""
-}
-
-# Main execution
-case "${1:-help}" in
-    python)
-        install_python_tools
-        ;;
-    node)
-        install_node_tools
-        ;;
-    go)
-        install_go_tools
-        ;;
-    rust)
-        install_rust_tools
-        ;;
-    csharp)
-        install_csharp_tools
-        ;;
-    lazygit)
-        install_lazygit
-        ;;
-    all)
-        print_header "Installing All Development Tools"
-        install_python_tools
-        echo ""
-        install_node_tools
-        echo ""
-        install_go_tools
-        echo ""
-        install_rust_tools
-        echo ""
-        install_csharp_tools
-        echo ""
-        install_lazygit
-        echo ""
-        print_success "All tools installed successfully!"
-        ;;
-    help|--help|-h)
-        show_usage
-        ;;
-    *)
-        print_error "Unknown option: $1"
-        echo ""
-        show_usage
-        exit 1
-        ;;
-esac
-
 
 show_usage() {
     echo "Usage: setup-tools.sh [option]"
@@ -348,4 +355,3 @@ case "${1:-help}" in
         exit 1
         ;;
 esac
-
