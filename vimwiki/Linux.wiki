@@ -7,3 +7,46 @@
 * [[wikiman]]
 = ASCII =
 * [[figlet]]
+
+
+/                                ← The root directory (top of the entire filesystem)
+├── bin                          ← Essential commands used by the system
+│     (Examples: ls, cp, mv, rm, cat)
+│
+├── boot                         ← Files needed to start (boot) Linux
+│     (Examples: Linux kernel vmlinuz, GRUB bootloader files)
+│
+├── dev                          ← Device files representing hardware
+│     (Examples: /dev/sda = SSD/HDD, /dev/tty = terminal, /dev/null = data sink)
+│
+├── etc                          ← System configuration files
+│     (Examples: /etc/hosts, /etc/passwd, /etc/ssh/sshd_config)
+│
+├── home                         ← Home directories for normal users
+│   ├── user1                    ← user1’s personal files
+│   │       (Examples: Documents, Downloads, .bashrc)
+│   └── user2                    ← user2’s personal files
+│           (Same structure as user1)
+│
+├── root                         ← Home directory of the root (administrator) user
+│     (Example: root's .bashrc, root-only scripts)
+│
+├── tmp                          ← Temporary files (often deleted on reboot)
+│     (Examples: temp files created by applications, installer data)
+│
+├── usr                          ← Applications, libraries, documentation, etc.
+│   ├── bin                      ← Executable programs for users
+│   │       (Examples: python, gcc, nano, vim)
+│   ├── lib                      ← Shared libraries used by programs
+│   │       (Examples: libpython3.12.so, libssl.so)
+│   └── share                    ← Architecture-independent data
+│           (Examples: icons, fonts, man pages)
+│
+└── var                          ← Variable files (change frequently)
+    ├── log                      ← Log files
+    │       (Examples: syslog, auth.log, nginx/access.log)
+    ├── lib                      ← Service/application data
+    │       (Examples: databases, Docker state, apt data)
+    └── cache                    ← Cached data
+            (Examples: package manager caches, thumbnail cache)
+
