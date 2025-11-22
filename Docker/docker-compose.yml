@@ -24,7 +24,7 @@ services:
       # Neovim configuration (read-only recommended)
       # Windows: Use full path like C:\Users\YourName\AppData\Local\nvim
       # Linux/Mac: Use ~/.config/nvim
-      - ${NVIM_CONFIG_PATH:-~/.config/nvim}:/root/.config/nvim:ro
+      - ..:/root/.config/nvim:ro
       
       # Workspace directory (your projects)
       # Change this to your actual projects directory
@@ -84,7 +84,7 @@ services:
     container_name: neovim-shell
     
     volumes:
-      - ${NVIM_CONFIG_PATH:-~/.config/nvim}:/root/.config/nvim:ro
+      - ..:/root/.config/nvim:ro
       - ${WORKSPACE_PATH:-~/projects}:/workspace
       - nvim-data:/root/.local/share/nvim
       - nvim-state:/root/.local/state/nvim
