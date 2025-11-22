@@ -41,9 +41,6 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     python3-venv \
     python3-dev \
-    # Node.js and npm (for LSP servers)
-    nodejs \
-    npm \
     # Additional development tools
     make \
     cmake \
@@ -74,6 +71,17 @@ RUN locale-gen en_US.UTF-8
 # Create symbolic links for fd-find
 # ============================================================================
 RUN ln -s $(which fdfind) /usr/local/bin/fd
+
+
+# ============================================================================
+# Install Node.js 20.x (LTS)
+# ============================================================================
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
+
+# Verify Node.js version
+RUN node --version && npm --version
 
 # ============================================================================
 # Install latest Neovim from official release (optional - if you want latest)

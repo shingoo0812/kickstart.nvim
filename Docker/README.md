@@ -71,7 +71,41 @@ WORKSPACE_PATH=C:/Users/YourName/projects
 # Linux/Mac の場合
 NVIM_CONFIG_PATH=~/.config/nvim
 WORKSPACE_PATH=~/projects
+
+ケース1: 全部WSL内で完結
+bash# WSL内のファイル構成
+/home/shingo/
+├── .config/nvim/          ← Neovim設定
+│   ├── lua/
+│   ├── init.lua
+│   └── docker/
+└── projects/              ← プロジェクト
+    ├── my-app/
+    └── houdini-tools/
+bash# .env
+NVIM_CONFIG_PATH=/home/shingo/.config/nvim
+WORKSPACE_PATH=/home/shingo/projects
+bash# WSLで起動
+cd ~/.config/nvim/docker
+docker-compose run --rm neovim
+
+ケース2: Neovim設定はWSL、プロジェクトはWindows
+bash# ファイル配置
+WSL: /home/shingo/.config/nvim/    ← Neovim設定
+Windows: C:/Users/shing/projects/   ← プロジェクト
+bash# .env
+NVIM_CONFIG_PATH=/home/shingo/.config/nvim
+WORKSPACE_PATH=/mnt/c/Users/shing/projects  # ← /mnt/c/で始まる
+
+ケース3: 全部Windows（WSLは使わない）
+bash# PowerShellで起動
+cd C:\Users\shing\AppData\Local\nvim\docker
+docker-compose run --rm neovim
+bash# .env
+NVIM_CONFIG_PATH=C:/Users/shing/AppData/Local/nvim
+WORKSPACE_PATH=C:/Users/shing/projects
 ```
+
 
 ### 3. Dockerイメージのビルド
 
