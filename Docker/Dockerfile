@@ -128,6 +128,9 @@ RUN npm install -g \
 # ============================================================================
 # RUN luarocks install --server=https://luarocks.org/dev lua-lsp
 
+# ============================================================================
+# Setup workspace
+# ============================================================================
 WORKDIR /workspace
 
 # Create Neovim config and data directories
@@ -135,16 +138,13 @@ RUN mkdir -p /root/.config/nvim \
              /root/.local/share/nvim \
              /root/.local/state/nvim \
              /root/.cache/nvim
-             /root/.local/state/nvim \
-             /root/.cache/nvim
-# Install Rust and Rust analyzer - Optional, uncomment if needed
+
 # ============================================================================
-# RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-# ENV PATH="/root/.cargo/bin:${PATH}"
-# RUN rustup component add rust-analyzer
-
-# Install Go tools
-
+# Configure Git for better network handling
+# ============================================================================
+RUN git config --global http.postBuffer 524288000 && \
+    git config --global http.lowSpeedLimit 1000 && \
+    git config --global http.lowSpeedTime 600
 
 
 # ============================================================================
