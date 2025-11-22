@@ -86,7 +86,7 @@ RUN node --version && npm --version
 # ============================================================================
 # Install latest Neovim from official release (required for dropbar.nvim 0.11.0+)
 # ============================================================================
-RUN curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz && \
+RUN curl -L -o nvim-linux64.tar.gz https://github.com/neovim/neovim/releases/download/v0.10.2/nvim-linux64.tar.gz && \
     tar -C /opt -xzf nvim-linux64.tar.gz && \
     ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim && \
     rm nvim-linux64.tar.gz
@@ -95,9 +95,9 @@ RUN curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linu
 RUN nvim --version
 
 # ============================================================================
+# Install Python packages (for Python LSP, formatters, and tools)
+# ============================================================================
 RUN pip3 install --no-cache-dir --break-system-packages \
-    # Python LSP servers
-    python-lsp-server[all] \
     pylsp-mypy \
     # Formatters
     black \
@@ -193,26 +193,26 @@ RUN git config --global http.postBuffer 524288000 && \
 RUN for i in 1 2 3 4 5; do \
         echo "Attempt $i: Cloning lazy.nvim..." && \
         git clone --filter=blob:none --depth=1 \
-# Create a startup script for convenience
-RUN echo '#!/bin/bash\n\
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
-echo "🚀 Neovim Docker Environment"\n\
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
-echo ""\n\
-echo "📂 Workspace:     /workspace"\n\
-echo "⚙️  Config:        /root/.config/nvim"\n\
-echo "🔌 Plugins:       /root/.local/share/nvim/lazy"\n\
-echo ""\n\
-# Check versions\n\
-echo "📦 Versions:"\n\
-nvim --version | head -n 1\n\
-node --version | xargs echo "   Node.js:"\n\
-python3 --version | xargs echo "   Python: "\n\
-go version | cut -d\" \" -f3 | xargs echo "   Go:     "\n\
-echo ""\n\
-# Check if nvim config is mounted\n\
-if [ ! -f "/root/.config/nvim/init.lua" ]; then\n\
-    echo "⚠️  WARNING: Neovim config not found!"\n\
+            https://github.com/folke/lazy.nvim.git --branch=stable \
+            /root/.local/share/nvim/lazy/lazy.nvim && \
+        echo "✓ Successfully cloned lazy.nvim" && \
+        break || { \
+            echo "✗ Failed attempt $i, retrying in 5 seconds..." && \
+            sleep 5; \
+        } \
+    done && \
+    if [ ! -d "/root/.local/share/nvim/lazy/lazy.nvim" ]; then \
+        echo "ERROR: Failed to clone lazy.nvim after 5 attempts" && \
+        exit 1; \
+    fi
+
+# ============================================================================
+# Environment setup
+# ============================================================================
+ENV PYTHONIOENCODING=utf-8
+ENV EDITOR=nvim
+
+# ============================================================================
     echo ""\n\
     echo "Make sure to mount your config directory:"\n\
     echo "  docker-compose run --rm neovim"\n\
