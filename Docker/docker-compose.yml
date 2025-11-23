@@ -16,8 +16,7 @@ services:
     # Volume mounts
     volumes:
       # Mount Neovim config (read-only)
-      - /home/vpam/dotfiles/linux/nvim:/root/.config/nvim:ro     
-
+      - /home/vpam/dotfiles/linux/nvim:/root/.config/nvim:rw
       # Mount lazy-lock.json separately as read-write
       - ../lazy-lock.json:/root/.config/nvim/lazy-lock.json:rw
       
