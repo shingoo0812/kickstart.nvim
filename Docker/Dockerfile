@@ -102,42 +102,12 @@ RUN nvim --version
 # ============================================================================
 # Install Python packages
 # ============================================================================
-RUN pip3 install --no-cache-dir --break-system-packages \
-    # Essential
-    pynvim \
-    # Python LSP servers
-    python-lsp-server[all] \
-    pylsp-mypy \
-    # Formatters
-    black \
-    isort \
-    autopep8 \
-    # Linters
-    flake8 \
-    pylint \
-    mypy \
-    # DAP (Debug Adapter Protocol)
-    debugpy \
-    # Additional Python tools
-    pydocstyle
+RUN pip3 install --no-cache-dir --break-system-packages pynvim
 
 # ============================================================================
-# Install Node.js packages globally (LSP servers and formatters)
+# Install Node.js packages globally (none - Mason will handle LSP/formatters)
 # ============================================================================
-RUN npm install -g \
-    # LSP servers
-    typescript \
-    typescript-language-server \
-    vscode-langservers-extracted \
-    bash-language-server \
-    yaml-language-server \
-    dockerfile-language-server-nodejs \
-    vim-language-server \
-    # Formatters
-    prettier \
-    eslint \
-    # Additional tools
-    tree-sitter-cli
+# All LSP servers and formatters will be installed via Mason in Neovim
 
 # ============================================================================
 # Install Go 1.23.4 (from pre-downloaded file)
@@ -150,16 +120,16 @@ RUN tar -C /usr/local -xzf /tmp/go.tar.gz && \
 ENV PATH="/usr/local/go/bin:/root/go/bin:${PATH}"
 ENV GOPATH="/root/go"
 
-# Install Go tools
-RUN go install golang.org/x/tools/gopls@latest && \
-    go install github.com/go-delve/delve/cmd/dlv@latest
+# Install Go tools - Mason will handle gopls and dlv
+# ============================================================================
+# Go compiler is installed, but gopls/dlv will be installed via Mason
 
 # ============================================================================
 # Install Rust and Rust analyzer
 # ============================================================================
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
-RUN rustup component add rust-analyzer
+# rust-analyzer will be installed via Mason
 
 # ============================================================================
 # Install LazyGit
