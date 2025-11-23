@@ -152,9 +152,10 @@ RUN mkdir -p /root/.config/nvim \
              /root/.local/share/nvim \
              /root/.local/state/nvim \
              /root/.cache/nvim && \
-    rm -rf /root/.config/nvim/lazy-lock.json
+
 # ============================================================================
 COPY cache/nvim-data/ /root/.local/share/nvim/
+RUN rm -rf /root/.config/nvim/lazy-lock.json
 
 # ============================================================================
 # Environment setup
