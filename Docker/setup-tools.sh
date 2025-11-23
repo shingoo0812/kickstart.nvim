@@ -65,7 +65,7 @@ install_base() {
     # ========================================================================
     # Neovim Installation
     # ========================================================================
-    print_info "Installing Neovim 0.10.2
+    print_info "Installing Neovim"
     curl -L --progress-bar -o /tmp/nvim-linux64.tar.gz https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
     tar -C /opt -xzf /tmp/nvim-linux64.tar.gz
     ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
