@@ -84,6 +84,13 @@ RUN git config --global http.postBuffer 524288000 && \
     git config --global http.lowSpeedLimit 1000 && \
     git config --global http.lowSpeedTime 600
 
+
+# ============================================================================
+# Setup Neovim and lazy
+# ============================================================================
+COPY /opt/nvim-linux64/bin/nvim /opt/nvim-linux64/bin/nvim 
+COPY ~/.local/share/nvim/lazy/lazy.nvim /root/.local/share/nvim/lazy/lazy.nvim
+
 # ============================================================================
 # Environment setup
 # ============================================================================
