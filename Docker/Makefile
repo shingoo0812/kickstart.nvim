@@ -130,8 +130,7 @@ all: build save
 run:
 	@echo "$(BLUE)Starting Neovim...$(NC)"
 	@docker run -it --rm \
-		-v $(NVIM_CONFIG):/root/.config/nvim:ro \
-		-v $(NVIM_CONFIG)/lazy-lock.json:/root/.config/nvim/lazy-lock.json:rw \
+		-v $(NVIM_CONFIG):/root/.config/nvim \
 		-v $(WORKSPACE):/workspace \
 		--name neovim-dev-container \
 		$(IMAGE_FULL)
