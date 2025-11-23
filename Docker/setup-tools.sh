@@ -50,6 +50,7 @@ install_base() {
     
     # Git large post buffer 設定
     git config --global http.postBuffer 524288000
+    print_info "Configured git http.postBuffer to 500MB"
     # ========================================================================
     # Node.js 20.x Installation
     # ========================================================================
@@ -87,9 +88,8 @@ install_base() {
     
     for i in 1 2 3 4 5; do
         echo "Attempt $i: Cloning lazy.nvim..."
-        if git clone --filter=blob:none --depth=1 \
-            https://github.com/folke/lazy.nvim.git --branch=stable \
-            /root/.local/share/nvim/lazy/lazy.nvim; then
+        if git clone --filter=blob:none --depth=1 --progress \
+            https://github.com/folke/lazy.nvim.git /root/.local/share/nvim/lazy/lazy.nvim; then
             print_success "Lazy.nvim cloned successfully"
             break
         else
