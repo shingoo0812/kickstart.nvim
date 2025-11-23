@@ -49,7 +49,15 @@ install_base() {
     print_header "Installing Base Environment (Node.js + Neovim + Lazy.nvim)"
     
     # Git large post buffer 設定
+    git config --global http.version HTTP/1.1
     git config --global http.postBuffer 524288000
+    git config --global http.maxRequests 1
+    git config --global http.lowSpeedLimit 0
+    git config --global http.lowSpeedTime 999999
+    git config --global http.sslVerify false
+    git config --global core.compression 0
+    git config --global http.noEPSV true
+    
     print_info "Configured git http.postBuffer to 500MB"
     # ========================================================================
     # Node.js 20.x Installation
@@ -266,7 +274,15 @@ install_lazygit() {
     print_header "Installing LazyGit"
     
     # Git large post buffer 設定
+    git config --global http.version HTTP/1.1
     git config --global http.postBuffer 524288000
+    git config --global http.maxRequests 1
+    git config --global http.lowSpeedLimit 0
+    git config --global http.lowSpeedTime 999999
+    git config --global http.sslVerify false
+    git config --global core.compression 0
+    git config --global http.noEPSV true
+
     # Check if lazygit is already installed
     if command -v lazygit &> /dev/null; then
         print_warning "LazyGit is already installed: $(lazygit --version)"
