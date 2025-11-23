@@ -48,6 +48,8 @@ help:
 	@echo ""
 	@echo "$(GREEN)Maintenance:$(NC)"
 	@echo "  make clean       - Remove Docker image"
+	@echo "  make clean-cache - Remove cache directory"
+	@echo "  make clean-all   - Remove image, cache, and export file"
 	@echo "  make rebuild     - Clean and rebuild"
 	@echo "  make info        - Show image information"
 	@echo ""
@@ -169,8 +171,14 @@ clean:
 	@docker rmi $(IMAGE_FULL) 2>/dev/null || true
 	@echo "$(GREEN)✓ Cleaned$(NC)"
 
+.PHONY: clean-cache
+clean-cache:
+	@echo "$(YELLOW)Removing cache directory...$(NC)"
+	@rm -rf cache/
+	@echo "$(GREEN)✓ Cache cleaned$(NC)"
+
 .PHONY: clean-all
-clean-all: clean
+clean-all: clean clean-cache
 	@echo "$(YELLOW)Removing $(EXPORT_FILE)...$(NC)"
 	@rm -f $(EXPORT_FILE)
 	@echo "$(GREEN)✓ All cleaned$(NC)"
