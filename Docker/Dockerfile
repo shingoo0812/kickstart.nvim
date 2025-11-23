@@ -179,17 +179,7 @@ echo "   • Python:      $(python3 --version | cut -d'\'' '\'' -f2)"\n\
 echo "   • Go:          $(go version | cut -d'\'' '\'' -f3)"\n\
 echo "   • Rust:        $(rustc --version | cut -d'\'' '\'' -f2)"\n\
 echo ""\n\
-if [ ! -f "/root/.config/nvim/init.lua" ]; then\n\
-    echo "⚠️  WARNING: Neovim config not found!"\n\
-    echo "   Mount your config: -v ~/.config/nvim:/root/.config/nvim:ro"\n\
-    echo ""\n\
-else\n\
-    echo "✓ Neovim config mounted"\n\
-fi\n\
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
-echo "💡 First time? Run :Lazy sync inside Neovim"\n\
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"\n\
-echo ""\n\
 exec nvim "$@"' > /usr/local/bin/start-nvim && \
     chmod +x /usr/local/bin/start-nvim
 
