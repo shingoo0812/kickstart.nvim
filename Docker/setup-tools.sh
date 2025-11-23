@@ -89,7 +89,7 @@ install_base() {
     
     for i in 1 2 3 4 5; do
         echo "Attempt $i: Cloning lazy.nvim..."
-        if git clone --filter=blob:none --depth=1 --progress \
+        if git -c http.version=HTTP/1.1 clone --filter=blob:none --depth=1 --progress \
             https://github.com/folke/lazy.nvim.git /root/.local/share/nvim/lazy/lazy.nvim; then
             print_success "Lazy.nvim cloned successfully"
             break
