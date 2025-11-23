@@ -92,13 +92,14 @@ RUN node --version && npm --version
 # Install Neovim (latest stable) with retry logic
 # ============================================================================
 RUN for i in 1 2 3 4 5; do \
-        echo "Attempt $i: Downloading Neovim..." && \
+        echo "Attempt $i: Downloading Neovim (latest)..." && \
+        NVIM_VERSION=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep -Po '"tag_name": "\K[^"]*') && \
         curl -L -o /tmp/nvim-linux64.tar.gz \
-            https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz && \
+            "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux64.tar.gz" && \
         tar -C /opt -xzf /tmp/nvim-linux64.tar.gz && \
         ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim && \
         rm /tmp/nvim-linux64.tar.gz && \
-        echo "✓ Neovim installed successfully" && \
+        echo "✓ Neovim ${NVIM_VERSION} installed successfully" && \
         break || { \
             echo "✗ Failed attempt $i, retrying in 10 seconds..." && \
             rm -f /tmp/nvim-linux64.tar.gz && \
