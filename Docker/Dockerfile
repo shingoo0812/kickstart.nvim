@@ -89,12 +89,11 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 RUN node --version && npm --version
 
 # ============================================================================
-# Install Neovim v0.10.2 (from pre-downloaded file)
+# Install Neovim (from host system)
 # ============================================================================
-COPY cache/nvim-linux64.tar.gz /tmp/nvim-linux64.tar.gz
-RUN tar -C /opt -xzf /tmp/nvim-linux64.tar.gz && \
-    ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim && \
-    rm /tmp/nvim-linux64.tar.gz
+# Copy entire Neovim installation from host
+COPY cache/nvim-linux64/ /opt/nvim-linux64/
+RUN ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim
 
 # Verify Neovim version
 RUN nvim --version
@@ -153,9 +152,9 @@ RUN mkdir -p /root/.config/nvim \
              /root/.cache/nvim
 
 # ============================================================================
-# Install Lazy.nvim plugin manager (from pre-cloned repository)
+# Copy Neovim data directory (Lazy.nvim + all plugins) from host
 # ============================================================================
-COPY cache/lazy.nvim /root/.local/share/nvim/lazy/lazy.nvim
+COPY cache/nvim-data/ /root/.local/share/nvim/
 
 # ============================================================================
 # Environment setup
