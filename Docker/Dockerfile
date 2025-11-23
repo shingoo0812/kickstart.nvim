@@ -173,11 +173,11 @@ echo "⚙️  Config:        /root/.config/nvim"\n\
 echo "🔌 Plugins:       /root/.local/share/nvim/lazy"\n\
 echo ""\n\
 echo "📦 Pre-installed:"\n\
-echo "   • Neovim:      $(nvim --version | head -n 1 | cut -d\" \" -f2)"\n\
+echo "   • Neovim:      $(nvim --version | head -n 1 | cut -d'\'' '\'' -f2)"\n\
 echo "   • Node.js:     $(node --version)"\n\
-echo "   • Python:      $(python3 --version | cut -d\" \" -f2)"\n\
-echo "   • Go:          $(go version | cut -d\" \" -f3)"\n\
-echo "   • Rust:        $(rustc --version | cut -d\" \" -f2)"\n\
+echo "   • Python:      $(python3 --version | cut -d'\'' '\'' -f2)"\n\
+echo "   • Go:          $(go version | cut -d'\'' '\'' -f3)"\n\
+echo "   • Rust:        $(rustc --version | cut -d'\'' '\'' -f2)"\n\
 echo ""\n\
 if [ ! -f "/root/.config/nvim/init.lua" ]; then\n\
     echo "⚠️  WARNING: Neovim config not found!"\n\
