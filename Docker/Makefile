@@ -143,8 +143,7 @@ run-file:
 	fi
 	@echo "$(BLUE)Opening $(FILE)...$(NC)"
 	@docker run -it --rm \
-		-v $(NVIM_CONFIG):/root/.config/nvim:ro \
-		-v $(NVIM_CONFIG)/lazy-lock.json:/root/.config/nvim/lazy-lock.json:rw \
+		-v $(NVIM_CONFIG):/root/.config/nvim \
 		-v $(WORKSPACE):/workspace \
 		--name neovim-dev-container \
 		$(IMAGE_FULL) $(FILE)
@@ -153,8 +152,7 @@ run-file:
 shell:
 	@echo "$(BLUE)Starting bash shell...$(NC)"
 	@docker run -it --rm \
-		-v $(NVIM_CONFIG):/root/.config/nvim:ro \
-		-v $(NVIM_CONFIG)/lazy-lock.json:/root/.config/nvim/lazy-lock.json:rw \
+		-v $(NVIM_CONFIG):/root/.config/nvim \
 		-v $(WORKSPACE):/workspace \
 		--entrypoint /bin/bash \
 		--name neovim-dev-shell \
