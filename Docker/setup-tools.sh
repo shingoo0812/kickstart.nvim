@@ -52,11 +52,6 @@ install_base() {
     git config --global http.version HTTP/1.1
     git config --global http.postBuffer 524288000
     git config --global http.maxRequests 1
-    git config --global http.lowSpeedLimit 0
-    git config --global http.lowSpeedTime 999999
-    git config --global http.sslVerify false
-    git config --global core.compression 0
-    git config --global http.noEPSV true
     
     print_info "Configured git http.postBuffer to 500MB"
     # ========================================================================
@@ -277,11 +272,6 @@ install_lazygit() {
     git config --global http.version HTTP/1.1
     git config --global http.postBuffer 524288000
     git config --global http.maxRequests 1
-    git config --global http.lowSpeedLimit 0
-    git config --global http.lowSpeedTime 999999
-    git config --global http.sslVerify false
-    git config --global core.compression 0
-    git config --global http.noEPSV true
 
     # Check if lazygit is already installed
     if command -v lazygit &> /dev/null; then
