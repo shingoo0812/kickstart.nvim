@@ -89,27 +89,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 RUN node --version && npm --version
 
 # ============================================================================
-# Install Neovim (latest stable) with retry logic
+# Install Neovim v0.10.2 (from pre-downloaded file)
 # ============================================================================
-RUN for i in 1 2 3 4 5; do \
-        echo "Attempt $i: Downloading Neovim (latest)..." && \
-        NVIM_VERSION=$(curl -s https://api.github.com/repos/neovim/neovim/releases/latest | grep -Po '"tag_name": "\K[^"]*') && \
-        curl -L -o /tmp/nvim-linux64.tar.gz \
-            "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux64.tar.gz" && \
-        tar -C /opt -xzf /tmp/nvim-linux64.tar.gz && \
-        ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim && \
-        rm /tmp/nvim-linux64.tar.gz && \
-        echo "✓ Neovim ${NVIM_VERSION} installed successfully" && \
-        break || { \
-            echo "✗ Failed attempt $i, retrying in 10 seconds..." && \
-            rm -f /tmp/nvim-linux64.tar.gz && \
-            sleep 10; \
-        } \
-    done && \
-    if [ ! -f "/usr/local/bin/nvim" ]; then \
-        echo "ERROR: Failed to install Neovim after 5 attempts" && \
-        exit 1; \
-    fi
+COPY cache/nvim-linux64.tar.gz /tmp/nvim-linux64.tar.gz
+RUN tar -C /opt -xzf /tmp/nvim-linux64.tar.gz && \
+    ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim && \
+    rm /tmp/nvim-linux64.tar.gz
 
 # Verify Neovim version
 RUN nvim --version
@@ -155,25 +140,12 @@ RUN npm install -g \
     tree-sitter-cli
 
 # ============================================================================
-# Install Go 1.23.4 and Go tools with retry logic
+# Install Go 1.23.4 (from pre-downloaded file)
 # ============================================================================
 ENV GO_VERSION=1.23.4
-RUN for i in 1 2 3 4 5; do \
-        echo "Attempt $i: Downloading Go..." && \
-        wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
-        tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
-        rm go${GO_VERSION}.linux-amd64.tar.gz && \
-        echo "✓ Go installed successfully" && \
-        break || { \
-            echo "✗ Failed attempt $i, retrying in 10 seconds..." && \
-            rm -f go${GO_VERSION}.linux-amd64.tar.gz && \
-            sleep 10; \
-        } \
-    done && \
-    if [ ! -d "/usr/local/go" ]; then \
-        echo "ERROR: Failed to install Go after 5 attempts" && \
-        exit 1; \
-    fi
+COPY cache/go${GO_VERSION}.linux-amd64.tar.gz /tmp/go.tar.gz
+RUN tar -C /usr/local -xzf /tmp/go.tar.gz && \
+    rm /tmp/go.tar.gz
 
 ENV PATH="/usr/local/go/bin:/root/go/bin:${PATH}"
 ENV GOPATH="/root/go"
@@ -210,23 +182,9 @@ RUN mkdir -p /root/.config/nvim \
              /root/.cache/nvim
 
 # ============================================================================
-# Install Lazy.nvim plugin manager with retry logic
+# Install Lazy.nvim plugin manager (from pre-cloned repository)
 # ============================================================================
-RUN for i in 1 2 3 4 5; do \
-        echo "Attempt $i: Cloning lazy.nvim..." && \
-        git clone --filter=blob:none --depth=1 \
-            https://github.com/folke/lazy.nvim.git --branch=stable \
-            /root/.local/share/nvim/lazy/lazy.nvim && \
-        echo "✓ Successfully cloned lazy.nvim" && \
-        break || { \
-            echo "✗ Failed attempt $i, retrying in 5 seconds..." && \
-            sleep 5; \
-        } \
-    done && \
-    if [ ! -d "/root/.local/share/nvim/lazy/lazy.nvim" ]; then \
-        echo "ERROR: Failed to clone lazy.nvim after 5 attempts" && \
-        exit 1; \
-    fi
+COPY cache/lazy.nvim /root/.local/share/nvim/lazy/lazy.nvim
 
 # ============================================================================
 # Environment setup
