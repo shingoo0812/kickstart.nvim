@@ -110,29 +110,27 @@ else
         echo "⊘ Skipped Go download"
     fi
 fi
-
 # ============================================================================
-# Download LazyGit (optional)
+# Copy lazygit
 # ============================================================================
-if command -v lazygit &> /dev/null; then
-    echo "✓ LazyGit already installed on host, will use from PATH"
+echo "📦 Copying lazygit..."
+LAZYGIT_PATH=$(which lazygit 2>/dev/null || echo "")
+if [ -n "$LAZYGIT_PATH" ]; then
+    # lazygitのバージョンを取得
+    LAZYGIT_VERSION=$(lazygit --version 2>/dev/null | grep -oP 'version=\K[0-9.]+' || echo "0.44.1")
+    
+    # tar.gzとして保存（Dockerfileの期待する形式に合わせる）
+    LAZYGIT_ARCHIVE="${CACHE_DIR}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+    
+    # 一時ディレクトリでtar作成
+    TEMP_DIR=$(mktemp -d)
+    cp "$LAZYGIT_PATH" "$TEMP_DIR/lazygit"
+    tar czf "$LAZYGIT_ARCHIVE" -C "$TEMP_DIR" lazygit
+    rm -rf "$TEMP_DIR"
+    
+    echo "✓ Lazygit cached: $(basename $LAZYGIT_ARCHIVE)"
 else
-    LAZYGIT_FILE="${CACHE_DIR}"/lazygit_*_Linux_x86_64.tar.gz
-    if compgen -G "$LAZYGIT_FILE" > /dev/null; then
-        echo "✓ LazyGit already downloaded"
-    else
-        read -p "Download LazyGit? (y/n) " -n 1 -r
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            echo "Downloading LazyGit..."
-            LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-            curl -Lo "${CACHE_DIR}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" \
-                "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-            echo "✓ LazyGit downloaded"
-        else
-            echo "⊘ Skipped LazyGit download"
-        fi
-    fi
+    echo "⚠ Lazygit not found on host, skipping..."
 fi
 
 echo ""
