@@ -16,7 +16,7 @@ IMAGE_NAME := neovim-dev
 IMAGE_TAG := latest
 IMAGE_FULL := $(IMAGE_NAME):$(IMAGE_TAG)
 EXPORT_FILE := $(IMAGE_NAME).tar.gz
-NVIM_CONFIG := $(shell cd .. && pwd)
+NVIM_CONFIG := $(HOME)/.config/nvim
 WORKSPACE := $(HOME)/projects
 
 # Colors for output
