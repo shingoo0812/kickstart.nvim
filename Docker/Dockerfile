@@ -73,7 +73,10 @@ RUN ln -s $(which fdfind) /usr/local/bin/fd
 # ============================================================================
 RUN git config --global http.postBuffer 524288000 && \
     git config --global http.lowSpeedLimit 1000 && \
-    git config --global http.lowSpeedTime 600
+    git config --global http.lowSpeedTime 600 && \
+    git config --global http.version HTTP/1.1 && \
+    git config --global core.compression 0 && \
+    git config --global http.sslVerify true
 
 # ============================================================================
 # Install Node.js 20.x (LTS)
@@ -86,12 +89,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 RUN node --version && npm --version
 
 # ============================================================================
-# Install Neovim 0.10.2 with retry logic
+# Install Neovim (latest stable) with retry logic
 # ============================================================================
 RUN for i in 1 2 3 4 5; do \
         echo "Attempt $i: Downloading Neovim..." && \
         curl -L -o /tmp/nvim-linux64.tar.gz \
-            https://github.com/neovim/neovim/releases/download/v0.10.2/nvim-linux64.tar.gz && \
+            https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz && \
         tar -C /opt -xzf /tmp/nvim-linux64.tar.gz && \
         ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim && \
         rm /tmp/nvim-linux64.tar.gz && \
