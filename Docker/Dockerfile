@@ -151,7 +151,7 @@ WORKDIR /workspace
 RUN mkdir -p /root/.config/nvim \
              /root/.local/share/nvim \
              /root/.local/state/nvim \
-             /root/.cache/nvim && \
+             /root/.cache/nvim
 
 # ============================================================================
 COPY cache/nvim-data/ /root/.local/share/nvim/
