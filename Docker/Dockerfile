@@ -146,13 +146,13 @@ RUN tar xf /tmp/lazygit.tar.gz -C /tmp lazygit && \
 WORKDIR /workspace
 
 # Create Neovim config and data directories
+# Create Neovim config and data directories
+# IMPORTANT: Remove any lazy-lock.json directory that might have been created
 RUN mkdir -p /root/.config/nvim \
              /root/.local/share/nvim \
              /root/.local/state/nvim \
-             /root/.cache/nvim
-
-# ============================================================================
-# Copy Neovim data directory (Lazy.nvim + all plugins) from host
+             /root/.cache/nvim && \
+    rm -rf /root/.config/nvim/lazy-lock.json
 # ============================================================================
 COPY cache/nvim-data/ /root/.local/share/nvim/
 
