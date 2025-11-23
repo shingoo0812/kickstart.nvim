@@ -132,11 +132,12 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # rust-analyzer will be installed via Mason
 
 # ============================================================================
-# Install LazyGit
+# Install LazyGit (from pre-downloaded file)
 # ============================================================================
-RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*') && \
-    curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" && \
-    tar xf /tmp/lazygit.tar.gz -C /tmp lazygit && \
+# Note: The exact filename will be determined at download time
+# We'll use a wildcard pattern to find the file
+COPY cache/lazygit_*_Linux_x86_64.tar.gz /tmp/lazygit.tar.gz
+RUN tar xf /tmp/lazygit.tar.gz -C /tmp lazygit && \
     install /tmp/lazygit /usr/local/bin && \
     rm /tmp/lazygit /tmp/lazygit.tar.gz
 

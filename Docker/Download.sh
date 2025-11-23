@@ -62,6 +62,21 @@ else
     echo "✓ Lazy.nvim cloned"
 fi
 
+# ============================================================================
+# Download LazyGit
+# ============================================================================
+LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
+LAZYGIT_FILE="${CACHE_DIR}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+
+if [ -f "${LAZYGIT_FILE}" ]; then
+    echo "✓ LazyGit already downloaded: ${LAZYGIT_FILE}"
+else
+    echo "Downloading LazyGit ${LAZYGIT_VERSION}..."
+    curl -Lo "${LAZYGIT_FILE}" \
+        "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+    echo "✓ LazyGit downloaded"
+fi
+
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "  All files downloaded successfully!"
