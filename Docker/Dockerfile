@@ -86,13 +86,26 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 RUN node --version && npm --version
 
 # ============================================================================
-# Install Neovim 0.10.2
+# Install Neovim 0.10.2 with retry logic
 # ============================================================================
-RUN curl -L -o /tmp/nvim-linux64.tar.gz \
-    https://github.com/neovim/neovim/releases/download/v0.10.2/nvim-linux64.tar.gz && \
-    tar -C /opt -xzf /tmp/nvim-linux64.tar.gz && \
-    ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim && \
-    rm /tmp/nvim-linux64.tar.gz
+RUN for i in 1 2 3 4 5; do \
+        echo "Attempt $i: Downloading Neovim..." && \
+        curl -L -o /tmp/nvim-linux64.tar.gz \
+            https://github.com/neovim/neovim/releases/download/v0.10.2/nvim-linux64.tar.gz && \
+        tar -C /opt -xzf /tmp/nvim-linux64.tar.gz && \
+        ln -sf /opt/nvim-linux64/bin/nvim /usr/local/bin/nvim && \
+        rm /tmp/nvim-linux64.tar.gz && \
+        echo "✓ Neovim installed successfully" && \
+        break || { \
+            echo "✗ Failed attempt $i, retrying in 10 seconds..." && \
+            rm -f /tmp/nvim-linux64.tar.gz && \
+            sleep 10; \
+        } \
+    done && \
+    if [ ! -f "/usr/local/bin/nvim" ]; then \
+        echo "ERROR: Failed to install Neovim after 5 attempts" && \
+        exit 1; \
+    fi
 
 # Verify Neovim version
 RUN nvim --version
@@ -138,12 +151,25 @@ RUN npm install -g \
     tree-sitter-cli
 
 # ============================================================================
-# Install Go 1.23.4 and Go tools
+# Install Go 1.23.4 and Go tools with retry logic
 # ============================================================================
 ENV GO_VERSION=1.23.4
-RUN wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
-    rm go${GO_VERSION}.linux-amd64.tar.gz
+RUN for i in 1 2 3 4 5; do \
+        echo "Attempt $i: Downloading Go..." && \
+        wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
+        tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
+        rm go${GO_VERSION}.linux-amd64.tar.gz && \
+        echo "✓ Go installed successfully" && \
+        break || { \
+            echo "✗ Failed attempt $i, retrying in 10 seconds..." && \
+            rm -f go${GO_VERSION}.linux-amd64.tar.gz && \
+            sleep 10; \
+        } \
+    done && \
+    if [ ! -d "/usr/local/go" ]; then \
+        echo "ERROR: Failed to install Go after 5 attempts" && \
+        exit 1; \
+    fi
 
 ENV PATH="/usr/local/go/bin:/root/go/bin:${PATH}"
 ENV GOPATH="/root/go"
