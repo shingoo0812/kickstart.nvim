@@ -20,6 +20,7 @@ return {
       pattern = 'vimwiki',
       callback = function()
         vim.bo.filetype = 'markdown'
+        vim.g.vimwiki_table_mappings = 0
         vim.wo.concealcursor = 'n' -- カーソル行では常に表示
         vim.wo.wrap = false
       end,
