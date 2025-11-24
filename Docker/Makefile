@@ -6,6 +6,7 @@
 #   make save     - Save image to tar.gz file
 #   make load     - Load image from tar.gz file
 #   make run      - Run Neovim with mounted config
+#   make open     - Open specific file or directory
 #   make shell    - Run bash shell
 #   make clean    - Remove Docker image
 #   make help     - Show this help
@@ -40,11 +41,16 @@ help:
 	@echo "  make build       - Build complete Docker image"
 	@echo "  make save        - Save image to $(EXPORT_FILE)"
 	@echo "  make load        - Load image from $(EXPORT_FILE)"
+	@echo "  make all         - Build and save (distribution package)"
 	@echo ""
 	@echo "$(GREEN)Run:$(NC)"
-	@echo "  make run         - Run Neovim with mounted config"
+	@echo "  make run         - Run Neovim (default workspace)"
+	@echo "  make open        - Open file or directory (TARGET=path)"
 	@echo "  make shell       - Run bash shell"
-	@echo "  make run-file    - Run Neovim with specific file (FILE=path/to/file)"
+	@echo ""
+	@echo "$(GREEN)Examples:$(NC)"
+	@echo "  make open TARGET=~/projects/myapp/main.py"
+	@echo "  make open TARGET=~/projects/myapp"
 	@echo ""
 	@echo "$(GREEN)Maintenance:$(NC)"
 	@echo "  make clean       - Remove Docker image"
@@ -55,7 +61,6 @@ help:
 	@echo ""
 	@echo "$(GREEN)Workflow:$(NC)"
 	@echo "  make check       - Check requirements"
-	@echo "  make all         - Build and save (distribution package)"
 	@echo ""
 
 .PHONY: check
@@ -126,6 +131,7 @@ all: build save
 # Run targets
 # ============================================================================
 
+# デフォルトワークスペースでNeovimを起動
 .PHONY: run
 run:
 	@echo "$(BLUE)Starting Neovim...$(NC)"
@@ -135,19 +141,36 @@ run:
 		--name neovim-dev-container \
 		$(IMAGE_FULL)
 
-.PHONY: run-file
-run-file:
-	@if [ -z "$(FILE)" ]; then \
-		echo "$(RED)✗ Usage: make run-file FILE=path/to/file$(NC)"; \
+# 特定のファイルまたはディレクトリを開く
+.PHONY: open
+open:
+	@if [ -z "$(TARGET)" ]; then \
+		echo "$(RED)✗ Usage: make open TARGET=path/to/file_or_dir$(NC)"; \
+		echo "$(YELLOW)Examples:$(NC)"; \
+		echo "  make open TARGET=~/projects/myapp/main.py"; \
+		echo "  make open TARGET=~/projects/myapp"; \
 		exit 1; \
 	fi
-	@echo "$(BLUE)Opening $(FILE)...$(NC)"
-	@docker run -it --rm \
-		-v $(NVIM_CONFIG):/root/.config/nvim \
-		-v $(WORKSPACE):/workspace \
-		--name neovim-dev-container \
-		$(IMAGE_FULL) $(FILE)
+	@if [ -f "$(TARGET)" ]; then \
+		echo "$(BLUE)Opening file: $(TARGET)$(NC)"; \
+		docker run -it --rm \
+			-v $(NVIM_CONFIG):/root/.config/nvim \
+			-v $$(dirname $$(realpath $(TARGET))):/workspace \
+			--name neovim-dev-container \
+			$(IMAGE_FULL) /workspace/$$(basename $(TARGET)); \
+	elif [ -d "$(TARGET)" ]; then \
+		echo "$(BLUE)Opening directory: $(TARGET)$(NC)"; \
+		docker run -it --rm \
+			-v $(NVIM_CONFIG):/root/.config/nvim \
+			-v $$(realpath $(TARGET)):/workspace \
+			--name neovim-dev-container \
+			$(IMAGE_FULL); \
+	else \
+		echo "$(RED)✗ $(TARGET) not found$(NC)"; \
+		exit 1; \
+	fi
 
+# bashシェルを起動
 .PHONY: shell
 shell:
 	@echo "$(BLUE)Starting bash shell...$(NC)"
@@ -198,6 +221,7 @@ info:
 
 .DEFAULT_GOAL := help
 
+# イメージの存在チェック（内部使用）
 .PHONY: .check-image
 .check-image:
 	@docker images -q $(IMAGE_FULL) >/dev/null 2>&1 || { \
@@ -206,4 +230,5 @@ info:
 		exit 1; \
 	}
 
-run shell run-file: .check-image
+# runとshellとopenの実行前にイメージの存在チェック
+run shell open: .check-image
