@@ -20,6 +20,11 @@ EXPORT_FILE := $(IMAGE_NAME).tar.gz
 NVIM_CONFIG := $(HOME)/dotfiles/linux/nvim
 WORKSPACE := $(HOME)/projects
 
+# Docker Hub settings (change these to your Docker Hub username)
+DOCKER_USERNAME := your-dockerhub-username
+DOCKER_REPO := $(DOCKER_USERNAME)/$(IMAGE_NAME)
+DOCKER_REPO_FULL := $(DOCKER_REPO):$(IMAGE_TAG)
+
 # Colors for output
 RED := \033[0;31m
 GREEN := \033[0;32m
@@ -42,6 +47,13 @@ help:
 	@echo "  make save        - Save image to $(EXPORT_FILE)"
 	@echo "  make load        - Load image from $(EXPORT_FILE)"
 	@echo "  make all         - Build and save (distribution package)"
+	@echo "  make dist        - Create complete distribution package"
+	@echo ""
+	@echo "$(GREEN)Docker Hub (requires login):$(NC)"
+	@echo "  make login       - Login to Docker Hub"
+	@echo "  make push        - Push image to Docker Hub"
+	@echo "  make pull        - Pull image from Docker Hub"
+	@echo "  make publish     - Build and push to Docker Hub"
 	@echo ""
 	@echo "$(GREEN)Run:$(NC)"
 	@echo "  make run         - Run Neovim (default workspace)"
@@ -127,6 +139,82 @@ all: build save
 	@echo "File: $(EXPORT_FILE)"
 	@echo "Size: $$(du -h $(EXPORT_FILE) | cut -f1)"
 
+# 配布用パッケージ（tar.gz + Makefile + ドキュメント）を作成
+.PHONY: dist
+dist: build save
+	@echo "$(BLUE)Creating distribution package...$(NC)"
+	@mkdir -p dist
+	@cp $(EXPORT_FILE) dist/
+	@cp Makefile dist/
+	@cp DISTRIBUTION.md dist/README.md
+	@echo ""
+	@echo "$(GREEN)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)  Distribution package created!$(NC)"
+	@echo "$(GREEN)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo ""
+	@echo "📦 Package location: dist/"
+	@echo ""
+	@echo "Contents:"
+	@ls -lh dist/
+	@echo ""
+	@echo "$(YELLOW)Transfer the entire 'dist/' directory to the target machine.$(NC)"
+
+# ============================================================================
+# Docker Hub targets
+# ============================================================================
+
+.PHONY: login
+login:
+	@echo "$(BLUE)Logging in to Docker Hub...$(NC)"
+	@if [ "$(DOCKER_USERNAME)" = "your-dockerhub-username" ]; then \
+		echo "$(RED)✗ Please set DOCKER_USERNAME in Makefile first$(NC)"; \
+		echo "$(YELLOW)Edit the DOCKER_USERNAME variable at the top of Makefile$(NC)"; \
+		exit 1; \
+	fi
+	@docker login
+
+.PHONY: push
+push:
+	@if [ "$(DOCKER_USERNAME)" = "your-dockerhub-username" ]; then \
+		echo "$(RED)✗ Please set DOCKER_USERNAME in Makefile first$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)Tagging image as $(DOCKER_REPO_FULL)...$(NC)"
+	@docker tag $(IMAGE_FULL) $(DOCKER_REPO_FULL)
+	@echo "$(BLUE)Pushing $(DOCKER_REPO_FULL) to Docker Hub...$(NC)"
+	@echo "$(YELLOW)⚠ This may take 10-20 minutes depending on your connection...$(NC)"
+	@docker push $(DOCKER_REPO_FULL)
+	@echo ""
+	@echo "$(GREEN)✓ Image pushed successfully!$(NC)"
+	@echo "$(BLUE)Repository: $(DOCKER_REPO_FULL)$(NC)"
+	@echo ""
+	@echo "$(YELLOW)Users can now pull with:$(NC)"
+	@echo "  docker pull $(DOCKER_REPO_FULL)"
+
+.PHONY: pull
+pull:
+	@if [ "$(DOCKER_USERNAME)" = "your-dockerhub-username" ]; then \
+		echo "$(RED)✗ Please set DOCKER_USERNAME in Makefile first$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(BLUE)Pulling $(DOCKER_REPO_FULL) from Docker Hub...$(NC)"
+	@docker pull $(DOCKER_REPO_FULL)
+	@echo "$(BLUE)Tagging as $(IMAGE_FULL)...$(NC)"
+	@docker tag $(DOCKER_REPO_FULL) $(IMAGE_FULL)
+	@echo "$(GREEN)✓ Image pulled successfully!$(NC)"
+	@docker images $(IMAGE_NAME)
+
+.PHONY: publish
+publish: build push
+	@echo ""
+	@echo "$(GREEN)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "$(GREEN)  Image published to Docker Hub!$(NC)"
+	@echo "$(GREEN)━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━$(NC)"
+	@echo "Repository: $(DOCKER_REPO_FULL)"
+	@echo ""
+	@echo "$(YELLOW)Share this command with users:$(NC)"
+	@echo "  docker pull $(DOCKER_REPO_FULL)"
+
 # ============================================================================
 # Run targets
 # ============================================================================
@@ -201,6 +289,8 @@ clean-cache:
 clean-all: clean clean-cache
 	@echo "$(YELLOW)Removing $(EXPORT_FILE)...$(NC)"
 	@rm -f $(EXPORT_FILE)
+	@echo "$(YELLOW)Removing dist directory...$(NC)"
+	@rm -rf dist/
 	@echo "$(GREEN)✓ All cleaned$(NC)"
 
 .PHONY: info
