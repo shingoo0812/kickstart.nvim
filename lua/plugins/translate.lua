@@ -1,43 +1,15 @@
 return {
-  'voldikss/vim-translator',
-  opts = {
-    lazy = true,
-  },
+  'uga-rosa/translate.nvim',
   config = function()
-    local keys = {
-      { '<leader><leader>t', '', desc = 'Translate Replace' },
-      -- Replace to Japanese
-      {
-        '<leader><leader>tj',
-        function()
-          vim.api.nvim_feedkeys('vg_', 'n', false)
-          -- Execute the conversion command after a short delay.
-          vim.defer_fn(function()
-            vim.api.nvim_feedkeys(':TranslateR --target_lang=ja\n', 'n', false)
-          end, 100) -- 100ms delay
-        end,
-        mode = 'n',
-        desc = 'Replace to Japanese',
+    require('translate').setup {
+      default = {
+        command = 'google',
+        output = 'replace',
       },
-      -- Replace to English
-      {
-        '<leader><leader>te',
-        function()
-          vim.api.nvim_feedkeys('vg_', 'n', false)
-          -- Run translator command after a short delay
-          vim.defer_fn(function()
-            vim.api.nvim_feedkeys(':TranslateR --target_lang=en\n', 'n', false)
-          end, 100) -- 100ms delay
-        end,
-        mode = 'n',
-        desc = 'Replace to English',
-      },
-      { '<leader>tre', ":'<,'>TranslateR --target_lang=en<CR>", mode = 'v', desc = 'Replace to English' },
     }
 
-    for _, key in ipairs(keys) do
-      local mode = key.mode or 'n' -- Default is normal mode
-      vim.keymap.set(mode, key[1], key[2], { desc = key.desc })
-    end
+    vim.keymap.set('n', '<leader><leader>tj', ':Translate ja<CR>', { desc = 'Replace to Japanese' })
+    vim.keymap.set('n', '<leader><leader>te', ':Translate en<CR>', { desc = 'Replace to English' })
+    vim.keymap.set('v', '<leader>tre', ':Translate en<CR>', { desc = 'Replace to English' })
   end,
 }

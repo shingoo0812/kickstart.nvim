@@ -1,0 +1,134 @@
+-- [[ Basic Keymaps ]]
+--  See `:help vim.keymap.set()`
+
+-- Clear highlights on search when pressing <Esc> in normal mode
+--  See `:help hlsearch`
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
+-- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
+-- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
+-- is not what someone will guess without a bit more experience.
+--
+-- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
+-- or just use <C-\><C-n> to exit terminal mode
+vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+
+-- TIP: Disable arrow keys in normal mode
+-- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+-- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+-- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+-- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+
+-- Keybinds to make split navigation easier.
+--  Use CTRL+<hjkl> to switch between windows
+--
+--  See `:help wincmd` for a list of all window commands
+
+-- [[ Basic Autocommands ]]
+--  See `:help lua-guide-autocommands`
+
+-- Highlight when yanking (copying) text
+--  Try it with `yap` in normal mode
+--  See `:help vim.highlight.on_yank()`
+
+-- :messages を現在のフォルダに保存する（Windows / Linux 両対応）
+vim.keymap.set('n', '<leader>m', function()
+  local msgs = vim.fn.execute 'messages'
+  local lines = vim.split(msgs, '\n')
+
+  -- OSに合わせてファイルパスを作成
+  local sep = package.config:sub(1, 1) -- Windowsなら "\"、Linuxなら "/"
+  local logfile = vim.fn.getcwd() .. sep .. 'messages.log'
+
+  -- 日時を区切りとして追加
+  table.insert(lines, 1, '==== ' .. os.date '%Y-%m-%d %H:%M:%S' .. ' ====')
+
+  -- ファイルに追記 ("a" フラグでappend)
+  vim.fn.writefile(lines, logfile, 'a')
+
+  print('Saved :messages to ' .. logfile)
+end, { desc = 'Save :messages to file' })
+
+-- Custom Keymaps
+local wk = require 'which-key'
+wk.add {
+  {
+    mode = { 'n' },
+    { 'd', '"_d' },
+    { '<leader><leader>x', '<cmd>source %<cr>' },
+    { '<leader>f', '', desc = 'File' },
+    { '<leader>w', '', desc = 'Vimwiki' },
+    { '<leader>q', '<cmd>confirm q<cr>', desc = 'Quit Window' },
+    { '<leader>Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
+    { ':Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
+    { '<C-S>', '<cmd>silent! update! | redraw<cr>', desc = 'Force write' },
+    { '<esc>', '<cmd>nohlsearch<cr>' },
+
+    -- { '<leader>g', '', desc = 'Diagnostics' },
+    -- { '<leader>gf', '<cmd>lua vim.diagnostic.open_float()<cr>', desc = 'Show Diagnostics Float' },
+    -- { '<leader>gl', '<cmd>lua vim.diagnostic.setloclist()<cr>', desc = 'Diagnostics List' },
+    -- Pane
+    { '<A-m>', ':vertical resize +2<cr>', desc = 'resize pane to left' },
+    { '<A-/>', ':vertical resize -2<cr>', desc = 'resize pane to right' },
+    { '<A-,>', ':resize -2<cr>gc', desc = 'resize pane to up' },
+    { '<A-.>', ':resize +2<cr>gc', desc = 'resize pane to down' },
+    { '<A-->', ':vs<cr>', desc = 'Sprit Horizontal Pane' },
+    { '<A-+>', ':sv<cr>', desc = 'Sprit Virtical Pane' },
+    -- Copilot
+    -- { '<leader>k', '', desc = 'Copilot' },
+    -- { '<C-[>', ':Copilot suggestion<cr>gc', desc = 'Copilot suggestion' },
+    -- { '<leader>kc', '<cmd>CopilotChat<cr>', desc = 'CopilotChat Open' },
+    -- { '<leader>kx', '<cmd>CopilotChatClose<cr>', desc = 'CopilotChat Close' },
+    -- { '<leader>kf', '<cmd>CopilotChatFix<cr>', desc = 'CopilotChatFix Open' },
+    -- { '<leader>ke', '<cmd>Copilot enable<cr>', desc = 'Copilot Enable' },
+    -- { '<leader>kd', '<cmd>Copilot disable<cr>', desc = 'Copilot Disable' },
+    -- { '<leader>ks', '<cmd>Copilot suggestion<cr>', desc = 'Copilot Suggestion' },
+    --Move Line
+    { '<C-a>', 'ggVG' },
+    { '<A-j>', '<cmd>m .+1<cr>==', desc = 'Move line down' },
+    { '<A-k>', '<cmd>m .-2<cr>==', desc = 'Move line up' },
+    { '<C-z>', '^', desc = 'Move to head' },
+    { '<C-e>', '$', desc = 'Move to end' },
+    { '<leader>fc', '<cmd>BufferClose<cr>', desc = 'Buffer Close' },
+    -- { '<leader>fo', '<cmd>e ' .. vim.fn.expand '%:p:h' .. '<cr>', desc = 'Open Current File Location' },
+    {
+      '<leader>fo',
+      function()
+        local current_path = vim.fn.expand '%:p:h'
+        vim.cmd('Neotree dir=' .. current_path)
+        vim.cmd 'Neotree show'
+      end,
+      desc = 'Open Current File Location(Neotree)',
+    },
+    { '<leader>fv', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.MYVIMRC, ':p:h') .. '<cr>', desc = 'Open Nvim Conf Location' },
+    { '<leader>fw', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.PROFILE, ':p:h') .. '<cr>', desc = 'Open Windows Profile Location' },
+    -- Move focus window
+    { '<C-h>', '<C-w><C-h>', desc = 'Move focus to the left window' },
+    { '<C-l>', '<C-w><C-l>', desc = 'Move focus to the right window' },
+    { '<C-j>', '<C-w><C-j>', desc = 'Move focus to the lower window' },
+    { '<C-k>', '<C-w><C-k>', desc = 'Move focus to the upper window' },
+    { '<leader>trp', '<cmd>Pantran<cr>', desc = 'Launch Pantran for translation' },
+  },
+  {
+    mode = { 'i' },
+    { 'jk', '<esc>', desc = 'Normal Mode' },
+    { '<C-o>', '<esc>o', desc = 'Go to normal mode, create new line' },
+    { '<C-z>', '<esc>^', desc = 'Move to head' },
+    { '<C-e>', '<esc>$', desc = 'Move to end' },
+    { '<C-h>', '<Left>', desc = 'Move to left' },
+    { '<C-j>', '<Down>', desc = 'Move to down' },
+    { '<C-k>', '<Up>', desc = 'Move to up' },
+    { '<C-l>', '<Right>', desc = 'Move to right' },
+  },
+  {
+    mode = { 'v' },
+    { 'd', '"_d' },
+    { '<C-z>', '^', desc = 'Move to head' },
+    { '<C-e>', '$', desc = 'Move to end' },
+    { '<A-j>', ":m '>+1<cr>gv=gv", mode = 'v', desc = 'Move selection down' },
+    { '<A-k>', ":m '<-2<cr>gv=gv", mode = 'v', desc = 'Move selection up' },
+  },
+  {
+    mode = { 'x' },
+  },
+}

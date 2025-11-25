@@ -235,7 +235,6 @@ return {
         capabilities = capabilities,
         settings = {
           python = {
-            pythonPath = get_python_path(vim.fn.getcwd() .. '/.venv'),
             analysis = {
               autoSearchPaths = true,
               useLibraryCodeForTypes = true,
@@ -244,11 +243,29 @@ return {
             },
           },
         },
-        before_init = function(_, config)
-          local venv_path = vim.fn.getcwd() .. '/.venv'
-          if vim.fn.isdirectory(venv_path) == 1 then
-            config.settings.python.pythonPath = get_python_path(venv_path)
+        before_init = function(initialize_params, config)
+          -- Root directoryを基準に.venvを探す
+          local root_dir = initialize_params.rootPath or initialize_params.rootUri:gsub('^file://', ''):gsub('^file:///', '')
+
+          -- Windows形式のパスに変換（必要に応じて）
+          if vim.fn.has 'win32' == 1 then
+            root_dir = root_dir:gsub('^/(%a)/', '%1:/')
           end
+
+          local venv_path = root_dir .. '/.venv'
+
+          local python_path
+          if vim.fn.isdirectory(venv_path) == 1 then
+            python_path = get_python_path(venv_path)
+            vim.notify('Pyright: Using venv at ' .. python_path, vim.log.levels.INFO)
+          else
+            -- .venvが見つからない場合はシステムのPythonを使用
+            python_path = vim.fn.exepath 'python3' or vim.fn.exepath 'python' or 'python'
+            vim.notify('Pyright: No .venv found at ' .. venv_path .. ', using system Python: ' .. python_path, vim.log.levels.WARN)
+          end
+
+          -- settings.python.pythonPathを設定
+          config.settings.python.pythonPath = python_path
         end,
       }
     end,
