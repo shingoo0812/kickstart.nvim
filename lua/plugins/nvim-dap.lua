@@ -118,6 +118,7 @@ return {
     local function get_project_python()
       local cwd = vim.fn.getcwd()
       local paths = {
+        cwd .. '\\.qtcreator\\Python_3_13_7venv\\Scripts\\python.exe', -- Windows uv/venv
         cwd .. '\\.venv\\Scripts\\python.exe', -- Windows uv/venv
         cwd .. '/.venv/bin/python', -- Linux/macOS uv/venv
         cwd .. '\\venv\\Scripts\\python.exe',
