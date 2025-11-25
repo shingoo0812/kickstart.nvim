@@ -20,7 +20,12 @@ return { -- Collection of various small independent plugins/modules
         end,
       },
     }
-    -- require('mini.indentscope').setup { symbol = '|', draw = { delay = 0 } }
+    -- Visualize and operate on indent scope
+    require('mini.indentscope').setup {
+      symbol = '│',
+      options = { try_as_border = true },
+      draw = { delay = 0, animation = require('mini.indentscope').gen_animation.none() },
+    }
 
     -- Add/delete/replace surroundings (brackets, quotes, etc.)
     --
