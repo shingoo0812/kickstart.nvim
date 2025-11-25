@@ -101,6 +101,10 @@ vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
 vim.opt.expandtab = true
 
+-- Windows Terminal用の描画修正
+vim.opt.termguicolors = true
+vim.opt.lazyredraw = false
+
 -- [[Godot]]
 -- Enable neovim to be the external editor for Godot, if the cwd has a project.godot file
 if vim.fn.filereadable(vim.fn.getcwd() .. '/project.godot') == 1 then

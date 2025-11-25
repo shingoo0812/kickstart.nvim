@@ -18,7 +18,7 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
 -- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 -- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
-
+-- Disable Ctrl+Shift+H/J/K/L for window movement
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
@@ -48,6 +48,15 @@ vim.keymap.set('n', '<leader>m', function()
 
   print('Saved :messages to ' .. logfile)
 end, { desc = 'Save :messages to file' })
+
+-- ウィンドウ移動のキーマップ（再描画付き）
+vim.keymap.set('n', '<C-h>', '<C-w>h<Cmd>redraw<CR>')
+vim.keymap.set('n', '<C-j>', '<C-w>j<Cmd>redraw<CR>')
+vim.keymap.set('n', '<C-k>', '<C-w>k<Cmd>redraw<CR>')
+vim.keymap.set('n', '<C-l>', '<C-w>l<Cmd>redraw<CR>')
+
+-- 手動再描画
+vim.keymap.set('n', '<leader>r', '<Cmd>redraw!<CR>')
 
 -- Custom Keymaps
 local wk = require 'which-key'
@@ -103,10 +112,6 @@ wk.add {
     { '<leader>fv', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.MYVIMRC, ':p:h') .. '<cr>', desc = 'Open Nvim Conf Location' },
     { '<leader>fw', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.PROFILE, ':p:h') .. '<cr>', desc = 'Open Windows Profile Location' },
     -- Move focus window
-    { '<C-h>', '<C-w><C-h>', desc = 'Move focus to the left window' },
-    { '<C-l>', '<C-w><C-l>', desc = 'Move focus to the right window' },
-    { '<C-j>', '<C-w><C-j>', desc = 'Move focus to the lower window' },
-    { '<C-k>', '<C-w><C-k>', desc = 'Move focus to the upper window' },
     { '<leader>trp', '<cmd>Pantran<cr>', desc = 'Launch Pantran for translation' },
   },
   {
