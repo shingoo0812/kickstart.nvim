@@ -58,6 +58,8 @@ vim.keymap.set('n', '<C-l>', '<C-w>l<Cmd>redraw<CR>')
 -- 手動再描画
 vim.keymap.set('n', '<leader>r', '<Cmd>redraw!<CR>')
 
+-- terminal buffer で <Esc><Esc> でノーマルモードに戻す
+vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 -- Custom Keymaps
 local wk = require 'which-key'
 wk.add {
