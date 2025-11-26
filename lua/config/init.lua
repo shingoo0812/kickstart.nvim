@@ -7,7 +7,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- [[Settings for UFO]]
-vim.o.foldenable = false -- 折りたたみを無効化
+vim.o.foldenable = true -- 折りたたみを無効化
 vim.o.foldlevel = 99 -- 全展開状態に設定
 vim.o.foldlevelstart = 99 -- 起動時も全展開
 vim.o.foldmethod = 'expr' -- exprで折りたたみ

@@ -20,14 +20,14 @@ return {
       {
         'zr',
         function()
-          require('ufo').openFoldsExceptKinds()
+          require('ufo').openFoldsExceptKinds(1)
         end,
         desc = 'Open folds except kinds',
       },
       {
         'zm',
         function()
-          require('ufo').closeFoldsWith()
+          require('ufo').closeFoldsWith(1)
         end,
         desc = 'Close folds with',
       },
