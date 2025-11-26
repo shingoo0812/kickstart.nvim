@@ -2,6 +2,7 @@ local M = {}
 -----------------------------------------------------
 -- Functions
 -----------------------------------------------------
+-- Function to modify .csproj files for WSL compatibility
 function M.ModifyCSProjFile()
   if vim.fn.has 'win32' == 1 then
     vim.fn.system 'findstr /s /i "*.csproj" | sed -i "s|C:\\|/mnt/c/|g"'
@@ -19,6 +20,8 @@ function M.ModifyCSProjFile()
   end
 end
 
+--------------------------------------------------------
+-- Function to check LSP status for all languages except C#
 function M.LspStatus()
   local clients = vim.lsp.get_clients()
   if #clients > 0 then
@@ -30,6 +33,8 @@ function M.LspStatus()
   end
 end
 
+--------------------------------------------------------
+-- Function to debug LSP information for current buffer
 function M.LspDebugInfo()
   local filetype = vim.bo.filetype
   local clients = vim.lsp.get_clients { bufnr = 0 }
@@ -46,6 +51,8 @@ function M.LspDebugInfo()
   end
 end
 
+--------------------------------------------------------
+-- Test command function
 function M.TestCommand()
   print 'This is a test command.'
 end
@@ -55,11 +62,13 @@ function M.WriteFile()
   vim.cmd 'w'
 end
 
+-----------------------------------------------------
 -- Switch Pyright root directory based on current Python file's .venv
 function M.SwitchPyrightRoot()
   local current_buf = vim.api.nvim_get_current_buf()
   local current_file = vim.api.nvim_buf_get_name(current_buf)
   local filetype = vim.bo[current_buf].filetype
+  local venv_types = { '.venv', '.qtcreator' }
 
   -- Skip for non-Python files
   if filetype ~= 'python' then
@@ -73,12 +82,14 @@ function M.SwitchPyrightRoot()
     return
   end
 
-  -- Find the root directory with .venv in the current file
+  -- Find the root directory with any venv_type in the current file
   local function find_venv_root(path)
     local current = vim.fn.fnamemodify(path, ':h')
     while current ~= '/' and current ~= '' and current ~= '.' do
-      if vim.fn.isdirectory(current .. '/.venv') == 1 then
-        return current
+      for _, venv_type in ipairs(venv_types) do
+        if vim.fn.isdirectory(current .. '/' .. venv_type) == 1 then
+          return current, venv_type
+        end
       end
       local parent = vim.fn.fnamemodify(current, ':h')
       if parent == current then
@@ -86,7 +97,7 @@ function M.SwitchPyrightRoot()
       end
       current = parent
     end
-    return nil
+    return nil, nil
   end
 
   local function get_python_path(venv_path)
@@ -97,16 +108,16 @@ function M.SwitchPyrightRoot()
     end
   end
 
-  local new_root = find_venv_root(current_file)
+  local new_root, found_venv_type = find_venv_root(current_file)
   if not new_root then
-    vim.notify('No .venv found in parent directories', vim.log.levels.WARN)
+    vim.notify('No virtual environment found in parent directories', vim.log.levels.WARN)
     return
   end
 
-  local new_venv_path = new_root .. '/.venv'
+  local new_venv_path = new_root .. '/' .. found_venv_type
   local new_python_path = get_python_path(new_venv_path)
 
-  -- pyrightクライアントを取得
+  -- Get the pyright client
   local clients = vim.lsp.get_clients { bufnr = current_buf, name = 'pyright' }
 
   if #clients > 0 then
@@ -114,19 +125,19 @@ function M.SwitchPyrightRoot()
     local current_root = client.config.root_dir
     local current_python = client.config.settings.python.pythonPath
 
-    -- Root directoryまたはpythonPathが異なる場合
+    -- If the root directory or pythonPath is different
     if current_root ~= new_root or current_python ~= new_python_path then
       vim.notify(string.format('Pyright: Switching\n  Root: %s\n  Python: %s', new_root, new_python_path), vim.log.levels.INFO)
 
-      -- 設定を更新してから再起動
+      -- Update the settings and reboot
       client.config.settings.python.pythonPath = new_python_path
       client.config.root_dir = new_root
 
       vim.lsp.stop_client(client.id)
 
-      -- 少し待ってから新しい設定で起動
+      -- Wait a moment and then start with the new settings
       vim.defer_fn(function()
-        vim.cmd 'edit' -- バッファを再読み込みしてLSPを再アタッチ
+        vim.cmd 'edit' -- Reload buffer and reattach LSP
       end, 200)
     else
       vim.notify(string.format('Already using correct configuration\n  Root: %s\n  Python: %s', current_root, current_python), vim.log.levels.INFO)

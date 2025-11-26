@@ -79,6 +79,7 @@ wk.add {
     -- { '<leader>gf', '<cmd>lua vim.diagnostic.open_float()<cr>', desc = 'Show Diagnostics Float' },
     -- { '<leader>gl', '<cmd>lua vim.diagnostic.setloclist()<cr>', desc = 'Diagnostics List' },
     -- Pane
+    { '<A-.>', ':vertical resize 150<cr>', desc = 'resize pane' },
     { "<A-'>", ':vertical resize +2<cr>', desc = 'resize pane to left' },
     { '<A-;>', ':vertical resize -2<cr>', desc = 'resize pane to right' },
     { '<A-[>', ':resize -2<cr>gc', desc = 'resize pane to up' },
