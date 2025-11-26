@@ -60,6 +60,22 @@ vim.keymap.set('n', '<leader>r', '<Cmd>redraw!<CR>')
 
 -- terminal buffer で <Esc><Esc> でノーマルモードに戻す
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+-- [[VSCode Key binding]]
+if vim.g.vscode then
+  vim.opt.clipboard = 'unnamedplus'
+  vim.keymap.set('n', 'd', '"_d')
+  vim.keymap.set('n', 'dd', '"_dd')
+  vim.keymap.set('n', '<C-z>', '^')
+  vim.keymap.set('n', '<C-e>', '$h')
+  vim.keymap.set('v', 'd', '"_d')
+  vim.keymap.set('v', '<C-z>', '^')
+  vim.keymap.set('v', '<C-e>', '$h')
+  -- yとpのマッピングは削除（keybindings.jsonで処理）
+  -- VSCodeのキーバインドに任せる
+else
+  vim.opt.clipboard = 'unnamedplus'
+end
+
 -- Custom Keymaps
 local wk = require 'which-key'
 wk.add {

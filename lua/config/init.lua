@@ -33,22 +33,6 @@ vim.opt.showmode = false
 -- Vimwikiディレクトリ外のmarkdownファイルをvimwikiとして扱わないようにする
 vim.g.vimwiki_global_ext = 0
 
--- [[VSCode Key binding]]
-if vim.g.vscode then
-  vim.opt.clipboard = 'unnamedplus'
-  vim.keymap.set('n', 'd', '"_d')
-  vim.keymap.set('n', 'dd', '"_dd')
-  vim.keymap.set('n', '<C-z>', '^')
-  vim.keymap.set('n', '<C-e>', '$h')
-  vim.keymap.set('v', 'd', '"_d')
-  vim.keymap.set('v', '<C-z>', '^')
-  vim.keymap.set('v', '<C-e>', '$h')
-  -- yとpのマッピングは削除（keybindings.jsonで処理）
-  -- VSCodeのキーバインドに任せる
-else
-  vim.opt.clipboard = 'unnamedplus'
-end
-
 -- Enable break indent
 vim.opt.breakindent = true
 
