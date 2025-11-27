@@ -6,6 +6,7 @@ local M = {}
 M.functions = {
   -- 汎用ユーティリティ系
   utils = {
+    -- Save Vim messages to a file
     save_message = function(filename)
       local msgs = vim.fn.execute 'messages'
       local f = io.open(filename, 'w')
@@ -18,11 +19,21 @@ M.functions = {
       end
     end,
 
+    -- Normalize path separators
     normalize_path = function(p)
       return p:gsub('\\', '/')
     end,
     test = function()
       return 'test'
+    end,
+
+    -- Get Git root directory or current file's directory
+    git_root = function()
+      local git_root = vim.fn.systemlist('git -C ' .. vim.fn.expand '%:p:h' .. ' rev-parse --show-toplevel')[1]
+      if vim.v.shell_error == 0 then
+        return git_root
+      end
+      return vim.fn.expand '%:p:h'
     end,
   },
 
@@ -101,6 +112,11 @@ M.commands = {
   {
     name = 'test',
     func = M.functions.utils.test,
+  },
+  {
+    name = 'GitRoot',
+    func = M.functions.utils.git_root,
+    desc = "Get Git root directory or current file's directory",
   },
   -- LSP系
   {
