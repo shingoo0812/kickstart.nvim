@@ -21,6 +21,7 @@
 --]]
 
 require 'config.init'
+require 'config.functions'
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -123,17 +124,29 @@ require('lazy').setup({
 -- [[Read Configuration folders(./lua/config/*.lua)]]
 local config_path = vim.fn.stdpath 'config' .. '/lua/config'
 local files = vim.fn.readdir(config_path)
+
+-- Manually loaded files (before Lazy)
+local skip_files = {
+  ['init.lua'] = true,
+  ['functions.lua'] = true,
+}
+
 for _, file in ipairs(files) do
-  if file:match '%.lua$' and file ~= 'init.lua' then
-    local module_name = 'config.' .. file:gsub('%.lua$', '')
-    local ok, result = pcall(require, module_name)
-    if not ok then
-      -- エラーが発生したファイルとエラー内容を表示
-      vim.notify('Error loading ' .. module_name .. ': ' .. tostring(result), vim.log.levels.ERROR)
-    elseif type(result) == 'table' and result.setup then
-      local setup_ok, setup_err = pcall(result.setup)
-      if not setup_ok then
-        vim.notify('Error in ' .. module_name .. '.setup(): ' .. tostring(setup_err), vim.log.levels.ERROR)
+  -- Process files only (excluding directories)
+  local full_path = config_path .. '/' .. file
+  if vim.fn.isdirectory(full_path) == 0 then
+    -- .lua only & not skipped
+    if file:match '%.lua$' and not skip_files[file] then
+      local module_name = 'config.' .. file:gsub('%.lua$', '')
+
+      local ok, result = pcall(require, module_name)
+      if not ok then
+        vim.notify('Error loading ' .. module_name .. ': ' .. tostring(result), vim.log.levels.ERROR)
+      elseif type(result) == 'table' and result.setup then
+        local setup_ok, setup_err = pcall(result.setup)
+        if not setup_ok then
+          vim.notify('Error in ' .. module_name .. '.setup(): ' .. tostring(setup_err), vim.log.levels.ERROR)
+        end
       end
     end
   end
