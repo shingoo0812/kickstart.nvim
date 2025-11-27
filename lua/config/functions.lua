@@ -28,12 +28,24 @@ M.functions = {
     end,
 
     -- Get Git root directory or current file's directory
-    git_root = function()
-      local git_root = vim.fn.systemlist('git -C ' .. vim.fn.expand '%:p:h' .. ' rev-parse --show-toplevel')[1]
-      if vim.v.shell_error == 0 then
-        return git_root
+    -- プロジェクトルートを検出する関数
+    get_project_root = function()
+      local root_patterns = { '.git', 'package.json', 'Cargo.toml', 'go.mod', 'pyproject.toml' }
+      local current_file = vim.fn.expand '%:p:h'
+
+      for _, pattern in ipairs(root_patterns) do
+        local root = vim.fn.finddir(pattern, current_file .. ';')
+        if root ~= '' then
+          return vim.fn.fnamemodify(root, ':h')
+        end
+
+        local file = vim.fn.findfile(pattern, current_file .. ';')
+        if file ~= '' then
+          return vim.fn.fnamemodify(file, ':h')
+        end
       end
-      return vim.fn.expand '%:p:h'
+
+      return current_file
     end,
   },
 
@@ -114,9 +126,12 @@ M.commands = {
     func = M.functions.utils.test,
   },
   {
-    name = 'GitRoot',
-    func = M.functions.utils.git_root,
-    desc = "Get Git root directory or current file's directory",
+    name = 'ProjectRoot',
+    func = function()
+      local root = M.functions.utils.get_project_root()
+      print('Project root: ' .. root)
+    end,
+    desc = 'Get the project root directory',
   },
   -- LSP系
   {

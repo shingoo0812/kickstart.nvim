@@ -1,6 +1,5 @@
 local fn = require 'config.functions'
-local git_root = fn.functions.utils.git_root
-
+local project_root = fn.functions.utils.get_project_root
 return {
   'MagicDuck/grug-far.nvim',
   keys = {
@@ -15,7 +14,7 @@ return {
       '<leader>.s',
       function()
         require('grug-far').search {
-          prefills = { paths = git_root() },
+          prefills = { paths = project_root() },
         }
       end,
       desc = 'GrugFar Search',
@@ -27,7 +26,7 @@ return {
       '<leader>.r',
       function()
         require('grug-far').open {
-          prefills = { paths = git_root() },
+          prefills = { paths = project_root() },
         }
       end,
       desc = 'GrugFar Replace',
@@ -39,7 +38,7 @@ return {
       '<leader>.v',
       function()
         require('grug-far').with_visual_selection {
-          prefills = { paths = git_root() },
+          prefills = { paths = project_root() },
         }
       end,
       desc = 'Search and Replace (selection)',
@@ -51,7 +50,7 @@ return {
       '<leader>.w',
       function()
         require('grug-far').open {
-          prefills = { paths = git_root(), search = vim.fn.expand '<cword>' },
+          prefills = { paths = project_root(), search = vim.fn.expand '<cword>' },
         }
       end,
       desc = 'Search and Replace (word under cursor)',
