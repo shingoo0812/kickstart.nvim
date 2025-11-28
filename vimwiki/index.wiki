@@ -1,7 +1,6 @@
 # VIMWIKI [[INDEX|INDEX]]
 - My knowledge base
-    * [[Tasks]] -- things to be done _yesterday_!!!
-    * [[Project Gutenberg]]-- good books are power.
+-   * [[Git]] 
     * [[Scratchpad]] -- various temporary stuff.
 - Programming
     * [[CPP]]
