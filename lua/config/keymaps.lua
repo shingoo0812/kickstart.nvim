@@ -123,8 +123,23 @@ wk.add {
       '<leader>fo',
       function()
         local current_path = vim.fn.expand '%:p:h'
-        vim.cmd('Neotree dir=' .. current_path)
-        vim.cmd 'Neotree show'
+
+        -- neo-treeを強制的にロード
+        local ok, neotree_command = pcall(require, 'neo-tree.command')
+        if not ok then
+          -- ロードできない場合はvimコマンドで試行
+          vim.cmd 'Neotree show'
+          vim.schedule(function()
+            vim.cmd('Neotree dir=' .. vim.fn.fnameescape(current_path))
+          end)
+          return
+        end
+
+        -- Neotreeを開く/パスを変更
+        neotree_command.execute {
+          action = 'show',
+          dir = current_path,
+        }
       end,
       desc = 'Open Current File Location(Neotree)',
     },
