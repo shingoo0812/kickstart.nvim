@@ -1,6 +1,6 @@
 # VIMWIKI [[INDEX|INDEX]]
 - My knowledge base
--   * [[Git]] 
+    * [[Git]] 
     * [[Scratchpad]] -- various temporary stuff.
 - Programming
     * [[CPP]]

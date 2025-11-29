@@ -20,7 +20,6 @@ git remote -v
 ```bash
 git branch -M main
 ```
-
 - Make the first commit
 Add files, commit changes, and push to remote repository
 ```bash
