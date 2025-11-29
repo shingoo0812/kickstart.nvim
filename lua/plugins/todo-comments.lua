@@ -2,7 +2,7 @@
 return {
   {
     'folke/todo-comments.nvim',
-    enabled = false,
+    enabled = true,
     event = 'VimEnter',
     dependencies = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons', 'ibhagwan/fzf-lua' },
     opts = { signs = false, lazy = true },
