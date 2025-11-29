@@ -90,7 +90,17 @@ wk.add {
     { ':Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
     { '<C-S>', '<cmd>silent! update! | redraw<cr>', desc = 'Force write' },
     { '<esc>', '<cmd>nohlsearch<cr>' },
-
+    {
+      {
+        '<leader>fp',
+        function()
+          local path = vim.fn.expand '%:p'
+          print(path)
+          vim.fn.setreg('+', path)
+        end,
+        desc = 'Copy File Path to Clipboard',
+      },
+    },
     -- { '<leader>g', '', desc = 'Diagnostics' },
     -- { '<leader>gf', '<cmd>lua vim.diagnostic.open_float()<cr>', desc = 'Show Diagnostics Float' },
     -- { '<leader>gl', '<cmd>lua vim.diagnostic.setloclist()<cr>', desc = 'Diagnostics List' },
@@ -100,7 +110,6 @@ wk.add {
     { '<A-;>', ':vertical resize -2<cr>', desc = 'resize pane to right' },
     { '<A-[>', ':resize -2<cr>gc', desc = 'resize pane to up' },
     { '<A-/>', ':resize +2<cr>gc', desc = 'resize pane to down' },
-    { '<A-->', ':vs<cr>', desc = 'Sprit Horizontal Pane' },
     { '<A-=>', ':sv<cr>', desc = 'Sprit Virtical Pane' },
     -- Copilot
     -- { '<leader>k', '', desc = 'Copilot' },
