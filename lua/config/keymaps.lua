@@ -55,9 +55,6 @@ vim.keymap.set('n', '<C-j>', '<C-w>j<Cmd>redraw<CR>')
 vim.keymap.set('n', '<C-k>', '<C-w>k<Cmd>redraw<CR>')
 vim.keymap.set('n', '<C-l>', '<C-w>l<Cmd>redraw<CR>')
 
--- 手動再描画
-vim.keymap.set('n', '<leader>r', '<Cmd>redraw!<CR>')
-
 -- terminal buffer で <Esc><Esc> でノーマルモードに戻す
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 -- [[VSCode Key binding]]
@@ -81,18 +78,22 @@ local wk = require 'which-key'
 wk.add {
   {
     mode = { 'n' },
+    -- Normal Mode
     { 'd', '"_d' },
     { '<Esc>', '<cmd>nohlsearch<CR>', 'Clear Highlight' },
     { ']w', '/^$/<CR>', desc = 'Next Blank Line' },
     { '[w', '?^$<CR>', desc = 'Previous Blank Line' },
     { '<leader><leader>x', '<cmd>source %<cr>' },
+    -- Redraw Screen
+    { '<leader>r', '<cmd>redraw!<cr>', desc = 'Redraw Screen' },
+    -- <leader> Menu
     { '<leader>f', '', desc = 'File' },
     { '<leader>w', '', desc = 'Vimwiki' },
+    -- Quit
     { '<leader>q', '<cmd>confirm qall<cr>', desc = 'Quit Window' },
     { '<leader>Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
     { ':Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
     { '<C-S>', '<cmd>silent! update! | redraw<cr>', desc = 'Force write' },
-    { '<esc>', '<cmd>nohlsearch<cr>' },
     {
       {
         '<leader>fp',
