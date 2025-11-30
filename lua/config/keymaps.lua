@@ -82,6 +82,9 @@ wk.add {
   {
     mode = { 'n' },
     { 'd', '"_d' },
+    { '<Esc>', '<cmd>nohlsearch<CR>', 'Clear Highlight' },
+    { ']w', '/^$/<CR>', desc = 'Next Blank Line' },
+    { '[w', '?^$<CR>', desc = 'Previous Blank Line' },
     { '<leader><leader>x', '<cmd>source %<cr>' },
     { '<leader>f', '', desc = 'File' },
     { '<leader>w', '', desc = 'Vimwiki' },
@@ -171,6 +174,8 @@ wk.add {
   {
     mode = { 'v' },
     { 'd', '"_d' },
+    { ']w', '/^$/<CR>', desc = 'Next Blank Line' },
+    { '[w', '?^$<CR>', desc = 'Previous Blank Line' },
     { '<C-z>', '^', desc = 'Move to head' },
     { '<C-e>', '$', desc = 'Move to end' },
     { '<A-j>', ":m '>+1<cr>gv=gv", mode = 'v', desc = 'Move selection down' },
