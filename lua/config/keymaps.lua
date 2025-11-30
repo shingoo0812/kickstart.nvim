@@ -1,10 +1,6 @@
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
--- Clear highlights on search when pressing <Esc> in normal mode
---  See `:help hlsearch`
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -80,12 +76,12 @@ wk.add {
     mode = { 'n' },
     -- Normal Mode
     { 'd', '"_d' },
-    { '<Esc>', '<cmd>nohlsearch<CR>', 'Clear Highlight' },
-    { ']w', '/^$/<CR>', desc = 'Next Blank Line' },
-    { '[w', '?^$<CR>', desc = 'Previous Blank Line' },
-    { '<leader><leader>x', '<cmd>source %<cr>' },
-    -- Redraw Screen
-    { '<leader>r', '<cmd>redraw!<cr>', desc = 'Redraw Screen' },
+    --  Clear Highlight
+    --  See `:help hlsearch`
+    { '<Esc>', '<cmd>nohlsearch<cr>', desc = 'Clear Highlight' },
+    -- Move to Blank Line
+    { ']w', '/^$/<cr>', desc = 'Next Blank Line' },
+    { '[w', '?^$<cr>', desc = 'Previous Blank Line' },
     -- <leader> Menu
     { '<leader>f', '', desc = 'File' },
     { '<leader>w', '', desc = 'Vimwiki' },
