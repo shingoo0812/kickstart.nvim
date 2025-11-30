@@ -85,7 +85,7 @@ wk.add {
     { '<leader><leader>x', '<cmd>source %<cr>' },
     { '<leader>f', '', desc = 'File' },
     { '<leader>w', '', desc = 'Vimwiki' },
-    { '<leader>q', '<cmd>confirm q<cr>', desc = 'Quit Window' },
+    { '<leader>q', '<cmd>confirm qall<cr>', desc = 'Quit Window' },
     { '<leader>Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
     { ':Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
     { '<C-S>', '<cmd>silent! update! | redraw<cr>', desc = 'Force write' },
