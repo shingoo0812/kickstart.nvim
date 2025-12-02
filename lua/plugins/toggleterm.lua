@@ -2,7 +2,7 @@ return {
   'akinsho/toggleterm.nvim',
   keys = {
     { '<leader><leader>t', '', desc = 'Terminal' },
-    { '<leader><leader>th', '<cmd>ToggleTerm direction=horizontal size=20<cr>', desc = 'Horizontal ToggleTerm' },
+    { '<leader><leader>th', '<cmd>ToggleTerm direction=horizontal size=10<cr>', desc = 'Horizontal ToggleTerm' },
     { '<leader><leader>tv', '<cmd>ToggleTerm direction=vertical size=80<cr>', desc = 'Vertical ToggleTerm' },
   },
   config = function()

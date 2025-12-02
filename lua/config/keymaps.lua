@@ -79,6 +79,7 @@ wk.add {
     --  Clear Highlight
     --  See `:help hlsearch`
     { '<Esc>', '<cmd>nohlsearch<cr>', desc = 'Clear Highlight' },
+    { '<leader><leader>x', '<cmd>source %<cr>', desc = 'Source Current File' },
     -- Move to Blank Line
     { ']w', '/^$/<cr>', desc = 'Next Blank Line' },
     { '[w', '?^$<cr>', desc = 'Previous Blank Line' },
