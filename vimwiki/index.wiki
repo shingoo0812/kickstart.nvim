@@ -1,10 +1,11 @@
 # VIMWIKI [[INDEX|INDEX]]
 - My knowledge base
     * [[Git]] 
+    * [[UML]]
     * [[Scratchpad]] -- various temporary stuff.
 - Programming
     * [[CPP]]
-    * [[Shell Script]]
+    * [[Shell Script|Shell Script]]
     * [[Python]]
 - Env
     * [[NEOVIM]]
