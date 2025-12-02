@@ -18,6 +18,8 @@ return {
       -- Move to previous/next
       { 'H', '<cmd>BufferPrevious<cr>' },
       { 'L', '<cmd>BufferNext<cr>' },
+      { '<A-h>', '<cmd>BufferMovePrevious<cr>' },
+      { '<A-l>', '<cmd>BufferMoveNext<cr>' },
       -- Goto buffer in position..
       { '<A-1>', '<cmd>BufferGoto 1<cr>' },
       { '<A-2>', '<cmd>BufferGoto 2<cr>' },
