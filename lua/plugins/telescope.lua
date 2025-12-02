@@ -124,6 +124,37 @@ return { -- Fuzzy Finder (files, lsp, etc)
       })
     end, { desc = '[/] Fuzzily search in current buffer' })
 
+    -- ビジュアルモード用（選択した範囲を検索）
+    vim.keymap.set('v', '<leader>/', function()
+      -- ビジュアルモードを抜ける
+      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>', true, false, true), 'x', false)
+
+      -- 少し待ってから選択範囲を取得
+      vim.schedule(function()
+        local start_pos = vim.fn.getpos "'<"
+        local end_pos = vim.fn.getpos "'>"
+        local start_line = start_pos[2]
+        local end_line = end_pos[2]
+        local start_col = start_pos[3]
+        local end_col = end_pos[3]
+
+        local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
+
+        local selected_text = ''
+        if #lines == 1 then
+          selected_text = string.sub(lines[1], start_col, end_col)
+        else
+          selected_text = string.sub(lines[1], start_col)
+        end
+
+        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+          winblend = 10,
+          previewer = false,
+          default_text = selected_text,
+        })
+      end)
+    end, { desc = '[/] Fuzzily search selection in current buffer' })
+
     -- It's also possible to pass additional configuration options.
     --  See `:help telescope.builtin.live_grep()` for information about particular keys
     vim.keymap.set('n', '<leader>s/', function()
