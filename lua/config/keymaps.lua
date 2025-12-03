@@ -112,6 +112,7 @@ wk.add {
     { '<A-[>', ':resize -2<cr>gc', desc = 'resize pane to up' },
     { '<A-/>', ':resize +2<cr>gc', desc = 'resize pane to down' },
     { '<A-=>', ':sv<cr>', desc = 'Sprit Virtical Pane' },
+    { '<A-->', ':vsplit<cr>', desc = 'Sprit Virtical Pane' },
     -- Copilot
     -- { '<leader>k', '', desc = 'Copilot' },
     -- { '<C-[>', ':Copilot suggestion<cr>gc', desc = 'Copilot suggestion' },
