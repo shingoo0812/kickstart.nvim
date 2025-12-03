@@ -1,9 +1,9 @@
 return {
   'akinsho/toggleterm.nvim',
   keys = {
-    { '<leader><leader>t', '', desc = 'Terminal' },
-    { '<leader><leader>th', '<cmd>ToggleTerm direction=horizontal size=10<cr>', desc = 'Horizontal ToggleTerm' },
-    { '<leader><leader>tv', '<cmd>ToggleTerm direction=vertical size=80<cr>', desc = 'Vertical ToggleTerm' },
+    { '<leader>1', '', desc = 'Terminal' },
+    { '<leader>1h', '<cmd>ToggleTerm direction=horizontal size=10<cr>', desc = 'Horizontal ToggleTerm' },
+    { '<leader>1v', '<cmd>ToggleTerm direction=vertical size=80<cr>', desc = 'Vertical ToggleTerm' },
   },
   config = function()
     local shell_cmd = ''
