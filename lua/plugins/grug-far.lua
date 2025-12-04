@@ -10,16 +10,6 @@ return {
       desc = 'GrugFar Search',
       mode = 'n',
     },
-    {
-      '<leader>.s',
-      function()
-        require('grug-far').search {
-          prefills = { paths = project_root() },
-        }
-      end,
-      desc = 'GrugFar Search',
-      mode = 'n',
-    },
 
     -- ノーマルモード：検索・置換 UI
     {
