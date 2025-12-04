@@ -1,3 +1,6 @@
+local fn = require 'config.functions'
+local os = fn.functions.utils.detect_os()
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -51,8 +54,6 @@ vim.keymap.set('n', '<C-j>', '<C-w>j<Cmd>redraw<CR>')
 vim.keymap.set('n', '<C-k>', '<C-w>k<Cmd>redraw<CR>')
 vim.keymap.set('n', '<C-l>', '<C-w>l<Cmd>redraw<CR>')
 
--- terminal buffer で <Esc><Esc> でノーマルモードに戻す
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 -- [[VSCode Key binding]]
 if vim.g.vscode then
   vim.opt.clipboard = 'unnamedplus'
@@ -69,7 +70,6 @@ else
   vim.opt.clipboard = 'unnamedplus'
 end
 
--- Custom Keymaps
 local wk = require 'which-key'
 wk.add {
   {
@@ -129,7 +129,6 @@ wk.add {
     { '<C-z>', '^', desc = 'Move to head' },
     { '<C-e>', '$', desc = 'Move to end' },
     { '<leader>fc', '<cmd>BufferClose<cr>', desc = 'Buffer Close' },
-    -- { '<leader>fo', '<cmd>e ' .. vim.fn.expand '%:p:h' .. '<cr>', desc = 'Open Current File Location' },
     {
       '<leader>fo',
       function()
@@ -156,6 +155,21 @@ wk.add {
     },
     { '<leader>fv', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.MYVIMRC, ':p:h') .. '<cr>', desc = 'Open Nvim Conf Location' },
     { '<leader>fw', '<cmd>e ' .. vim.fn.fnamemodify(vim.env.PROFILE, ':p:h') .. '<cr>', desc = 'Open Windows Profile Location' },
+    {
+      '<leader>fd',
+      function()
+        if os == 'windows' then
+          vim.cmd 'e F:\\Downloads'
+        elseif os == 'wsl' then
+          vim.cmd 'e /mnt/f/Downloads'
+        elseif os == 'linux' then
+          vim.cmd 'e ~/Downloads'
+        else
+          print 'Unsupported OS for this command'
+        end
+      end,
+      desc = 'Open Windows Download Location',
+    },
     -- Move focus window
     { '<leader>trp', '<cmd>Pantran<cr>', desc = 'Launch Pantran for translation' },
   },

@@ -47,6 +47,24 @@ M.functions = {
 
       return current_file
     end,
+    -- OS detection
+    detect_os = function()
+      local has = vim.fn.has
+
+      if has 'wsl' == 1 then
+        return 'wsl'
+      elseif has 'win32' == 1 or has 'win64' == 1 then
+        return 'windows'
+      elseif has 'macunix' == 1 then
+        return 'mac'
+      elseif has 'unix' == 1 then
+        return 'linux'
+      else
+        return 'unknown'
+      end
+    end,
+
+    -- More utility functions can be added here
   },
 
   -- LSP系
@@ -78,6 +96,7 @@ M.functions = {
         end
       end
     end,
+    -- More LSP-related functions can be added here
   },
 
   -- Unity/C#系
