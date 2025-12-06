@@ -230,6 +230,8 @@ return {
         end
       end
 
+      -- before_init の外でキャッシュ変数を定義
+      local pyright_venv_cache = {}
       -- Python
       vim.lsp.config.pyright = {
         capabilities = capabilities,
@@ -243,30 +245,61 @@ return {
             },
           },
         },
-        -- before_init = function(initialize_params, config)
-        --   -- Root directoryを基準に.venvを探す
-        --   local root_dir = initialize_params.rootPath or initialize_params.rootUri:gsub('^file://', ''):gsub('^file:///', '')
-        --
-        --   -- Windows形式のパスに変換（必要に応じて）
-        --   if vim.fn.has 'win32' == 1 then
-        --     root_dir = root_dir:gsub('^/(%a)/', '%1:/')
+
+        flags = {
+          debounce_text_changes = 150,
+          allow_incremental_sync = true,
+          exit_timeout = 1000, -- 終了タイムアウトを延長
+        },
+
+        -- バッファ離脱時にLSPを停止しない
+        -- on_exit = function(code, signal, client_id)
+        --   if code == 1 and signal == 15 then
+        --     return
         --   end
-        --
-        --   local venv_path = root_dir .. '/.venv'
-        --
-        --   local python_path
-        --   if vim.fn.isdirectory(venv_path) == 1 then
-        --     python_path = get_python_path(venv_path)
-        --     vim.notify('Pyright: Using venv at ' .. python_path, vim.log.levels.INFO)
-        --   else
-        --     -- .venvが見つからない場合はシステムのPythonを使用
-        --     python_path = vim.fn.exepath 'python3' or vim.fn.exepath 'python' or 'python'
-        --     vim.notify('Pyright: No .venv found at ' .. venv_path .. ', using system Python: ' .. python_path, vim.log.levels.WARN)
-        --   end
-        --
-        --   -- settings.python.pythonPathを設定
-        --   config.settings.python.pythonPath = python_path
         -- end,
+        before_init = function(params, config)
+          local func = require 'config.functions'
+          local find_venv_root = func.functions.utils.find_venv_root
+
+          -- バッファ固有のIDを取得（rootPathベース）
+          local root_path = params.rootPath or vim.fn.getcwd()
+
+          -- キャッシュをチェック
+          if pyright_venv_cache[root_path] then
+            config.settings.python.pythonPath = pyright_venv_cache[root_path]
+            -- vim.notify('Pyright using cached Python: ' .. pyright_venv_cache[root_path], vim.log.levels.DEBUG)
+            return
+          end
+
+          -- venv のルート（.venv のある場所）
+          local venv_root = find_venv_root(root_path)
+          if not venv_root then
+            -- print 'venvが見つからなかったため、pythonPath設定をスキップ'
+            return
+          end
+
+          -- OSごとに python の場所を決める
+          local python_path
+          if func.functions.utils.detect_os() == 'windows' then
+            python_path = venv_root .. '/Scripts/python.exe'
+          else
+            python_path = venv_root .. '/bin/python'
+          end
+
+          -- 存在チェック
+          if vim.fn.filereadable(python_path) == 0 then
+            print('python実行ファイルが見つかりません:', python_path)
+            return
+          end
+
+          -- キャッシュに保存
+          pyright_venv_cache[root_path] = python_path
+          config.settings.python.pythonPath = python_path
+
+          -- デバッグ用（初回のみ通知）
+          vim.notify('###Pyright using Python: ' .. python_path, vim.log.levels.INFO)
+        end,
       }
     end,
   },
