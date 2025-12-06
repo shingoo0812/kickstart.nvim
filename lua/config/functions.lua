@@ -27,6 +27,7 @@ M.functions = {
       return 'test'
     end,
 
+    -- TODO: NEOVIMで対応している箇所を置き換えする
     -- Get Git root directory or current file's directory
     -- プロジェクトルートを検出する関数
     get_project_root = function()
@@ -47,6 +48,7 @@ M.functions = {
 
       return current_file
     end,
+    -- TODO: NEOVIMで対応している箇所を置き換えする
     -- OS detection
     detect_os = function()
       local has = vim.fn.has
@@ -64,6 +66,36 @@ M.functions = {
       end
     end,
 
+    -- Find the root of a Python virtual environment by looking for a `.venv` folder
+    find_venv_root = function(path)
+      local utils = M.functions.utils
+
+      -- path がフォルダかファイルか判定して正しく処理
+      local current
+      if vim.fn.isdirectory(path) == 1 then
+        current = path
+      else
+        current = vim.fn.fnamemodify(path, ':h')
+      end
+
+      for _ = 1, 100 do
+        local venv_path = (utils.detect_os() == 'windows') and (current .. '\\.venv') or (current .. '/.venv')
+
+        if vim.fn.isdirectory(venv_path) == 1 then
+          return venv_path
+        end
+
+        local parent = vim.fn.fnamemodify(current, ':h')
+
+        if parent == current or parent == '' or parent == '.' then
+          break
+        end
+
+        current = parent
+      end
+
+      return nil
+    end,
     -- More utility functions can be added here
   },
 
