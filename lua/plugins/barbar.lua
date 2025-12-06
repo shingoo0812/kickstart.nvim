@@ -1,16 +1,19 @@
 return {
-
   'romgrk/barbar.nvim',
   dependencies = {
-    'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
-    'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
+    'lewis6991/gitsigns.nvim',
+    'nvim-tree/nvim-web-devicons',
   },
-
-  -- config = function()
-  --   require('nvim-web-devicons').setup()
-  -- end,
   init = function()
     vim.g.barbar_auto_setup = false
+
+    -- LSPリクエストのキャンセルエラーを軽減
+    vim.api.nvim_create_autocmd('BufLeave', {
+      callback = function()
+        -- バッファ切り替え時に少し待機してからLSP処理を行う
+        vim.defer_fn(function() end, 10)
+      end,
+    })
 
     local wk = require 'which-key'
     wk.add {
@@ -32,9 +35,6 @@ return {
       { '<A-9>', '<cmd>BufferGoto 9<cr>' },
       -- Pin/unpin buffer
       { '<C-p>', '<cmd>BufferPin<cr>' },
-      -- Goto pinned/unpinned buffer
-      --                 :BufferGotoPinned
-      --                 :BufferGotoUnpinned
       -- Close buffer
       { '<C-w>', '<Cmd>BufferClose<cr>' },
       { '<C-x>', '<Cmd>BufferRestore<cr>' },
@@ -42,15 +42,10 @@ return {
     }
   end,
   opts = {
-    animation = true,
-    -- Automatically hide the tabline when there are this many buffers left.
-    -- Set to any value >=0 to enable.
+    animation = false, -- アニメーションをオフにして切り替えを高速化
     auto_hide = false,
-    -- Enable/disable current/total tabpages indicator (top right corner)
     tabpages = true,
-    -- noremap = true,
-    -- silent = true,
     lazy = true,
   },
-  version = '^1.0.0', -- optional: only update when a new 1.x version is released
+  version = '^1.0.0',
 }
