@@ -116,6 +116,7 @@ return {
           { name = 'copilot', group_index = 1 },
           { name = 'path' },
           { name = 'buffer' },
+          { name = 'obsidian' },
         },
       }
     end,
