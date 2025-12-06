@@ -1,5 +1,5 @@
 local fn = require 'config.functions'
-local os = fn.functions.utils.detect_os()
+local operate_s = fn.functions.utils.detect_os()
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -31,7 +31,7 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  See `:help vim.highlight.on_yank()`
 
 -- :messages を現在のフォルダに保存する（Windows / Linux 両対応）
-vim.keymap.set('n', '<leader>m', function()
+vim.keymap.set('n', '<leader><leader>m', function()
   local msgs = vim.fn.execute 'messages'
   local lines = vim.split(msgs, '\n')
 
@@ -158,14 +158,14 @@ wk.add {
     {
       '<leader>fd',
       function()
-        if os == 'windows' then
+        if operate_s == 'windows' then
           vim.cmd 'e F:\\Downloads'
-        elseif os == 'wsl' then
+        elseif operate_s == 'wsl' then
           vim.cmd 'e /mnt/f/Downloads'
-        elseif os == 'linux' then
+        elseif operate_s == 'linux' then
           vim.cmd 'e ~/Downloads'
         else
-          print 'Unsupported OS for this command'
+          print 'Unsupported operate_s for this command'
         end
       end,
       desc = 'Open Windows Download Location',
