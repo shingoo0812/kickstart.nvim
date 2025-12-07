@@ -13,7 +13,7 @@ return {
     end,
     config = function()
       -- キーマップはconfigで設定
-      vim.keymap.set('n', '<leader>m', '', { desc = 'Molten' })
+      vim.keymap.set('n', '<leader>m', '', { desc = 'Molten(JupyterNotebook)' })
       vim.keymap.set('n', '<leader>mi', ':MoltenInit<CR>', { desc = 'Initialize Molten' })
       vim.keymap.set('n', '<leader>ml', ':MoltenEvaluateLine<CR>', { desc = 'Evaluate Line' })
       vim.keymap.set('n', '<leader>mr', ':MoltenReevaluateCell<CR>', { desc = 'Re-evaluate Cell' })
