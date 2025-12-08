@@ -6,6 +6,8 @@ return {
     'nvim-treesitter/nvim-treesitter',
     'ravitemer/mcphub.nvim', -- 依存関係に追加
   },
+  -- Fixed version to avoid breaking changes
+  version = 'v17.33.0',
   config = function()
     require('codecompanion').setup {
       extensions = {
