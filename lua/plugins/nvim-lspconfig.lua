@@ -247,7 +247,7 @@ return {
         },
 
         flags = {
-          debounce_text_changes = 150,
+          debounce_text_changes = 100,
           allow_incremental_sync = true,
           exit_timeout = 1000, -- 終了タイムアウトを延長
         },
