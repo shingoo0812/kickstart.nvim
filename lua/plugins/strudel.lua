@@ -3,13 +3,13 @@ return {
     'gruvw/strudel.nvim',
     build = 'npm ci',
     keys = {
-      { '<leader><leader>s', '<cmd>StrudelLaunch<cr>', desc = 'Launch Strudel' },
-      { '<leader><leader>sq', '<cmd>StrudelQuit<cr>', desc = 'Quit Strudel' },
-      { '<leader><leader>st', '<cmd>StrudelToggle<cr>', desc = 'Toggle Strudel' },
-      { '<leader><leader>su', '<cmd>StrudelUpdate<cr>', desc = 'Update Strudel' },
-      { '<leader><leader>ss', '<cmd>StrudelStop<cr>', desc = 'Stop Strudel' },
-      { '<leader><leader>sb', '<cmd>StrudelSetBuffer<cr>', desc = 'Set Buffer Strudel' },
-      { '<leader><leader>se', '<cmd>StrudelExecute<cr>', desc = 'Execute Strudel' },
+      { '<leader><leader>S', '<cmd>StrudelLaunch<cr>', desc = 'Launch Strudel' },
+      { '<leader><leader>Sq', '<cmd>StrudelQuit<cr>', desc = 'Quit Strudel' },
+      { '<leader><leader>St', '<cmd>StrudelToggle<cr>', desc = 'Toggle Strudel' },
+      { '<leader><leader>Su', '<cmd>StrudelUpdate<cr>', desc = 'Update Strudel' },
+      { '<leader><leader>Ss', '<cmd>StrudelStop<cr>', desc = 'Stop Strudel' },
+      { '<leader><leader>Sb', '<cmd>StrudelSetBuffer<cr>', desc = 'Set Buffer Strudel' },
+      { '<leader><leader>Se', '<cmd>StrudelExecute<cr>', desc = 'Execute Strudel' },
     },
     config = function()
       require('strudel').setup {
