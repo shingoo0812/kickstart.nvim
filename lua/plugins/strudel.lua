@@ -3,7 +3,8 @@ return {
     'gruvw/strudel.nvim',
     build = 'npm ci',
     keys = {
-      { '<leader><leader>S', '<cmd>StrudelLaunch<cr>', desc = 'Launch Strudel' },
+      { '<leader><leader>S', '', desc = 'Strudel' },
+      { '<leader><leader>Sl', '<cmd>StrudelLaunch<cr>', desc = 'Launch Strudel' },
       { '<leader><leader>Sq', '<cmd>StrudelQuit<cr>', desc = 'Quit Strudel' },
       { '<leader><leader>St', '<cmd>StrudelToggle<cr>', desc = 'Toggle Strudel' },
       { '<leader><leader>Su', '<cmd>StrudelUpdate<cr>', desc = 'Update Strudel' },
