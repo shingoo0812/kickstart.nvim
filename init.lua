@@ -46,13 +46,33 @@ vim.opt.rtp:prepend(lazypath)
 --  To update plugins you can run
 --    :Lazy update
 --
--- NOTE: Here is where you install your plugins.
+--
+-- [[ Configure and install plugins ]]
+-- pluginsフォルダ内のサブフォルダを自動検出
+local function get_plugin_imports()
+  local plugins_path = vim.fn.stdpath 'config' .. '/lua/plugins'
+  local imports = { { import = 'plugins' } }
+
+  -- pluginsフォルダ内のディレクトリを取得
+  local items = vim.fn.readdir(plugins_path)
+  for _, item in ipairs(items) do
+    local full_path = plugins_path .. '/' .. item
+    -- ディレクトリの場合、importに追加
+    if vim.fn.isdirectory(full_path) == 1 then
+      table.insert(imports, { import = 'plugins.' .. item })
+    end
+  end
+
+  return imports
+end
+
 require('lazy').setup({
+  get_plugin_imports(),
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-  {
-    import = 'plugins',
-  },
+  -- {
+  --   import = 'plugins',
+  -- },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -120,37 +140,45 @@ require('lazy').setup({
     },
   },
 })
-
 -- [[Read Configuration folders(./lua/config/*.lua)]]
 local config_path = vim.fn.stdpath 'config' .. '/lua/config'
-local files = vim.fn.readdir(config_path)
-
 -- Manually loaded files (before Lazy)
 local skip_files = {
   ['init.lua'] = true,
   ['functions.lua'] = true,
 }
 
-for _, file in ipairs(files) do
-  -- Process files only (excluding directories)
-  local full_path = config_path .. '/' .. file
-  if vim.fn.isdirectory(full_path) == 0 then
-    -- .lua only & not skipped
-    if file:match '%.lua$' and not skip_files[file] then
-      local module_name = 'config.' .. file:gsub('%.lua$', '')
+-- ファイルとディレクトリを再帰的に処理する関数
+local function load_config_recursive(base_path, module_prefix)
+  local files = vim.fn.readdir(base_path)
 
-      local ok, result = pcall(require, module_name)
-      if not ok then
-        vim.notify('Error loading ' .. module_name .. ': ' .. tostring(result), vim.log.levels.ERROR)
-      elseif type(result) == 'table' and result.setup then
-        local setup_ok, setup_err = pcall(result.setup)
-        if not setup_ok then
-          vim.notify('Error in ' .. module_name .. '.setup(): ' .. tostring(setup_err), vim.log.levels.ERROR)
+  for _, file in ipairs(files) do
+    local full_path = base_path .. '/' .. file
+
+    if vim.fn.isdirectory(full_path) == 1 then
+      -- ディレクトリの場合、再帰的に処理
+      local new_prefix = module_prefix .. file .. '.'
+      load_config_recursive(full_path, new_prefix)
+    else
+      -- ファイルの場合、.luaファイルのみ処理
+      if file:match '%.lua$' and not skip_files[file] then
+        local module_name = module_prefix .. file:gsub('%.lua$', '')
+        local ok, result = pcall(require, module_name)
+        if not ok then
+          vim.notify('Error loading ' .. module_name .. ': ' .. tostring(result), vim.log.levels.ERROR)
+        elseif type(result) == 'table' and result.setup then
+          local setup_ok, setup_err = pcall(result.setup)
+          if not setup_ok then
+            vim.notify('Error in ' .. module_name .. '.setup(): ' .. tostring(setup_err), vim.log.levels.ERROR)
+          end
         end
       end
     end
   end
 end
+
+-- 再帰的にconfigを読み込み
+load_config_recursive(config_path, 'config.')
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

@@ -148,6 +148,21 @@ M.autocmds = {
     end,
     desc = 'Automatically redraw when window is entered or resized',
   },
+  {
+    group = 'FixObsidianMarkdownFiletype',
+    event = { 'BufEnter' },
+    pattern = '*',
+    callback = function(args)
+      local buf = args.buf
+      local name = vim.api.nvim_buf_get_name(buf)
+
+      -- .md ファイルなのに filetype が空な場合のみ補正
+      if name:match '%.md$' and vim.bo[buf].filetype == '' then
+        vim.bo[buf].filetype = 'markdown'
+      end
+    end,
+    desc = 'Fix missing filetype for Obsidian markdown buffers',
+  },
   -- You can add more autocmds here following the same format
 }
 

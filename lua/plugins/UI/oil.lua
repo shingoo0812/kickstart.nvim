@@ -29,7 +29,7 @@ return {
           foldcolumn = '0',
           spell = false,
           list = false,
-          conceallevel = 3,
+          conceallevel = 0,
           concealcursor = 'nvic',
         },
 

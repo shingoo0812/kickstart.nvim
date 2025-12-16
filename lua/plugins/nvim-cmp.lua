@@ -113,9 +113,9 @@ return {
         sources = {
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
-          { name = 'copilot', group_index = 1 },
+          { name = 'copilot', group_index = 2 },
           { name = 'path' },
-          { name = 'buffer' },
+          { name = 'buffer', keyword_length = 3 },
           { name = 'obsidian' },
         },
       }
