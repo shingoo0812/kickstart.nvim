@@ -4,23 +4,15 @@ return { -- Fuzzy Finder (files, lsp, etc)
   branch = '0.1.x',
   dependencies = {
     'nvim-lua/plenary.nvim',
-    { -- If encountering errors, see telescope-fzf-native README for installation instructions
+    {
       'nvim-telescope/telescope-fzf-native.nvim',
-
-      -- `build` is used to run some command when the plugin is installed/updated.
-      -- This is only run then, not every time Neovim starts up.
       build = 'make',
-
-      -- `cond` is a condition used to determine whether this plugin should be
-      -- installed and loaded.
       cond = function()
         return vim.fn.executable 'make' == 1
       end,
     },
     { 'nvim-telescope/telescope-ui-select.nvim' },
     { 'rcarriga/nvim-notify' },
-    -- Useful for getting pretty icons, but requires a Nerd Font.
-    -- { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
   },
   config = function()
     local actions = require 'telescope.actions'
@@ -42,36 +34,12 @@ return { -- Fuzzy Finder (files, lsp, etc)
       actions.select_all(prompt_bufnr)
       open_selected(prompt_bufnr)
     end
-    -- Enable telescope notify extension
-    require('telescope').load_extension 'notify'
-    -- Telescope is a fuzzy finder that comes with a lot of different things that
-    -- it can fuzzy find! It's more than just a "file finder", it can search
-    -- many different aspects of Neovim, your workspace, LSP, and more!
-    --
-    -- The easiest way to use Telescope, is to start by doing something like:
-    --  :Telescope help_tags
-    --
-    -- After running this command, a window will open up and you're able to
-    -- type in the prompt window. You'll see a list of `help_tags` options and
-    -- a corresponding preview of the help.
-    --
-    -- Two important keymaps to use while in Telescope are:
-    --  - Insert mode: <c-/>
-    --  - Normal mode: ?
-    --
-    -- This opens a window that shows you all of the keymaps for the current
-    -- Telescope picker. This is really useful to discover what Telescope can
-    -- do as well as how to actually do it!
 
-    -- [[ Configure Telescope ]]
-    -- See `:help telescope` and `:help telescope.setup()`
+    require('telescope').load_extension 'notify'
+
     require('telescope').setup {
-      -- You can put your default mappings / updates / etc. in here
-      --  All the info you're looking for is in `:help telescope.setup()`
-      --
       defaults = {
         mappings = {
-          -- i = { ['<c-enter>'] = 'to_fuzzy_refine' },
           i = {
             ['<C-J>'] = actions.move_selection_next,
             ['<C-K>'] = actions.move_selection_previous,
@@ -85,7 +53,6 @@ return { -- Fuzzy Finder (files, lsp, etc)
           },
         },
       },
-      -- pickers = {}
       extensions = {
         ['ui-select'] = {
           require('telescope.themes').get_dropdown(),
@@ -93,43 +60,62 @@ return { -- Fuzzy Finder (files, lsp, etc)
       },
     }
 
-    -- Enable Telescope extensions if they are installed
     pcall(require('telescope').load_extension, 'fzf')
     pcall(require('telescope').load_extension, 'ui-select')
 
-    -- See `:help telescope.builtin`
     local builtin = require 'telescope.builtin'
+
     vim.keymap.set('n', '<leader>s', '', { desc = 'Telescope' })
     vim.keymap.set('n', '<leader>s?', builtin.help_tags, { desc = '[S]earch [H]elp' })
     vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
     vim.keymap.set('n', '<leader>sb', builtin.buffers, { desc = '[S]earch [B]uffers' })
-    vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
-    vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
-    vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
-    vim.keymap.set('n', '<leader>s,', builtin.live_grep, { desc = '[S]earch [b]y Grep' })
+
+    -- 現在のファイルが所属するプロジェクトのルートから検索
+    vim.keymap.set('n', '<leader>sf', function()
+      local root = vim.fs.root(0, { '.git', '.hg', '.svn' }) or vim.fn.expand '%:p:h'
+      builtin.find_files {
+        cwd = root,
+        hidden = true,
+        no_ignore = true,
+        no_ignore_parent = true,
+      }
+    end, { desc = '[S]earch [F]iles from project root' })
+
+    vim.keymap.set('n', '<leader>s,', function()
+      local root = vim.fs.root(0, { '.git', '.hg', '.svn' }) or vim.fn.expand '%:p:h'
+      builtin.live_grep {
+        cwd = root,
+        additional_args = { '--hidden', '--no-ignore' },
+      }
+    end, { desc = '[S]earch by [G]rep from project root' })
+
+    vim.keymap.set('n', '<leader>sw', function()
+      local root = vim.fs.root(0, { '.git', '.hg', '.svn' }) or vim.fn.expand '%:p:h'
+      builtin.grep_string {
+        cwd = root,
+        additional_args = { '--hidden', '--no-ignore' },
+      }
+    end, { desc = '[S]earch current [W]ord from project root' })
+
     vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
-    vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-    vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+    vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files' })
+    vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = 'Find existing buffers' })
+
     vim.keymap.set('n', '<leader>sg', '', { desc = '[S]earch [G]it' })
     vim.keymap.set('n', '<leader>sgc', '<cmd>Telescope git_commits<cr>', { desc = '[S]earch [G]it [C]ommits' })
     vim.keymap.set('n', '<leader>sgb', '<cmd>Telescope git_bcommits<cr>', { desc = '[S]earch [G]it [B]Commits' })
     vim.keymap.set('n', '<leader>sgs', '<cmd>Telescope git_status<cr>', { desc = '[S]earch [G]it [S]tatus' })
-    -- Slightly advanced example of overriding default behavior and theme
+
     vim.keymap.set('n', '<leader>/', function()
-      -- You can pass additional configuration to Telescope to change the theme, layout, etc.
       builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
         winblend = 10,
         previewer = false,
       })
     end, { desc = '[/] Fuzzily search in current buffer' })
 
-    -- ビジュアルモード用（選択した範囲を検索）
     vim.keymap.set('v', '<leader>/', function()
-      -- ビジュアルモードを抜ける
       vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>', true, false, true), 'x', false)
-
-      -- 少し待ってから選択範囲を取得
       vim.schedule(function()
         local start_pos = vim.fn.getpos "'<"
         local end_pos = vim.fn.getpos "'>"
@@ -137,16 +123,13 @@ return { -- Fuzzy Finder (files, lsp, etc)
         local end_line = end_pos[2]
         local start_col = start_pos[3]
         local end_col = end_pos[3]
-
         local lines = vim.api.nvim_buf_get_lines(0, start_line - 1, end_line, false)
-
         local selected_text = ''
         if #lines == 1 then
           selected_text = string.sub(lines[1], start_col, end_col)
         else
           selected_text = string.sub(lines[1], start_col)
         end
-
         builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
           winblend = 10,
           previewer = false,
@@ -155,8 +138,6 @@ return { -- Fuzzy Finder (files, lsp, etc)
       end)
     end, { desc = '[/] Fuzzily search selection in current buffer' })
 
-    -- It's also possible to pass additional configuration options.
-    --  See `:help telescope.builtin.live_grep()` for information about particular keys
     vim.keymap.set('n', '<leader>s/', function()
       builtin.live_grep {
         grep_open_files = true,
@@ -164,9 +145,17 @@ return { -- Fuzzy Finder (files, lsp, etc)
       }
     end, { desc = '[S]earch [/] in Open Files' })
 
-    -- Shortcut for searching your Neovim configuration files
     vim.keymap.set('n', '<leader>sn', function()
       builtin.find_files { cwd = vim.fn.stdpath 'config' }
     end, { desc = '[S]earch [N]eovim files' })
+
+    -- プロジェクトルート全体で検索
+    vim.keymap.set('n', '<leader>sP', function()
+      builtin.find_files()
+    end, { desc = '[S]earch [P]roject files' })
+
+    vim.keymap.set('n', '<leader>sG', function()
+      builtin.live_grep()
+    end, { desc = '[S]earch by [G]rep in project' })
   end,
 }
