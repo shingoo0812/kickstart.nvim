@@ -21,7 +21,7 @@ return {
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       -- LSP attach時の設定
-      local lspconfig = require 'lspconfig'
+
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -176,13 +176,13 @@ return {
       }
 
       -- QML言語サーバーの設定
-      lspconfig.qmlls.setup {
+      vim.lsp.config.qmlls = {
         cmd = { 'qmlls' },
         filetypes = { 'qml', 'qmltypes' },
-        root_dir = lspconfig.util.root_pattern('.qmlls.ini', 'qmlproject', '.git'),
+        root_dir = function(fname)
+          return vim.fs.root(fname, { '.qmlls.ini', 'qmlproject', '.git' })
+        end,
       }
-
-      -- null-lsの設定を削除（conform.nvimで代替）
 
       -- Setup Mason and LSP servers
       require('mason').setup()
