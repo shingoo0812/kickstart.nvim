@@ -21,6 +21,7 @@ return {
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       -- LSP attach時の設定
+      local lspconfig = require 'lspconfig'
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -172,6 +173,13 @@ return {
             },
           },
         },
+      }
+
+      -- QML言語サーバーの設定
+      lspconfig.qmlls.setup {
+        cmd = { 'qmlls' },
+        filetypes = { 'qml', 'qmltypes' },
+        root_dir = lspconfig.util.root_pattern('.qmlls.ini', 'qmlproject', '.git'),
       }
 
       -- null-lsの設定を削除（conform.nvimで代替）

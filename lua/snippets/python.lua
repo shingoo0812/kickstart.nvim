@@ -179,4 +179,28 @@ class {}({}):
       }
     )
   ),
+  -- PySide6 アプリ起動スニペット
+  s(
+    'pyside',
+    fmt(
+      [[
+  import sys
+
+  from PySide6 import QtWidgets
+  from {} import {}
+
+  app = QtWidgets.QApplication(sys.argv)
+
+  window = {}()
+  window.show()
+
+  app.exec()
+  ]],
+      {
+        i(1, 'widget'), -- モジュール名
+        i(2, 'Widget'), -- クラス名
+        i(3, 'Widget'), -- インスタンス生成クラス
+      }
+    )
+  ),
 }
