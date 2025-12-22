@@ -28,14 +28,14 @@ return {
       })
 
       -- キーマップはconfigで設定
-      vim.keymap.set('n', '<leader>m', '', { desc = 'Molten(JupyterNotebook)' })
-      vim.keymap.set('n', '<leader>mi', ':MoltenInit<CR>', { desc = 'Initialize Molten' })
-      vim.keymap.set('n', '<leader>ml', ':MoltenEvaluateLine<CR>', { desc = 'Evaluate Line' })
-      vim.keymap.set('n', '<leader>mr', ':MoltenReevaluateCell<CR>', { desc = 'Re-evaluate Cell' })
-      vim.keymap.set('v', '<leader>mv', ':<C-u>MoltenEvaluateVisual<CR>gv', { desc = 'Evaluate Visual' })
-      vim.keymap.set('n', '<leader>md', ':MoltenDelete<CR>', { desc = 'Delete Cell' })
-      vim.keymap.set('n', '<leader>mo', ':MoltenHideOutput<CR>', { desc = 'Hide Output' })
-      vim.keymap.set('n', '<leader>ms', ':noautocmd MoltenEnterOutput<CR>', { desc = 'Show Output' })
+      vim.keymap.set('n', '<leader>j', '', { desc = 'Molten(JupyterNotebook)' })
+      vim.keymap.set('n', '<leader>ji', ':MoltenInit<CR>', { desc = 'Initialize Molten' })
+      vim.keymap.set('n', '<leader>jl', ':MoltenEvaluateLine<CR>', { desc = 'Evaluate Line' })
+      vim.keymap.set('n', '<leader>jr', ':MoltenReevaluateCell<CR>', { desc = 'Re-evaluate Cell' })
+      vim.keymap.set('v', '<leader>jv', ':<C-u>MoltenEvaluateVisual<CR>gv', { desc = 'Evaluate Visual' })
+      vim.keymap.set('n', '<leader>jd', ':MoltenDelete<CR>', { desc = 'Delete Cell' })
+      vim.keymap.set('n', '<leader>jo', ':MoltenHideOutput<CR>', { desc = 'Hide Output' })
+      vim.keymap.set('n', '<leader>js', ':noautocmd MoltenEnterOutput<CR>', { desc = 'Show Output' })
     end,
   },
 }

@@ -176,13 +176,16 @@ return {
       }
 
       -- QML言語サーバーの設定
-      vim.lsp.config.qmlls = {
-        cmd = { 'qmlls' },
-        filetypes = { 'qml', 'qmltypes' },
-        root_dir = function(fname)
-          return vim.fs.root(fname, { '.qmlls.ini', 'qmlproject', '.git' })
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'qml', 'qmltypes' },
+        callback = function(ev)
+          vim.lsp.start {
+            name = 'qmlls',
+            cmd = { 'qmlls' },
+            root_dir = vim.fs.root(ev.buf, { '.qmlls.ini', 'qmlproject', '.git' }),
+          }
         end,
-      }
+      })
 
       -- Setup Mason and LSP servers
       require('mason').setup()

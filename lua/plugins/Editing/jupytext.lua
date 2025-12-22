@@ -63,6 +63,12 @@ return {
     vim.api.nvim_create_autocmd('FileType', {
       pattern = 'markdown',
       callback = function()
+        vim.keymap.set('n', '<leader>j', '', { buffer = true, desc = 'Convert to Jupyter Notebook' })
+      end,
+    })
+    vim.api.nvim_create_autocmd('FileType', {
+      pattern = 'markdown',
+      callback = function()
         vim.keymap.set('n', '<leader>jn', md_to_ipynb, { buffer = true, desc = 'Convert to Jupyter Notebook' })
       end,
     })

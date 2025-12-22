@@ -34,7 +34,15 @@ return { -- Collection of various small independent plugins/modules
     -- - sr)'  - [S]urround [R]eplace [)] [']
     -- - vai - [V]isually select [A]round [I]ndent
     -- - vii - [V]isually select [I]nside [I]ndent
-    require('mini.surround').setup()
+    require('mini.surround').setup {
+      respect_selection_type = false,
+      custom_surroundings = {
+        ['('] = { output = { left = '(', right = ')' } },
+        ['{'] = { output = { left = '{', right = '}' } },
+        ['['] = { output = { left = '[', right = ']' } },
+        ['<'] = { output = { left = '<', right = '>' } },
+      },
+    }
     -- Simple and easy statusline.
     --  You could remove this setup call if you don't like it,
     --  and try some other statusline plugin
