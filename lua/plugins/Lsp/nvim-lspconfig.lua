@@ -1,3 +1,7 @@
+local func = require 'config.functions'
+local find_venv_root = func.functions.utils.find_venv_root
+local detect_os = func.functions.utils.detect_os
+
 -- lua/plugins/lspconfig.lua
 return {
   -- Main LSP Configuration
@@ -223,23 +227,27 @@ return {
         capabilities = capabilities,
       }
 
-      -- GDScript の設定（既存のまま）
-      local gdscript_config = {
-        capabilities = capabilities,
-        settings = {},
-      }
-      if vim.fn.has 'win32' == 1 then
-        gdscript_config['cmd'] = { 'ncat', 'localhost', os.getenv 'GDScript_Port' or '6005' }
-      end
-      vim.lsp.config.gdscript = gdscript_config
+      -- GDScript の設定
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'gd', 'gdscript', 'gdscript3' },
+        callback = function(ev)
+          local port = os.getenv 'GDScript_Port' or '6005'
+          local cmd
 
-      local function get_python_path(venv_path)
-        if vim.fn.has 'win32' == 1 or vim.fn.has 'win64' == 1 then
-          return venv_path .. '/Scripts/python.exe'
-        else
-          return venv_path .. '/bin/python'
-        end
-      end
+          if detect_os() == 'windows' then
+            cmd = { 'ncat', 'localhost', port }
+          else
+            cmd = { 'nc', 'localhost', port }
+          end
+
+          vim.lsp.start {
+            name = 'gdscript',
+            cmd = cmd,
+            root_dir = vim.fs.root(ev.buf, { 'project.godot', '.git' }),
+            capabilities = capabilities,
+          }
+        end,
+      })
 
       -- before_init の外でキャッシュ変数を定義
       local pyright_venv_cache = {}
@@ -271,20 +279,6 @@ return {
         --   end
         -- end,
         before_init = function(params, config)
-          local func = require 'config.functions'
-          local find_venv_root = func.functions.utils.find_venv_root
-
-          -- バッファ固有のIDを取得（rootPathベース）
-          local root_path = params.rootPath or vim.fn.getcwd()
-
-          -- キャッシュをチェック
-          if pyright_venv_cache[root_path] then
-            config.settings.python.pythonPath = pyright_venv_cache[root_path]
-            -- vim.notify('Pyright using cached Python: ' .. pyright_venv_cache[root_path], vim.log.levels.DEBUG)
-            return
-          end
-
-          -- venv のルート（.venv のある場所）
           local venv_root = find_venv_root(root_path)
           if not venv_root then
             -- print 'venvが見つからなかったため、pythonPath設定をスキップ'

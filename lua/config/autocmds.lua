@@ -163,6 +163,16 @@ M.autocmds = {
     end,
     desc = 'Fix missing filetype for Obsidian markdown buffers',
   },
+  -- GDScript filetype detection
+  {
+    group = 'GDScriptFiletype',
+    event = { 'BufRead', 'BufNewFile' },
+    pattern = { '*.gd', '*.gdscript', '*.gdscript3' },
+    desc = 'Set filetype to gdscript for GDScript files',
+    callback = function()
+      vim.bo.filetype = 'gdscript'
+    end,
+  },
   -- You can add more autocmds here following the same format
 }
 
