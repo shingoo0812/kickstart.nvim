@@ -279,6 +279,20 @@ return {
         --   end
         -- end,
         before_init = function(params, config)
+          -- local func = require 'config.functions'
+          -- local find_venv_root = func.functions.utils.find_venv_root
+
+          -- バッファ固有のIDを取得（rootPathベース）
+          local root_path = params.rootPath or vim.fn.getcwd()
+
+          -- キャッシュをチェック
+          if pyright_venv_cache[root_path] then
+            config.settings.python.pythonPath = pyright_venv_cache[root_path]
+            -- vim.notify('Pyright using cached Python: ' .. pyright_venv_cache[root_path], vim.log.levels.DEBUG)
+            return
+          end
+
+          -- venv のルート（.venv のある場所）
           local venv_root = find_venv_root(root_path)
           if not venv_root then
             -- print 'venvが見つからなかったため、pythonPath設定をスキップ'
@@ -296,6 +310,7 @@ return {
           -- 存在チェック
           if vim.fn.filereadable(python_path) == 0 then
             print('python実行ファイルが見つかりません:', python_path)
+
             return
           end
 
