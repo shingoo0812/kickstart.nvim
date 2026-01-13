@@ -91,3 +91,10 @@ vim.opt.expandtab = true
 -- Windows Terminal用の描画修正
 vim.opt.termguicolors = true
 vim.opt.lazyredraw = false
+
+-- 未保存のバッファを隠すことを許可（バッファ切り替え時にエラーが出ない）
+vim.opt.hidden = true
+-- 外部で変更されたファイルを自動で再読み込み
+vim.opt.autoread = true
+-- オプション: バッファ切り替え時に自動保存
+vim.opt.autowrite = true

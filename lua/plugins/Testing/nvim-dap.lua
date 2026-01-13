@@ -1,3 +1,5 @@
+local func = require 'config.functions'
+local detect_os = func.functions.utils.detect_os
 return {
   'mfussenegger/nvim-dap',
   dependencies = {
@@ -26,6 +28,7 @@ return {
       { '<leader>d4', dap.step_out, desc = 'Debug: Step Out(F3)' },
       { '<leader>dt', dap.toggle_breakpoint, desc = 'Debug: Toggle Breakpoint' },
       { '<leader>du', '<cmd>lua require("dapui").toggle()<cr>', desc = 'Toggle Dap UI' },
+      { '<leader>dc', '<cmd>lua require("dapui").close()<cr>', desc = 'Close Dap UI' },
       { '<leader>de', ':DapTerminate<cr>', desc = 'DAP End' },
       {
         '<leader>db',
@@ -34,10 +37,11 @@ return {
         end,
         desc = 'Debug: Set Breakpoint',
       },
-      -- Python用のキーバインド追加
       { '<leader>dpm', dap_python.test_method, desc = 'Debug: Python Test Method' },
       { '<leader>dpc', dap_python.test_class, desc = 'Debug: Python Test Class' },
       { '<leader>dps', dap_python.debug_selection, desc = 'Debug: Python Selection', mode = 'v' },
+      { '<leader>dr', '<cmd>lua require("dapui").float_element("repl", { enter = true })<cr>', desc = 'Debug: Open REPL' },
+      { '<leader>do', '<cmd>lua require("dapui").float_element("console", { enter = true })<cr>', desc = 'Debug: Open Console' },
       { '<F7>', dapui.toggle, desc = 'Debug: See last session result.' },
       unpack(keys),
     }
@@ -46,7 +50,6 @@ return {
     local dap = require 'dap'
     local dapui = require 'dapui'
     local dap_python = require 'dap-python'
-    local neotree_width = 40
 
     require('mason-nvim-dap').setup {
       automatic_installation = true,
@@ -77,17 +80,35 @@ return {
           disconnect = '⏏',
         },
       },
+      layouts = {
+        {
+          elements = {
+            { id = 'scopes', size = 0.25 },
+            { id = 'breakpoints', size = 0.25 },
+            { id = 'stacks', size = 0.25 },
+            { id = 'watches', size = 0.25 },
+          },
+          size = 40,
+          position = 'left',
+        },
+        {
+          elements = {
+            { id = 'repl', size = 0.5 },
+            { id = 'console', size = 0.5 },
+          },
+          size = 10,
+          position = 'bottom',
+        },
+      },
+      mappings = {
+        expand = { '<CR>', '<2-LeftMouse>' },
+        open = 'o',
+        remove = 'd',
+        edit = 'e',
+        repl = 'r',
+        toggle = 't',
+      },
     }
-
-    local function reset_neotree_width()
-      local status_ok, _ = pcall(vim.cmd, 'Neotree close')
-      if not status_ok then
-        return
-      end
-      vim.cmd 'Neotree close'
-      vim.cmd 'Neotree reveal'
-      vim.cmd('vertical resize ' .. neotree_width)
-    end
 
     dap.listeners.after.event_initialized['dapui_config'] = function()
       dapui.open()
@@ -95,32 +116,42 @@ return {
 
     dap.listeners.before.event_terminated['dapui_config'] = function()
       dapui.close()
-      reset_neotree_width()
     end
 
     dap.listeners.before.event_exited['dapui_config'] = function()
       dapui.close()
-      reset_neotree_width()
     end
+
+    -- 出力イベントをキャプチャしてREPLに表示
+    dap.listeners.after['event_output']['dapui_output'] = function(session, body)
+      if body.category == 'stdout' or body.category == 'console' then
+        vim.schedule(function()
+          local repl = require 'dap.repl'
+          repl.append(body.output)
+        end)
+      end
+    end
+
+    -- DAPUIウィンドウでqキーで閉じる
+    vim.api.nvim_create_autocmd('FileType', {
+      pattern = 'dap-repl',
+      callback = function()
+        vim.keymap.set('n', 'q', '<cmd>close<cr>', { buffer = true, silent = true })
+      end,
+    })
 
     -- ========================================
     -- Python DAP Setup - Mason's debugpy + uv venv
     -- ========================================
 
-    -- Use Mason's debugpy Python for running the debugger
     local mason_path = vim.fn.stdpath 'data' .. '/mason/packages/debugpy/venv'
-    local debugpy_python = vim.fn.has 'win32' == 1 and mason_path .. '/Scripts/python.exe' or mason_path .. '/bin/python'
 
-    -- Setup with Mason's Python
-    dap_python.setup(debugpy_python)
-
-    -- Get project's Python (uv or standard venv) for code execution
     local function get_project_python()
       local cwd = vim.fn.getcwd()
       local paths = {
-        cwd .. '\\.qtcreator\\Python_3_13_7venv\\Scripts\\python.exe', -- Windows uv/venv
-        cwd .. '\\.venv\\Scripts\\python.exe', -- Windows uv/venv
-        cwd .. '/.venv/bin/python', -- Linux/macOS uv/venv
+        cwd .. '\\.qtcreator\\Python_3_13_7venv\\Scripts\\python.exe',
+        cwd .. '\\.venv\\Scripts\\python.exe',
+        cwd .. '/.venv/bin/python',
         cwd .. '\\venv\\Scripts\\python.exe',
         cwd .. '/venv/bin/python',
       }
@@ -132,15 +163,14 @@ return {
       return nil
     end
 
-    -- Override Python configurations to use project's Python for execution
     local project_python = get_project_python()
     if project_python then
       for _, config in pairs(dap.configurations.python) do
         config.pythonPath = project_python
+        config.console = 'integratedTerminal'
       end
     end
 
-    -- FastAPI用の設定を追加
     table.insert(dap.configurations.python, {
       type = 'python',
       request = 'launch',
@@ -151,7 +181,6 @@ return {
       console = 'integratedTerminal',
     })
 
-    -- GDScript config
     dap.adapters.godot = {
       type = 'server',
       host = '127.0.0.1',
@@ -162,15 +191,32 @@ return {
       {
         type = 'godot',
         request = 'launch',
-        name = 'Launch Main Scene',
+        name = 'Launch Project (Use Project Settings)',
         project = '${workspaceFolder}',
+        launch_game_instance = true,
+        launch_scene = false,
+      },
+      {
+        type = 'godot',
+        request = 'launch',
+        name = 'Launch Current Scene',
+        project = '${workspaceFolder}',
+        launch_game_instance = true,
+        launch_scene = true,
+        scene = '${file}',
+      },
+      {
+        type = 'godot',
+        request = 'launch',
+        name = 'Attach to Running Game',
+        project = '${workspaceFolder}',
+        launch_game_instance = false,
       },
     }
 
-    -- Go debug setup
     require('dap-go').setup {
       delve = {
-        detached = vim.fn.has 'win32' == 0,
+        detached = detect_os ~= 'windows',
       },
     }
   end,

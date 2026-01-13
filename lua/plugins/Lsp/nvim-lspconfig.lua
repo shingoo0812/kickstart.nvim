@@ -32,7 +32,7 @@ return {
           -- C#ファイルの場合はomnisharp-vimを優先するため、LSPキーマップをスキップ
           local filetype = vim.bo[event.buf].filetype
           if filetype == 'cs' then
-            vim.notify('C#ファイル: OmniSharp-vim を使用（LSPキーマップをスキップ）', vim.log.levels.INFO)
+            -- vim.notify('C#ファイル: OmniSharp-vim を使用（LSPキーマップをスキップ）', vim.log.levels.INFO)
             return
           end
 
@@ -227,29 +227,125 @@ return {
         capabilities = capabilities,
       }
 
-      -- GDScript の設定
+      -- GDScript LSP設定
+
+      -- クライアント管理用のテーブル
+      local gdscript_timers = {}
+
+      -- GDScriptクライアントの起動
+      local function start_gdscript_client(bufnr, root_dir, capabilities)
+        -- 既存のクライアントをチェック
+        local clients = vim.lsp.get_clients { name = 'gdscript' }
+        for _, client in ipairs(clients) do
+          if client.config.root_dir == root_dir then
+            vim.lsp.buf_attach_client(bufnr, client.id)
+            return
+          end
+        end
+
+        -- 新しいクライアントを起動
+        local port = os.getenv 'GDScript_Port' or '6005'
+        local cmd = detect_os() == 'windows' and { 'ncat', 'localhost', port } or { 'nc', 'localhost', port }
+
+        local client_id = vim.lsp.start {
+          name = 'gdscript',
+          cmd = cmd,
+          root_dir = root_dir,
+          capabilities = capabilities,
+          flags = {
+            debounce_text_changes = 150,
+          },
+        }
+
+        if not client_id then
+          return
+        end
+
+        -- Keepaliveタイマーの設定（通知なし版）
+        local timer = vim.loop.new_timer()
+        gdscript_timers[client_id] = timer
+
+        timer:start(
+          120000,
+          120000,
+          vim.schedule_wrap(function()
+            local client = vim.lsp.get_client_by_id(client_id)
+            if client and not client.is_stopped() then
+              -- 単純な再アタッチでkeepalive（通知が出ない）
+              pcall(vim.lsp.buf_attach_client, bufnr, client_id)
+            else
+              timer:stop()
+              timer:close()
+              gdscript_timers[client_id] = nil
+            end
+          end)
+        )
+
+        -- バッファが閉じられたらタイマーを停止
+        vim.api.nvim_create_autocmd('BufDelete', {
+          buffer = bufnr,
+          once = true,
+          callback = function()
+            if timer then
+              timer:stop()
+              timer:close()
+              gdscript_timers[client_id] = nil
+            end
+          end,
+        })
+      end
+
+      -- FileType autocmd
       vim.api.nvim_create_autocmd('FileType', {
         pattern = { 'gd', 'gdscript', 'gdscript3' },
         callback = function(ev)
-          local port = os.getenv 'GDScript_Port' or '6005'
-          local cmd
-
-          if detect_os() == 'windows' then
-            cmd = { 'ncat', 'localhost', port }
-          else
-            cmd = { 'nc', 'localhost', port }
-          end
-
-          vim.lsp.start {
-            name = 'gdscript',
-            cmd = cmd,
-            root_dir = vim.fs.root(ev.buf, { 'project.godot', '.git' }),
-            capabilities = capabilities,
-          }
+          local root_dir = vim.fs.root(ev.buf, { 'project.godot', '.git' })
+          start_gdscript_client(ev.buf, root_dir, capabilities)
         end,
       })
 
-      -- before_init の外でキャッシュ変数を定義
+      -- Godotのファイル変更を検知
+      vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold' }, {
+        pattern = '*',
+        callback = function()
+          if vim.fn.mode() ~= 'c' then
+            vim.cmd 'checktime'
+          end
+        end,
+      })
+      -- -- LSP切断時の自動再接続
+      -- vim.api.nvim_create_autocmd('LspDetach', {
+      --   callback = function(args)
+      --     local client = vim.lsp.get_client_by_id(args.data.client_id)
+      --     if not client or client.name ~= 'gdscript' then
+      --       return
+      --     end
+      --
+      --     -- タイマーのクリーンアップ
+      --     local timer = gdscript_timers[args.data.client_id]
+      --     if timer then
+      --       timer:stop()
+      --       timer:close()
+      --       gdscript_timers[args.data.client_id] = nil
+      --     end
+      --
+      --     -- 現在のバッファがGDScriptなら再接続
+      --     local current_buf = vim.api.nvim_get_current_buf()
+      --     local filetype = vim.bo[current_buf].filetype
+      --     if filetype == 'gd' or filetype == 'gdscript' or filetype == 'gdscript3' then
+      --       vim.defer_fn(function()
+      --         -- 変更されていない場合のみeditを実行
+      --         if not vim.bo[current_buf].modified then
+      --           vim.cmd 'edit'
+      --         else
+      --           -- 変更がある場合はFileType autocmdを再発火
+      --           vim.cmd('doautocmd FileType ' .. filetype)
+      --         end
+      --       end, 1000)
+      --     end
+      --   end,
+      -- })
+
       local pyright_venv_cache = {}
       -- Python
       vim.lsp.config.pyright = {
@@ -319,7 +415,7 @@ return {
           config.settings.python.pythonPath = python_path
 
           -- デバッグ用（初回のみ通知）
-          vim.notify('###Pyright using Python: ' .. python_path, vim.log.levels.INFO)
+          -- vim.notify('###Pyright using Python: ' .. python_path, vim.log.levels.INFO)
         end,
       }
     end,
