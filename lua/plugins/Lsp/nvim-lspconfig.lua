@@ -215,6 +215,16 @@ return {
         },
       }
 
+      -- javascript
+      vim.lsp.config.tsserver = {
+        capabilities = capabilities,
+        on_attach = function(client, bufnr)
+          -- フォーマット機能は conform.nvim に任せる
+          client.server_capabilities.documentFormattingProvider = false
+          client.server_capabilities.documentRangeFormattingProvider = false
+        end,
+      }
+
       -- Clangd の個別設定
       vim.lsp.config.clangd = {
         cmd = { 'C:\\Program Files\\LLVM\\bin\\clangd.exe' },
@@ -313,38 +323,6 @@ return {
           end
         end,
       })
-      -- -- LSP切断時の自動再接続
-      -- vim.api.nvim_create_autocmd('LspDetach', {
-      --   callback = function(args)
-      --     local client = vim.lsp.get_client_by_id(args.data.client_id)
-      --     if not client or client.name ~= 'gdscript' then
-      --       return
-      --     end
-      --
-      --     -- タイマーのクリーンアップ
-      --     local timer = gdscript_timers[args.data.client_id]
-      --     if timer then
-      --       timer:stop()
-      --       timer:close()
-      --       gdscript_timers[args.data.client_id] = nil
-      --     end
-      --
-      --     -- 現在のバッファがGDScriptなら再接続
-      --     local current_buf = vim.api.nvim_get_current_buf()
-      --     local filetype = vim.bo[current_buf].filetype
-      --     if filetype == 'gd' or filetype == 'gdscript' or filetype == 'gdscript3' then
-      --       vim.defer_fn(function()
-      --         -- 変更されていない場合のみeditを実行
-      --         if not vim.bo[current_buf].modified then
-      --           vim.cmd 'edit'
-      --         else
-      --           -- 変更がある場合はFileType autocmdを再発火
-      --           vim.cmd('doautocmd FileType ' .. filetype)
-      --         end
-      --       end, 1000)
-      --     end
-      --   end,
-      -- })
 
       local pyright_venv_cache = {}
       -- Python
