@@ -156,7 +156,7 @@ M.autocmds = {
       local buf = args.buf
       local name = vim.api.nvim_buf_get_name(buf)
 
-      -- .md ファイルなのに filetype が空な場合のみ補正
+      -- Correct only if filetype is empty even though it is a .md file
       if name:match '%.md$' and vim.bo[buf].filetype == '' then
         vim.bo[buf].filetype = 'markdown'
       end
