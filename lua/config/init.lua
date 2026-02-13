@@ -87,6 +87,7 @@ vim.cmd 'filetype plugin indent on'
 vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
 vim.opt.expandtab = true
+vim.opt.softtabstop = 4
 
 -- Windows Terminal用の描画修正
 vim.opt.termguicolors = true
