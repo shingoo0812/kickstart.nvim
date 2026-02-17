@@ -21,6 +21,18 @@ return {
       vim.notify('Added to Harpoon: ' .. vim.fn.expand '%:t', vim.log.levels.INFO)
     end, { desc = 'Add file to Harpoon' })
 
+    -- Remove file from Harpoon list by index
+    keymap('n', '<leader>hd', function()
+      local input = vim.fn.input 'Enter Harpoon index to remove: '
+      local idx = tonumber(input)
+
+      if idx then
+        require('harpoon'):list():remove_at(idx)
+        vim.notify('Removed Harpoon index: ' .. idx, vim.log.levels.INFO)
+      else
+        vim.notify('Invalid index.', vim.log.levels.ERROR)
+      end
+    end, { desc = 'Remove Harpoon by index' })
     -- Toggle Harpoon quick menu
     keymap('n', '<leader>h', function() end, { desc = 'Harpoon' })
 
