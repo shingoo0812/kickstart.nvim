@@ -38,6 +38,14 @@ return {
 
     keymap('n', '<leader>hl', function()
       harpoon.ui:toggle_quick_menu(harpoon:list())
+
+      vim.schedule(function()
+        local buf = vim.api.nvim_get_current_buf()
+
+        vim.keymap.set('n', '<C-j>', 'j', { buffer = buf, silent = true })
+
+        vim.keymap.set('n', '<C-k>', 'k', { buffer = buf, silent = true })
+      end)
     end, { desc = 'Toggle Harpoon menu' })
 
     -- Quick jump to marked items (h1-4でジャンプ)
