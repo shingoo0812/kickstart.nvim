@@ -254,17 +254,13 @@ return {
         end
 
         -- 新しいクライアントを起動
-        local port = os.getenv 'GDScript_Port' or '6005'
-        local cmd = detect_os() == 'windows' and { 'ncat', 'localhost', port } or { 'nc', 'localhost', port }
+        local port = tonumber(os.getenv 'GDScript_Port') or 6005
 
         local client_id = vim.lsp.start {
           name = 'gdscript',
-          cmd = cmd,
+          cmd = vim.lsp.rpc.connect('127.0.0.1', port),
           root_dir = root_dir,
           capabilities = capabilities,
-          flags = {
-            debounce_text_changes = 150,
-          },
         }
 
         if not client_id then
