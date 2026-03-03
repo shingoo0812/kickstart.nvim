@@ -75,11 +75,11 @@ local wk = require 'which-key'
 wk.add {
   {
     mode = { 'n' },
-    -- Normal Mode
+    -- normal mode
     { 'd', '"_d' },
-    --  Clear Highlight
-    --  See `:help hlsearch`
-    { '<Esc>', '<cmd>nohlsearch<cr>', desc = 'Clear Highlight' },
+    --  clear highlight
+    --  see `:help hlsearch`
+    { '<esc>', '<cmd>nohlsearch<cr>', desc = 'clear highlight' },
     { '<leader><leader>x', '<cmd>source %<cr>', desc = 'Source Current File' },
     -- Move to Blank Line
     { ']w', '/^$/<cr>', desc = 'Next Blank Line' },
@@ -195,7 +195,24 @@ wk.add {
     { '<C-e>', '$', desc = 'Move to end' },
     { '<A-j>', ":m '>+1<cr>gv=gv", mode = 'v', desc = 'Move selection down' },
     { '<A-k>', ":m '<-2<cr>gv=gv", mode = 'v', desc = 'Move selection up' },
-    { '<C-_>', 'gc', remap = true, desc = 'Toggle Comment' },
+    {
+      'gs',
+      function()
+        -- 選択テキストを取得
+        vim.cmd 'normal! "vy'
+        local selected = vim.fn.getreg 'v'
+
+        -- 正規表現の特殊文字をエスケープ
+        selected = selected:gsub('([/\\^$.*+?()[%]{}|])', '\\%1')
+        -- 改行をエスケープ
+        selected = selected:gsub('\n', '\\n')
+
+        -- 置換コマンドを選択テキスト入力済みで起動
+        local cmd = "'<,'>s/" .. selected .. '/'
+        vim.api.nvim_feedkeys(':' .. cmd, 'n', false)
+      end,
+      { noremap = true, desc = 'Replace selected text' },
+    },
   },
   {
     mode = { 'x' },
