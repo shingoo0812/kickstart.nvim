@@ -198,16 +198,16 @@ wk.add {
     {
       'gs',
       function()
-        -- 選択テキストを取得
+        --Get the selected text
         vim.cmd 'normal! "vy'
         local selected = vim.fn.getreg 'v'
 
-        -- 正規表現の特殊文字をエスケープ
+        -- Escape special characters in regular expressions
         selected = selected:gsub('([/\\^$.*+?()[%]{}|])', '\\%1')
-        -- 改行をエスケープ
+        -- Escape newline
         selected = selected:gsub('\n', '\\n')
 
-        -- 置換コマンドを選択テキスト入力済みで起動
+        -- Start the replace command with the selected text entered
         local cmd = "'<,'>s/" .. selected .. '/'
         vim.api.nvim_feedkeys(':' .. cmd, 'n', false)
       end,
