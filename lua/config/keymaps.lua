@@ -195,6 +195,7 @@ wk.add {
     { '<C-e>', '$', desc = 'Move to end' },
     { '<A-j>', ":m '>+1<cr>gv=gv", mode = 'v', desc = 'Move selection down' },
     { '<A-k>', ":m '<-2<cr>gv=gv", mode = 'v', desc = 'Move selection up' },
+    { '<C-/>', 'gcc', desc = 'Comment' },
     {
       'gs',
       function()
