@@ -1,15 +1,19 @@
 return {
   'nvimtools/none-ls.nvim',
-  enabled = false,
+  enabled = true,
   opts = function(_, opts)
-    -- opts variable is the default configuration table for the setup function call
-    -- local null_ls = require "null-ls"
-
-    -- Check supported formatters and linters
-    -- https://github.com/nvimtools/none-ls.nvim/tree/main/lua/null-ls/builtins/formatting
-    -- https://github.com/nvimtools/none-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
-
-    -- Only insert new sources, do not replace the existing ones
-    -- (If you wish to replace, use `opts.sources = {}` instead of the `list_insert_unique` function)
+    local null_ls = require 'null-ls'
+    opts.sources = opts.sources or {}
+    vim.list_extend(opts.sources, {
+      null_ls.builtins.diagnostics.glslc.with {
+        filetypes = { 'glsl' },
+        args = { '-fshader-stage=fragment', '-o', '-', '$FILENAME' },
+        extra_args = { '--target-env=opengl' },
+        filter = function(diagnostic)
+          local msg = diagnostic.message
+          return not msg:match 'varying deprecated' and not msg:match 'non%-opaque uniform' and not msg:match 'SPIR%-V requires location'
+        end,
+      },
+    })
   end,
 }

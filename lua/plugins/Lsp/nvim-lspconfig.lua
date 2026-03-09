@@ -237,6 +237,26 @@ return {
         capabilities = capabilities,
       }
 
+      -- glsl conf
+      vim.lsp.config.glsl_analyzer = {
+        cmd = { 'glsl_analyzer' },
+        filetypes = { 'glsl', 'vert', 'frag', 'comp' },
+        root_dir = function(bufnr, on_dir)
+          local root = vim.fs.root(bufnr, { '.git' })
+          if root then
+            on_dir(root)
+          else
+            on_dir(vim.fn.getcwd())
+          end
+        end,
+        capabilities = capabilities,
+        settings = {
+          glsl_analyzer = {
+            target = 'opengl',
+          },
+        },
+      }
+      vim.lsp.enable 'glsl_analyzer'
       -- GDScript LSP設定
 
       -- クライアント管理用のテーブル
