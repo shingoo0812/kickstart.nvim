@@ -7,7 +7,9 @@ return {
     vim.list_extend(opts.sources, {
       null_ls.builtins.diagnostics.glslc.with {
         filetypes = { 'glsl' },
-        args = { '-fshader-stage=fragment', '-o', '-', '$FILENAME' },
+        -- args = { '-fshader-stage=fragment', '-std=450core', '-o', '-', '$FILENAME' },
+        -- 330core is used for three.js.
+        args = { '-fshader-stage=fragment', '-std=330core', '-o', '-', '$FILENAME' },
         extra_args = { '--target-env=opengl' },
         filter = function(diagnostic)
           local msg = diagnostic.message
