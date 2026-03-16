@@ -37,6 +37,12 @@ return {
       cpp = { 'clang-format' },
       c = { 'clang-format' },
       python = { 'isort', 'black' },
+      javascript = { "prettier" },
+      javascriptreact = { "prettier" },
+      typescript = { "prettier" },
+      typescriptreact = { "prettier" },
+      html = { "prettier" },
+      css = { "prettier" },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
       --
