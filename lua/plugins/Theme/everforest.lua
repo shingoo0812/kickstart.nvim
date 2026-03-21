@@ -22,6 +22,8 @@ return {
     vim.api.nvim_set_hl(0, '@attribute', { fg = '#bb9af7' }) -- アトリビュート
     vim.api.nvim_set_hl(0, '@keyword', { fg = '#bb9af7' }) -- キーワード
     vim.api.nvim_set_hl(0, '@keyword.storage.type', { fg = '#bb9af7' }) -- const/let/var
+    vim.api.nvim_set_hl(0, '@tag.attribute.javascript', { fg = '#bb9af7' }) -- Tokyo Night purple
+    vim.api.nvim_set_hl(0, '@tag.attribute', { fg = '#bb9af7' }) -- fallback
 
     vim.api.nvim_set_hl(0, '@function', { fg = '#7aa2f7' }) -- 関数名
     vim.api.nvim_set_hl(0, '@string', { fg = '#9ece6a' }) -- 文字列
