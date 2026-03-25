@@ -43,18 +43,18 @@ return {
         -- 隠しファイルの表示
         view_options = {
           show_hidden = true, -- デフォルトで隠しファイル表示
-          is_hidden_file = function(name, bufnr)
-            -- .git/などは常に隠す
-            return vim.startswith(name, '.')
-          end,
-          is_always_hidden = function(name, bufnr)
-            -- node_modules, __pycache__などは常に隠す
-            return name == '..' or name == 'node_modules' or name == '__pycache__'
-          end,
-          sort = {
-            { 'type', 'asc' }, -- ディレクトリを先に
-            { 'name', 'asc' }, -- 名前順
-          },
+          -- is_hidden_file = function(name, bufnr)
+          --   -- .git/などは常に隠す
+          --   return vim.startswith(name, '.')
+          -- end,
+          -- is_always_hidden = function(name, bufnr)
+          --   -- node_modules, __pycache__などは常に隠す
+          --   return name == '..' or name == 'node_modules' or name == '__pycache__'
+          -- end,
+          -- sort = {
+          --   { 'type', 'asc' }, -- ディレクトリを先に
+          --   { 'name', 'asc' }, -- 名前順
+          -- },
         },
 
         -- フロートウィンドウ設定（oil.nvimをフロートで開く場合）
