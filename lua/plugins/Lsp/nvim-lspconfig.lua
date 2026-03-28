@@ -205,6 +205,27 @@ return {
         end,
       }
       vim.lsp.enable 'ts_ls'
+      -- ESLint
+      vim.lsp.config.eslint = {
+        capabilities = capabilities,
+        root_dir = function(bufnr, on_dir)
+          local root = vim.fs.root(bufnr, { 'eslint.config.js', 'eslint.config.mjs', '.eslintrc.js', '.eslintrc.json', '.git' })
+          if root then
+            on_dir(root)
+          end
+        end,
+        settings = {
+          validate = 'on',
+          useESLintClass = false,
+          experimental = { useFlatConfig = true },
+          rulesCustomizations = {},
+          run = 'onType',
+          problems = { shortenToSingleLine = false },
+          nodePath = '',
+          workingDirectory = { mode = 'location' },
+        },
+      }
+      vim.lsp.enable 'eslint'
 
       -- Clangd の個別設定
       vim.lsp.config.clangd = {

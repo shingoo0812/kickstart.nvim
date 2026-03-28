@@ -50,9 +50,6 @@ return {
       -- デフォルトのクエリ
       vim.g.db_ui_default_query = 'SELECT * FROM {table} LIMIT 100'
 
-      -- Win32yank（WSL）を使用する場合
-      vim.g.db_ui_use_nvim_notify = 1
-
       -- テーブル表示でのデフォルトの行数
       vim.g.db_ui_win_position = 'left'
 
@@ -70,9 +67,7 @@ return {
 
         -- SQLite
         sqlite_local = 'sqlite:~/data/mydb.sqlite',
-
-        -- MongoDB
-        -- mongo = "mongodb://localhost:27017/mydb",
+        asset_manager = 'postgresql://postgres:postgres@localhost:5432/asset_manager',
       }
 
       -- 方法2: リスト形式で設定（名前とURLを明示的に指定）
