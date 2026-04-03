@@ -38,26 +38,26 @@ return {
       'hrsh7th/cmp-path',
 
       -- Copilot 本体
-      {
-        'zbirenbaum/copilot.lua',
-        cmd = 'Copilot',
-        event = 'InsertEnter',
-        config = function()
-          require('copilot').setup {
-            suggestion = { enabled = false },
-            panel = { enabled = false },
-          }
-        end,
-      },
+      -- {
+      --   'zbirenbaum/copilot.lua',
+      --   cmd = 'Copilot',
+      --   event = 'InsertEnter',
+      --   config = function()
+      --     require('copilot').setup {
+      --       suggestion = { enabled = false },
+      --       panel = { enabled = false },
+      --     }
+      --   end,
+      -- },
 
       -- Copilot を CMP に統合
-      {
-        'zbirenbaum/copilot-cmp',
-        after = { 'copilot.lua' },
-        config = function()
-          require('copilot_cmp').setup()
-        end,
-      },
+      -- {
+      --   'zbirenbaum/copilot-cmp',
+      --   after = { 'copilot.lua' },
+      --   config = function()
+      --     require('copilot_cmp').setup()
+      --   end,
+      -- },
     },
 
     config = function()
