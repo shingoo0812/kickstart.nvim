@@ -79,7 +79,7 @@ M.functions = {
       end
 
       for _ = 1, 100 do
-        local venv_path = (utils.detect_os() == 'windows') and (current .. '\\.venv') or (current .. '/.venv')
+        local venv_path = (utils.detect_os() == 'windows') and (current .. '\\.venv') or (current .. '/.venv') or (current .. '/venv') or (current .. '\\venv')
 
         if vim.fn.isdirectory(venv_path) == 1 then
           return venv_path
