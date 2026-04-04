@@ -21,7 +21,7 @@ NVIM_CONFIG := $(HOME)/dotfiles/linux/nvim
 WORKSPACE := $(HOME)/projects
 
 # Docker Hub settings (change these to your Docker Hub username)
-DOCKER_USERNAME := your-dockerhub-username
+DOCKER_USERNAME := shingoo0812977
 DOCKER_REPO := $(DOCKER_USERNAME)/$(IMAGE_NAME)
 DOCKER_REPO_FULL := $(DOCKER_REPO):$(IMAGE_TAG)
 
