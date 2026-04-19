@@ -2,49 +2,17 @@ return {
   {
     'kevinhwang91/nvim-ufo',
     dependencies = 'kevinhwang91/promise-async',
-    keys = {
-      {
-        'zR',
-        function()
-          require('ufo').openAllFolds()
-        end,
-        desc = 'Open all folds',
-      },
-      {
-        'zM',
-        function()
-          require('ufo').closeAllFolds()
-        end,
-        desc = 'Close all folds',
-      },
-      {
-        'zr',
-        function()
-          require('ufo').openFoldsExceptKinds(1)
-        end,
-        desc = 'Open folds except kinds',
-      },
-      {
-        'zm',
-        function()
-          require('ufo').closeFoldsWith(1)
-        end,
-        desc = 'Close folds with',
-      },
-      {
-        'K',
-        function()
-          local winid = require('ufo').peekFoldedLinesUnderCursor()
-          if not winid then
-            vim.lsp.buf.hover()
-          end
-        end,
-        desc = 'Hover or peek folded lines',
-      },
-    },
+    event = 'BufReadPost',
     config = function()
-      -- UFOセットアップ
-      require('ufo').setup {
+      -- Initial state: Fully expanded
+      vim.o.foldlevel = 99
+      vim.o.foldlevelstart = 99
+      vim.o.foldcolumn = '1'
+      vim.o.foldenable = true
+
+      local ufo = require 'ufo'
+
+      ufo.setup {
         provider_selector = function(_, _, _)
           return { 'lsp', 'indent' }
         end,
@@ -55,7 +23,6 @@ return {
           local targetWidth = width - sufWidth
           local curWidth = 0
 
-          -- 折りたたまれた行の文字を青にする
           for _, chunk in ipairs(virtText) do
             local chunkText = chunk[1]
             local chunkWidth = vim.fn.strdisplaywidth(chunkText)
@@ -69,15 +36,51 @@ return {
             curWidth = curWidth + chunkWidth
           end
 
-          -- 末尾サフィックスはオレンジ
           table.insert(newVirtText, { suffix, 'UfoFoldedEllipsis' })
           return newVirtText
         end,
       }
 
-      -- ハイライト設定
-      vim.api.nvim_set_hl(0, 'UfoFoldedBlue', { fg = '#00afff', bg = 'NONE' }) -- 折りたたみテキスト
-      vim.api.nvim_set_hl(0, 'UfoFoldedEllipsis', { fg = '#FFA500', bg = 'NONE' }) -- 末尾サフィックス
+      -- Highlight settings
+      vim.api.nvim_set_hl(0, 'UfoFoldedBlue', { fg = '#00afff', bg = 'none' })
+      vim.api.nvim_set_hl(0, 'UfoFoldedEllipsis', { fg = '#ffa500', bg = 'none' })
+
+      -- Keybindings
+      -- Reset all
+      vim.keymap.set('n', 'zR', ufo.openAllFolds, { desc = 'Open all folds' })
+      vim.keymap.set('n', 'zM', ufo.closeAllFolds, { desc = 'Close all folds' })
+
+      -- zr: Increase global fold level (Open everything one level deeper)
+      vim.keymap.set('n', 'zr', function()
+        -- Directly modify the foldlevel option
+        local level = vim.wo.foldlevel
+        if level < 20 then -- 20 is a practical max depth for most code
+          vim.wo.foldlevel = level + 1
+        end
+        print('Global Fold Level: ' .. vim.wo.foldlevel)
+      end, { desc = 'Increase global fold level' })
+
+      -- zm: Decrease global fold level (Close everything one level shallower)
+      vim.keymap.set('n', 'zm', function()
+        local level = vim.wo.foldlevel
+        -- If currently at 99, start from a sensible level like 1
+        if level >= 99 then
+          vim.wo.foldlevel = 1
+        elseif level > 0 then
+          vim.wo.foldlevel = level - 1
+        end
+        -- closeFoldsWith is the only way to force UFO to respect the new level globally
+        ufo.closeFoldsWith(vim.wo.foldlevel)
+        print('Global Fold Level: ' .. vim.wo.foldlevel)
+      end, { desc = 'Decrease global fold level' })
+
+      -- k: Peek folded lines or hover
+      vim.keymap.set('n', 'k', function()
+        local winid = ufo.peekfoldedlinesundercursor()
+        if not winid then
+          vim.lsp.buf.hover()
+        end
+      end, { desc = 'Hover or peek folded lines' })
     end,
   },
 }
