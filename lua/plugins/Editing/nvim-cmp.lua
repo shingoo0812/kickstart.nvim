@@ -24,10 +24,8 @@ return {
             paths = vim.fn.stdpath 'config' .. '/lua/snippets',
           }
 
-          -- 👇 VSCodeスニペット読み込み（超重要）
           require('luasnip.loaders.from_vscode').lazy_load()
 
-          -- 👇 React対応（これないと効かないことある）
           ls.filetype_extend('javascript', { 'javascriptreact' })
           ls.filetype_extend('typescript', { 'typescriptreact' })
         end,
@@ -80,20 +78,20 @@ return {
           ['<C-f>'] = cmp.mapping.scroll_docs(4),
           ['<C-y>'] = cmp.mapping.confirm { select = true },
 
-          -- 👇 Tabでスニペット展開もできるように改善
+          -- Tabキー: 補完メニュー表示時のみ次の項目選択、それ以外は通常のTab（インデント）
+
+          -- Tabキーの動作を修正：補完メニュー表示時のみ動作
           ['<Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
-              cmp.confirm { select = true }
-            elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
+              cmp.select_next_item()
             else
               fallback()
             end
           end, { 'i', 's' }),
 
           ['<S-Tab>'] = cmp.mapping(function(fallback)
-            if luasnip.jumpable(-1) then
-              luasnip.jump(-1)
+            if cmp.visible() then
+              cmp.select_prev_item()
             else
               fallback()
             end
