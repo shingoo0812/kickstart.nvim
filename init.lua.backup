@@ -48,16 +48,16 @@ vim.opt.rtp:prepend(lazypath)
 --
 --
 -- [[ Configure and install plugins ]]
--- Auto-detect subfolders within plugins folder
+-- pluginsフォルダ内のサブフォルダを自動検出
 local function get_plugin_imports()
   local plugins_path = vim.fn.stdpath 'config' .. '/lua/plugins'
   local imports = { { import = 'plugins' } }
 
-  -- Get directories within plugins folder
+  -- pluginsフォルダ内のディレクトリを取得
   local items = vim.fn.readdir(plugins_path)
   for _, item in ipairs(items) do
     local full_path = plugins_path .. '/' .. item
-    -- If directory, add to imports
+    -- ディレクトリの場合、importに追加
     if vim.fn.isdirectory(full_path) == 1 then
       table.insert(imports, { import = 'plugins.' .. item })
     end
@@ -148,7 +148,7 @@ local skip_files = {
   ['functions.lua'] = true,
 }
 
--- Function to recursively process files and directories
+-- ファイルとディレクトリを再帰的に処理する関数
 local function load_config_recursive(base_path, module_prefix)
   local files = vim.fn.readdir(base_path)
 
@@ -156,11 +156,11 @@ local function load_config_recursive(base_path, module_prefix)
     local full_path = base_path .. '/' .. file
 
     if vim.fn.isdirectory(full_path) == 1 then
-      -- If directory, process recursively
+      -- ディレクトリの場合、再帰的に処理
       local new_prefix = module_prefix .. file .. '.'
       load_config_recursive(full_path, new_prefix)
     else
-      -- If file, only process .lua files
+      -- ファイルの場合、.luaファイルのみ処理
       if file:match '%.lua$' and not skip_files[file] then
         local module_name = module_prefix .. file:gsub('%.lua$', '')
         local ok, result = pcall(require, module_name)
@@ -177,7 +177,7 @@ local function load_config_recursive(base_path, module_prefix)
   end
 end
 
--- Load config recursively
+-- 再帰的にconfigを読み込み
 load_config_recursive(config_path, 'config.')
 
 -- The line beneath this is called `modeline`. See `:help modeline`

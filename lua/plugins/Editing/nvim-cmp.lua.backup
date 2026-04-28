@@ -19,7 +19,7 @@ return {
           local ls = require 'luasnip'
           ls.config.setup {}
 
-          -- Custom snippets
+          -- 自作スニペット
           require('luasnip.loaders.from_lua').lazy_load {
             paths = vim.fn.stdpath 'config' .. '/lua/snippets',
           }
@@ -35,7 +35,7 @@ return {
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
 
-      -- Copilot core
+      -- Copilot 本体
       -- {
       --   'zbirenbaum/copilot.lua',
       --   cmd = 'Copilot',
@@ -48,7 +48,7 @@ return {
       --   end,
       -- },
 
-      -- Integrate Copilot with CMP
+      -- Copilot を CMP に統合
       -- {
       --   'zbirenbaum/copilot-cmp',
       --   after = { 'copilot.lua' },
@@ -78,12 +78,12 @@ return {
           ['<C-f>'] = cmp.mapping.scroll_docs(4),
           ['<C-y>'] = cmp.mapping.confirm { select = true },
 
-          -- Tab key: Confirm completion when menu is visible, otherwise regular Tab (indent)
+          -- Tabキー: 補完メニュー表示時は補完を確定、それ以外は通常のTab（インデント）
 
-          -- Modified Tab key behavior: Only active when completion menu is visible
+          -- Tabキーの動作を修正：補完メニュー表示時のみ動作
           ['<Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
-              -- When completion menu is visible, confirm the completion
+              -- 補完メニューが表示されている場合、補完を確定
               cmp.confirm { select = true }
             else
               fallback()
@@ -92,7 +92,7 @@ return {
 
           ['<S-Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
-              -- When completion menu is visible, select previous item
+              -- 補完メニューが表示されている場合、前の項目を選択
               cmp.select_prev_item { behavior = cmp.SelectBehavior.Select }
             else
               fallback()
