@@ -70,7 +70,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
     vim.keymap.set('n', '<leader>sb', builtin.buffers, { desc = '[S]earch [B]uffers' })
 
-    -- 現在のファイルが所属するプロジェクトのルートから検索
+    -- Search from the root of the project the current file belongs to
     vim.keymap.set('n', '<leader>sf', function()
       local root = vim.fs.root(0, { '.git', '.hg', '.svn' }) or vim.fn.expand '%:p:h'
       builtin.find_files {
@@ -149,7 +149,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
       builtin.find_files { cwd = vim.fn.stdpath 'config' }
     end, { desc = '[S]earch [N]eovim files' })
 
-    -- プロジェクトルート全体で検索
+    -- Search across entire project root
     vim.keymap.set('n', '<leader>sP', function()
       builtin.find_files()
     end, { desc = '[S]earch [P]roject files' })

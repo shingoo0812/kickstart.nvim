@@ -28,7 +28,7 @@ return {
       modes = {
         char = {
           enabled = true,
-          -- f/F/t/Tの機能強化
+          -- Enhanced f/F/t/T functionality
           keys = { 'f', 'F', 't', 'T' },
           jump_labels = true,
         },

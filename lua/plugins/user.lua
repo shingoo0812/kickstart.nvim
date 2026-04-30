@@ -69,7 +69,7 @@ return {
         dashboard.button('s', '🔧 Settings', ':e $MYVIMRC<CR>'),
         dashboard.button('q', '🚪 Quit Neovim', ':qa<CR>'),
       }
-      -- 設定をAlphaに適用
+      -- Apply configuration to Alpha
       alpha.setup(dashboard.config)
     end,
   },

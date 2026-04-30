@@ -1,4 +1,4 @@
--- jupytext - .ipynbファイルを.pyとして扱う
+-- jupytext - Treat .ipynb files as .py
 return {
   'GCBallesteros/jupytext.nvim',
   config = function()
@@ -8,27 +8,27 @@ return {
       force_ft = 'python',
     }
 
-    -- マークダウンを.ipynbに変換する関数
+    -- Function to convert markdown to .ipynb
     local function md_to_ipynb()
       local current_file = vim.fn.expand '%:p'
       local output_file = vim.fn.expand '%:p:r' .. '.ipynb'
 
-      -- ファイルタイプをチェック
+      -- Check file type
       if vim.bo.filetype ~= 'markdown' then
         vim.notify('This command only works with markdown files', vim.log.levels.ERROR)
         return
       end
 
-      -- jupytextで変換（kernelspecを明示的に設定）
+      -- Convert with jupytext (explicitly configure kernelspec)
       local cmd = string.format('jupytext --to notebook --set-kernel python3 "%s" -o "%s"', current_file, output_file)
       local result = vim.fn.system(cmd)
 
       if vim.v.shell_error == 0 then
         vim.notify('Converted to: ' .. output_file, vim.log.levels.INFO)
-        -- 変換したファイルを開くか聞く
+        -- Ask whether to open converted file
         local choice = vim.fn.confirm('Open the converted notebook?', '&Yes\n&No', 2)
         if choice == 1 then
-          -- 新しいバッファで開く（autocmdの問題を回避）
+          -- Open in new buffer (avoid autocmd issues)
           vim.schedule(function()
             vim.cmd('edit! ' .. vim.fn.fnameescape(output_file))
           end)
@@ -38,12 +38,12 @@ return {
       end
     end
 
-    -- .ipynbをマークダウンに変換する関数
+    -- Function to convert .ipynb to markdown
     local function ipynb_to_md()
       local current_file = vim.fn.expand '%:p'
       local output_file = vim.fn.expand '%:p:r' .. '.md'
 
-      -- jupytextで変換
+      -- Convert with jupytext
       local cmd = string.format('jupytext --to markdown "%s" -o "%s"', current_file, output_file)
       local result = vim.fn.system(cmd)
 
@@ -59,7 +59,7 @@ return {
         vim.notify('Conversion failed: ' .. result, vim.log.levels.ERROR)
       end
     end
-    -- キーマップ（markdownファイル用）
+    -- Keymaps (for markdown files)
     vim.api.nvim_create_autocmd('FileType', {
       pattern = 'markdown',
       callback = function()
@@ -73,11 +73,11 @@ return {
       end,
     })
 
-    -- キーマップ（ipynbファイル用）
+    -- Keymaps (for ipynb files)
     vim.api.nvim_create_autocmd('FileType', {
       pattern = 'python',
       callback = function()
-        -- ipynbとして開かれているpythonファイルかチェック
+        -- Check if it's a python file opened as ipynb
         if vim.fn.expand '%:e' == 'ipynb' then
           vim.keymap.set('n', '<leader>jm', ipynb_to_md, { buffer = true, desc = 'Convert to Markdown' })
         end

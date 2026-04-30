@@ -14,10 +14,10 @@ return {
     },
     config = function()
       require('strudel').setup {
-        -- 最小設定。ほぼデフォルトのままで動く。
+        -- Minimal configuration. Works almost as default.
         start_on_launch = true,
-        sync_cursor = true, -- カーソル同期（デフォルトON）
-        report_eval_errors = true, -- エラーを通知
+        sync_cursor = true, -- Cursor sync (default ON)
+        report_eval_errors = true, -- Notify errors
         update_on_save = true,
       }
     end,

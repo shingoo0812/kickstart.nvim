@@ -10,7 +10,7 @@ return {
 
     local keymap = vim.keymap.set
 
-    -- Add file to Harpoon list (末尾に追加)
+    -- Add file to Harpoon list (append to end)
     keymap('n', '<leader>ha', function()
       harpoon:list():add()
       vim.notify('Added to Harpoon: ' .. vim.fn.expand '%:t', vim.log.levels.INFO)
@@ -48,7 +48,7 @@ return {
       end)
     end, { desc = 'Toggle Harpoon menu' })
 
-    -- Quick jump to marked items (h1-4でジャンプ)
+    -- Quick jump to marked items (jump with h1-4)
 
     keymap('n', '<leader>hh1', function()
       harpoon:list():select(1)
@@ -66,7 +66,7 @@ return {
       harpoon:list():select(4)
     end, { desc = 'Jump to Harpoon mark 4' })
 
-    -- <leader>h1-4で特定の位置にマークをセット
+    -- Set mark at specific position with <leader>h1-4
     keymap('n', '<leader>h1', function()
       local list = harpoon:list()
       local current_file = vim.api.nvim_buf_get_name(0)

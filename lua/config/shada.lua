@@ -1,11 +1,11 @@
--- ShaDaの一時ファイルをクリアするコマンド
+-- Command to clear ShaDa temporary files
 vim.api.nvim_create_user_command('ClearShada', function()
   local shada_dir = vim.fn.stdpath 'data' .. '/shada'
 
-  -- 現在のShaDaを保存
+  -- Save current ShaDa
   vim.cmd 'wshada!'
 
-  -- 一時ファイルを削除
+  -- Delete temporary files
   local tmp_files = vim.fn.glob(shada_dir .. '/main.shada.tmp.*', false, true)
   local deleted = 0
 
@@ -24,7 +24,7 @@ vim.api.nvim_create_user_command('ClearShada', function()
   end
 end, { desc = 'Clear ShaDa temporary files' })
 
--- ShaDaを完全にリセットするコマンド
+-- Command to completely reset ShaDa
 vim.api.nvim_create_user_command('ResetShada', function()
   local shada_dir = vim.fn.stdpath 'data' .. '/shada'
   local shada_file = shada_dir .. '/main.shada'
@@ -41,12 +41,12 @@ vim.api.nvim_create_user_command('ResetShada', function()
   vim.notify('Restart Neovim to complete the reset', vim.log.levels.INFO)
 end, { desc = 'Reset ShaDa file (creates backup)' })
 
--- キーマップ
+-- Keymaps
 vim.keymap.set('n', '<leader><leader>s', '', { desc = 'Shada' })
 vim.keymap.set('n', '<leader><leader>sc', '<cmd>ClearShada<cr>', { desc = 'Clear ShaDa temp files' })
 vim.keymap.set('n', '<leader><leader>sr', '<cmd>ResetShada<cr>', { desc = 'Reset ShaDa' })
 
--- 起動時に一時ファイルが残っていたら自動削除
+-- Auto-delete temporary files on startup if they remain
 vim.api.nvim_create_autocmd('VimEnter', {
   callback = function()
     local shada_dir = vim.fn.stdpath 'data' .. '/shada'

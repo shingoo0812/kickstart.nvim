@@ -7,12 +7,12 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- [[Settings for UFO]]
-vim.o.foldenable = true -- 折りたたみを無効化
-vim.o.foldlevel = 99 -- 全展開状態に設定
-vim.o.foldlevelstart = 99 -- 起動時も全展開
-vim.o.foldmethod = 'expr' -- exprで折りたたみ
-vim.o.foldexpr = "v:lua.require('ufo').foldexpr()" -- UFOのfoldexprを使用
-vim.o.foldcolumn = '1' -- 左側に折りたたみ列表示
+vim.o.foldenable = true -- Disable folding
+vim.o.foldlevel = 99 -- Set to fully expanded state
+vim.o.foldlevelstart = 99 -- Fully expanded on startup too
+vim.o.foldmethod = 'expr' -- Folding with expr
+vim.o.foldexpr = "v:lua.require('ufo').foldexpr()" -- Use UFO's foldexpr
+vim.o.foldcolumn = '1' -- Show fold column on the left
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
@@ -33,7 +33,7 @@ vim.opt.mouse = 'a'
 
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
--- Vimwikiディレクトリ外のmarkdownファイルをvimwikiとして扱わないようにする
+-- Don't treat markdown files outside Vimwiki directory as vimwiki
 vim.g.vimwiki_global_ext = 0
 
 -- Enable break indent
@@ -89,13 +89,13 @@ vim.opt.tabstop = 4
 vim.opt.expandtab = true
 vim.opt.softtabstop = 4
 
--- Windows Terminal用の描画修正
+-- Fix rendering for Windows Terminal
 vim.opt.termguicolors = true
 vim.opt.lazyredraw = false
 
--- 未保存のバッファを隠すことを許可（バッファ切り替え時にエラーが出ない）
+-- Allow hiding unsaved buffers (no errors when switching buffers)
 vim.opt.hidden = true
--- 外部で変更されたファイルを自動で再読み込み
+-- Auto-reload files modified externally
 vim.opt.autoread = true
--- オプション: バッファ切り替え時に自動保存
+-- Option: Auto-save when switching buffers
 vim.opt.autowrite = true

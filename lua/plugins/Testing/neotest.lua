@@ -9,7 +9,7 @@ return {
       'haydenmeade/neotest-jest',
     },
     config = function()
-      -- OS 判定
+      -- OS detection
       local is_windows = vim.loop.os_uname().version:match 'Windows'
 
       -- Detect project root
@@ -28,7 +28,7 @@ return {
         return vim.fn.getcwd()
       end
 
-      -- venv 自動検出
+      -- Auto-detect venv
       local function find_venv_python()
         local root = find_project_root()
         local candidates
@@ -53,7 +53,7 @@ return {
         return 'python'
       end
 
-      -- Neotest 設定
+      -- Neotest Configuration
       local neotest = require 'neotest'
       neotest.setup {
         adapters = {

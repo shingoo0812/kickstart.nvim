@@ -83,13 +83,13 @@ return {
         end,
       })
 
-      -- LSP capabilities の設定
+      -- LSP capabilities configuration
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
       capabilities.textDocument.semanticTokens = nil
       capabilities.textDocument.codeLens = nil
 
-      -- サーバー設定
+      -- Server configuration
       local servers = {
         clangd = {},
         lua_ls = {
@@ -151,7 +151,7 @@ return {
         },
       }
 
-      -- QML言語サーバーの設定
+      -- QML language server configuration
       vim.api.nvim_create_autocmd('FileType', {
         pattern = { 'qml', 'qmltypes' },
         callback = function(ev)
@@ -187,7 +187,7 @@ return {
         },
       }
 
-      -- JavaScript / TypeScript (ts_ls: nvim-lspconfig での正式名)
+      -- JavaScript / TypeScript (ts_ls: official name in nvim-lspconfig)
       vim.lsp.config.ts_ls = {
         capabilities = capabilities,
         settings = {
@@ -227,7 +227,7 @@ return {
       }
       vim.lsp.enable 'eslint'
 
-      -- Clangd の個別設定
+      -- Clangd specific configuration
       vim.lsp.config.clangd = {
         cmd = { 'C:\\Program Files\\LLVM\\bin\\clangd.exe' },
         on_attach = function(client, bufnr)
@@ -257,7 +257,7 @@ return {
       }
       vim.lsp.enable 'glsl_analyzer'
 
-      -- GDScript LSP設定
+      -- GDScript LSPConfiguration
       local gdscript_timers = {}
 
       local function start_gdscript_client(bufnr, root_dir, capabilities)
@@ -370,7 +370,7 @@ return {
           end
 
           if vim.fn.filereadable(python_path) == 0 then
-            print('python実行ファイルが見つかりません:', python_path)
+            print('pythonExecuteFile not found:', python_path)
             return
           end
 

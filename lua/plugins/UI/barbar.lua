@@ -8,10 +8,10 @@ return {
   init = function()
     -- vim.g.barbar_auto_setup = false
 
-    -- LSPリクエストのキャンセルエラーを軽減
+    -- Mitigate LSP request cancel errors
     vim.api.nvim_create_autocmd('BufLeave', {
       callback = function()
-        -- バッファ切り替え時に少し待機してからLSP処理を行う
+        -- Wait a bit before LSP processing when switching buffers
         vim.defer_fn(function() end, 10)
       end,
     })

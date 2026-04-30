@@ -51,14 +51,14 @@ return { -- Highlight, edit, and navigate code
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
     config = function()
       require('treesitter-context').setup {
-        enable = true, -- デフォルトで有効
-        max_lines = 0, -- コンテキストを表示する最大行数、0 = 無制限
-        min_window_height = 0, -- 有効にする最低ウィンドウ高さ
-        line_numbers = true, -- 行番号を表示
-        multiline_threshold = 20, -- 複数行のコンテキストの最大行数
+        enable = true, -- Enabled by default
+        max_lines = 0, -- Max lines to show context, 0 = unlimited
+        min_window_height = 0, -- Minimum window height to enable
+        line_numbers = true, -- Show line numbers
+        multiline_threshold = 20, -- Maximum lines for multi-line context
         trim_scope = 'outer', -- outer/inner
         mode = 'cursor', -- 'cursor' or 'topline'
-        separator = nil, -- コンテキストとコードの間の区切り
+        separator = nil, -- Separator between context and code
       }
     end,
   },

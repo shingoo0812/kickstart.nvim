@@ -1,12 +1,12 @@
 return {
   'numToStr/Comment.nvim',
   config = function()
-    -- Comment.nvim をセットアップ
+    -- Setup Comment.nvim
     require('Comment').setup()
 
-    -- which-key をロード
+    -- Load which-key
     local wk = require 'which-key'
-    -- ✅ which-key v3: wk.add を使う
+    -- ✅ which-key v3: use wk.add
     wk.add {
       { '<C-_>', '<Plug>(comment_toggle_linewise_current)', desc = 'Comment', mode = 'n' },
       { '<C-_>', '<Plug>(comment_toggle_linewise_visual)', desc = 'Comment', mode = 'v' },

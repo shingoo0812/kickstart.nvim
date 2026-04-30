@@ -3,7 +3,7 @@ local project_root = fn.functions.utils.get_project_root
 return {
   'MagicDuck/grug-far.nvim',
   keys = {
-    -- ノーマルモード：通常検索
+    -- Normal mode: Regular search
     {
       '<leader>.',
       function() end,
@@ -11,7 +11,7 @@ return {
       mode = 'n',
     },
 
-    -- ノーマルモード：検索・置換 UI
+    -- Normal mode: Search & replace UI
     {
       '<leader>.r',
       function()
@@ -23,7 +23,7 @@ return {
       mode = 'n',
     },
 
-    -- ビジュアルモード：選択テキストを検索・置換
+    -- Visual mode: Search & replace selected text
     {
       '<leader>.v',
       function()
@@ -35,7 +35,7 @@ return {
       mode = 'v',
     },
 
-    -- ノーマルモード：カーソル下の単語を検索
+    -- Normal mode: Search word under cursor
     {
       '<leader>.w',
       function()

@@ -1,4 +1,4 @@
--- PlatformIOがインストールされていないため無効化
+-- Disabled because PlatformIO is not installed
 return {
   'anurag3301/nvim-platformio.lua',
   enabled = false,

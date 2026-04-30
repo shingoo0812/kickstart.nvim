@@ -19,15 +19,15 @@ return {
       else
         -- === ON ===
         vim.b.venn_enabled = true
-        vim.cmd 'setlocal ve=all' -- ← これが重要！（virtualedit 設定）
+        vim.cmd 'setlocal ve=all' -- ← This is important! (virtualedit setting)
 
-        -- ノーマルモードで線を引く
+        -- Draw lines in normal mode
         vim.keymap.set('n', 'J', '<C-v>j:VBox<CR>', { buffer = true })
         vim.keymap.set('n', 'K', '<C-v>k:VBox<CR>', { buffer = true })
         vim.keymap.set('n', 'L', '<C-v>l:VBox<CR>', { buffer = true })
         vim.keymap.set('n', 'H', '<C-v>h:VBox<CR>', { buffer = true })
 
-        -- ビジュアル選択 → V でボックスを描く（便利ショートカット）
+        -- Visual select → V to draw box (convenient shortcut)
         vim.keymap.set('v', 'V', ':VBox<CR>', { buffer = true })
       end
     end

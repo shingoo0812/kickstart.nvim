@@ -31,25 +31,25 @@ vim.keymap.set('t', 'jk', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 --  Try it with `yap` in normal mode
 --  See `:help vim.highlight.on_yank()`
 
--- :messages を現在のフォルダに保存する（Windows / Linux 両対応）
+-- Save :messages to current folder (Windows/Linux compatible)
 vim.keymap.set('n', '<leader><leader>m', function()
   local msgs = vim.fn.execute 'messages'
   local lines = vim.split(msgs, '\n')
 
-  -- OSに合わせてファイルパスを作成
-  local sep = package.config:sub(1, 1) -- Windowsなら "\"、Linuxなら "/"
+  -- Create file path according to OS
+  local sep = package.config:sub(1, 1) -- For Windows "\"、For Linux "/"
   local logfile = vim.fn.getcwd() .. sep .. 'messages.log'
 
-  -- 日時を区切りとして追加
+  -- Add date/time as separator
   table.insert(lines, 1, '==== ' .. os.date '%Y-%m-%d %H:%M:%S' .. ' ====')
 
-  -- ファイルに追記 ("a" フラグでappend)
+  -- Append to file (with "a" flag)
   vim.fn.writefile(lines, logfile, 'a')
 
   print('Saved :messages to ' .. logfile)
 end, { desc = 'Save :messages to file' })
 
--- ウィンドウ移動のキーマップ（再描画付き）
+-- Window navigation keymaps (with redraw)
 vim.keymap.set('n', '<C-h>', '<C-w>h<Cmd>redraw<CR>')
 vim.keymap.set('n', '<C-j>', '<C-w>j<Cmd>redraw<CR>')
 vim.keymap.set('n', '<C-k>', '<C-w>k<Cmd>redraw<CR>')
@@ -65,8 +65,8 @@ if vim.g.vscode then
   vim.keymap.set('v', 'd', '"_d')
   vim.keymap.set('v', '<C-z>', '^')
   vim.keymap.set('v', '<C-e>', '$h')
-  -- yとpのマッピングは削除（keybindings.jsonで処理）
-  -- VSCodeのキーバインドに任せる
+  -- Removed y and p mappings (handled in keybindings.json)
+  -- Leave to VSCode keybindings
 else
   vim.opt.clipboard = 'unnamedplus'
 end
@@ -135,10 +135,10 @@ wk.add {
       function()
         local current_path = vim.fn.expand '%:p:h'
 
-        -- neo-treeを強制的にロード
+        -- Force load neo-tree
         local ok, neotree_command = pcall(require, 'neo-tree.command')
         if not ok then
-          -- ロードできない場合はvimコマンドで試行
+          -- Try with vim command if load fails
           vim.cmd 'Neotree show'
           vim.schedule(function()
             vim.cmd('Neotree dir=' .. vim.fn.fnameescape(current_path))
@@ -146,7 +146,7 @@ wk.add {
           return
         end
 
-        -- Neotreeを開く/パスを変更
+        -- Open Neotree/modify path
         neotree_command.execute {
           action = 'show',
           dir = current_path,

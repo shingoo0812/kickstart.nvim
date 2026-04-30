@@ -15,13 +15,13 @@ return {
       },
     }
     vim.g.vimwiki_conceallevel = 2
-    -- vimwiki ファイルを markdown として扱う
+    -- Treat vimwiki files as markdown
     vim.api.nvim_create_autocmd('FileType', {
       pattern = 'vimwiki',
       callback = function()
         vim.bo.filetype = 'markdown'
         vim.g.vimwiki_table_mappings = 0
-        vim.wo.concealcursor = 'n' -- カーソル行では常に表示
+        vim.wo.concealcursor = 'n' -- Always display on cursor line
         vim.wo.wrap = false
       end,
     })

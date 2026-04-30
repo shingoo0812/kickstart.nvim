@@ -122,7 +122,7 @@ return {
       dapui.close()
     end
 
-    -- 出力イベントをキャプチャしてREPLに表示
+    -- Capture output events and display in REPL
     dap.listeners.after['event_output']['dapui_output'] = function(session, body)
       if body.category == 'stdout' or body.category == 'console' then
         vim.schedule(function()
@@ -132,7 +132,7 @@ return {
       end
     end
 
-    -- DAPUIウィンドウでqキーで閉じる
+    -- Close with q key in DAPUI window
     vim.api.nvim_create_autocmd('FileType', {
       pattern = 'dap-repl',
       callback = function()

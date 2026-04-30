@@ -2,14 +2,14 @@ return {
   'nosduco/remote-sshfs.nvim',
   dependencies = { 'nvim-telescope/telescope.nvim' },
   opts = {
-    -- SSHの接続設定
+    -- SSH connection configuration
     connections = {
-      -- 例: サーバー接続設定
+      -- Example: Server connection configuration
       ssh_configs = {
         vim.fn.expand '$HOME' .. '/.ssh/config',
-        -- 追加のSSH設定ファイルがあればここに追加
+        -- Add additional SSH config files here if available
       },
-      -- プリセット接続（オプション）
+      -- Preset connections (optional)
       -- my_server = {
       --   host = "example.com",
       --   username = "user",
@@ -17,12 +17,12 @@ return {
       --   remote_path = "/home/user/projects",
       -- },
     },
-    -- マウント設定
+    -- Mount configuration
     mounts = {
       base_dir = vim.fn.expand '$HOME' .. '/.sshfs/',
       unmount_on_exit = true,
     },
-    -- ハンドラー設定
+    -- Handler configuration
     handlers = {
       on_connect = {
         change_dir = true,
@@ -31,14 +31,14 @@ return {
         clean_mount_folders = false,
       },
     },
-    -- UI設定
+    -- UIConfiguration
     ui = {
       confirm = {
         connect = true,
         change_dir = false,
       },
     },
-    -- ログレベル
+    -- Log level
     log = {
       enable = false,
       truncate = false,

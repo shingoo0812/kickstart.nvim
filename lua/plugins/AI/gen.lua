@@ -2,14 +2,14 @@ return {
   {
     'David-Kunz/gen.nvim',
     opts = {
-      model = 'qwen2.5-coder:7b', -- 例: "mistral", "llama3", など
+      model = 'qwen2.5-coder:7b', -- Example: "mistral", "llama3", etc.
       host = 'localhost',
-      port = '11434', -- Ollama デフォルトポート
-      display_mode = 'float', -- 結果を浮動ウィンドウで表示
+      port = '11434', -- Ollama default port
+      display_mode = 'float', -- Display results in floating window
     },
     keys = {
       {
-        '<leader>o', -- 好きなキー
+        '<leader>o', -- Your preferred key
         ':Gen<CR>',
         desc = 'Generate with Ollama / gen.nvim',
       },

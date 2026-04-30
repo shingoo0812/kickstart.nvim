@@ -23,7 +23,7 @@ return {
           root = vim.fn.getcwd()
         end
 
-        -- LazyGit の UI をディレクトリ指定で呼び出す
+        -- Call LazyGit UI with directory specification
         require('lazygit').lazygit(root)
       end,
       desc = 'LazyGit (Open at Project Root)',

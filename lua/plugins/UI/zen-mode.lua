@@ -1,32 +1,32 @@
 return {
   {
     'folke/zen-mode.nvim',
-    cmd = 'ZenMode', -- :ZenMode で起動
+    cmd = 'ZenMode', -- Launch with :ZenMode
     config = function()
       require('zen-mode').setup {
         window = {
-          -- 幅を 80% に設定
+          -- Set width to 80%
           width = 0.8,
-          -- 高さを自動
+          -- Auto height
           height = 1,
-          -- 中央寄せ
+          -- Center
           options = {
-            number = true, -- 行番号表示
+            number = true, -- Show line numbers
             relativenumber = false,
             cursorline = true,
-            foldcolumn = '0', -- 折りたたみ列非表示
+            foldcolumn = '0', -- Hide fold column
             signcolumn = 'no',
           },
         },
         plugins = {
           options = {
-            -- Zen モード中に無効化したい機能
+            -- Features to disable during Zen mode
             ruler = false,
             showcmd = false,
           },
-          gitsigns = { enabled = true }, -- git 情報は残す
-          tmux = false, -- tmux 連携
-          twilight = { enabled = true }, -- twilight.nvim と併用する場合
+          gitsigns = { enabled = true }, -- Keep git info
+          tmux = false, -- tmux integration
+          twilight = { enabled = true }, -- When using with twilight.nvim
         },
         on_open = function()
           print 'Zen mode activated!'

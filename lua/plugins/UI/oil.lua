@@ -4,24 +4,24 @@ return {
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     config = function()
       require('oil').setup {
-        -- デフォルトのファイルエクスプローラーとして使用
+        -- Use as default file explorer
         default_file_explorer = true,
 
-        -- カラム表示の設定
+        -- Column display configuration
         columns = {
-          'icon', -- ファイルタイプアイコン
-          -- 'permissions', -- パーミッション表示（必要なら有効化）
-          -- 'size',        -- ファイルサイズ表示
-          -- 'mtime',       -- 最終更新日時
+          'icon', -- File type icon
+          -- 'permissions', -- Permission display (enable if needed)
+          -- 'size',        -- File size display
+          -- 'mtime',       -- Last modified date
         },
 
-        -- バッファ設定
+        -- Buffer configuration
         buf_options = {
           buflisted = false,
           bufhidden = 'hide',
         },
 
-        -- ウィンドウ設定
+        -- Window configuration
         win_options = {
           wrap = false,
           signcolumn = 'no',
@@ -33,31 +33,31 @@ return {
           concealcursor = 'nvic',
         },
 
-        -- 削除時の確認
-        delete_to_trash = false, -- trueにするとゴミ箱に移動（要trash-cli）
+        -- Confirm on delete
+        delete_to_trash = false, -- Set to true to move to trash (requires trash-cli)
         skip_confirm_for_simple_edits = true,
 
-        -- プロンプトの設定
+        -- Prompt configuration
         prompt_save_on_select_new_entry = true,
 
-        -- 隠しファイルの表示
+        -- Hidden file display
         view_options = {
-          show_hidden = true, -- デフォルトで隠しファイル表示
+          show_hidden = true, -- Show hidden files by default
           -- is_hidden_file = function(name, bufnr)
-          --   -- .git/などは常に隠す
+          --   -- Always hide .git/ etc.
           --   return vim.startswith(name, '.')
           -- end,
           -- is_always_hidden = function(name, bufnr)
-          --   -- node_modules, __pycache__などは常に隠す
+          --   -- Always hide node_modules, __pycache__ etc.
           --   return name == '..' or name == 'node_modules' or name == '__pycache__'
           -- end,
           -- sort = {
-          --   { 'type', 'asc' }, -- ディレクトリを先に
-          --   { 'name', 'asc' }, -- 名前順
+          --   { 'type', 'asc' }, -- Directories first
+          --   { 'name', 'asc' }, -- By name
           -- },
         },
 
-        -- フロートウィンドウ設定（oil.nvimをフロートで開く場合）
+        -- Float window configuration (when opening oil.nvim as float)
         float = {
           padding = 2,
           max_width = 90,
@@ -68,7 +68,7 @@ return {
           },
         },
 
-        -- プレビューウィンドウ設定
+        -- PreviewWindow configuration
         preview = {
           max_width = 0.9,
           min_width = { 40, 0.4 },
@@ -82,7 +82,7 @@ return {
           },
         },
 
-        -- プログレス表示
+        -- Progress display
         progress = {
           max_width = 0.9,
           min_width = { 40, 0.4 },
@@ -98,11 +98,11 @@ return {
         },
       }
 
-      -- キーマップ設定
+      -- KeymapsConfiguration
       vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
       vim.keymap.set('n', '<leader>-', '<CMD>Oil --float<CR>', { desc = 'Open parent directory in float' })
 
-      -- oil.nvim内でのカスタムキーマップ
+      -- Custom keymaps within oil.nvim
       vim.api.nvim_create_autocmd('FileType', {
         pattern = 'oil',
         callback = function()

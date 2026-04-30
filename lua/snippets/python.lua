@@ -7,7 +7,7 @@ local rep = require('luasnip.extras').rep
 
 return {
 
-  -- main 関数テンプレート
+  -- main function template
   s(
     'main',
     fmt(
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     )
   ),
 
-  -- ファイル読み込みテンプレート
+  -- File load template
   s(
     'openfile',
     fmt(
@@ -32,17 +32,17 @@ with open("{}", "{}") as {}:
     {}
 ]],
       {
-        i(1, 'filename.txt'), -- ファイル名
-        i(2, 'r'), -- モード
-        i(3, 'f'), -- ファイルオブジェクト
-        i(4, '_file'), -- 読み込む内容を格納
-        rep(3), -- f.read() の f と同じ
-        i(5, 'pass'), -- 任意の処理
+        i(1, 'filename.txt'), -- Filename
+        i(2, 'r'), -- Mode
+        i(3, 'f'), -- File object
+        i(4, '_file'), -- Store content to read
+        rep(3), -- Same f as in f.read()
+        i(5, 'pass'), -- Optional processing
       }
     )
   ),
 
-  -- ファイル書き込みテンプレート
+  -- File write template
   s(
     'writefile',
     fmt(
@@ -62,7 +62,7 @@ with open("{}", "{}") as {}:
     )
   ),
 
-  -- JSON 読み込み
+  -- JSON Load
   s(
     'jsonload',
     fmt(
@@ -84,7 +84,7 @@ with open("{}", "{}") as {}:
     )
   ),
 
-  -- JSON 書き込み
+  -- JSON write
   s(
     'jsondump',
     fmt(
@@ -99,7 +99,7 @@ with open("{}", "{}") as {}:
         i(1, 'data.json'),
         i(2, 'w'),
         i(3, 'f'),
-        i(4, 'data'), -- 書き込むデータ
+        i(4, 'data'), -- Data to write
         rep(3),
         i(5, '4'), -- indent
         i(6, 'pass'),
@@ -107,7 +107,7 @@ with open("{}", "{}") as {}:
     )
   ),
 
-  -- CSV 読み込み
+  -- CSV Load
   s(
     'csvread',
     fmt(
@@ -130,7 +130,7 @@ with open("{}", "{}") as {}:
     )
   ),
 
-  -- CSV 書き込み
+  -- CSV write
   s(
     'csvwrite',
     fmt(
@@ -153,7 +153,7 @@ with open("{}", "{}", newline="") as {}:
     )
   ),
 
-  -- Python クラス作成スニペット
+  -- Python class creation snippet
   s(
     'class',
     fmt(
@@ -169,17 +169,17 @@ class {}({}):
     {}
 ]],
       {
-        i(1, 'MyClass'), -- クラス名
-        i(2, 'object'), -- 継承クラス
-        i(3, 'クラス説明'), -- docstring
-        i(4, 'arg1'), -- __init__ の引数
-        i(5, 'self.arg1 = arg1'), -- __init__ 内の処理
-        i(6, 'pass'), -- __init__ の残り処理
-        i(7, 'def method(self):\n        pass'), -- メソッド追加用
+        i(1, 'MyClass'), -- Class name
+        i(2, 'object'), -- Parent class
+        i(3, 'Class Description'), -- docstring
+        i(4, 'arg1'), -- __init__ argument
+        i(5, 'self.arg1 = arg1'), -- Processing in __init__
+        i(6, 'pass'), -- Remaining __init__ processing
+        i(7, 'def method(self):\n        pass'), -- For adding methods
       }
     )
   ),
-  -- PySide6 アプリ起動スニペット
+  -- PySide6 app launch snippet
   s(
     'pyside',
     fmt(
@@ -197,9 +197,9 @@ class {}({}):
   app.exec()
   ]],
       {
-        i(1, 'widget'), -- モジュール名
-        i(2, 'Widget'), -- クラス名
-        i(3, 'Widget'), -- インスタンス生成クラス
+        i(1, 'widget'), -- Module name
+        i(2, 'Widget'), -- Class name
+        i(3, 'Widget'), -- Instance creation class
       }
     )
   ),

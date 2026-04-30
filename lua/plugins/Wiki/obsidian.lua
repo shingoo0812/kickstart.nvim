@@ -10,35 +10,35 @@ return {
 
   opts = {
     workspaces = {
-      -- ★ あなたのVaultのパスを書く場所
+      -- ★ Place to write your Vault path
       {
         name = 'notes',
         path = 'F:/Documents/ObsidianVault',
       },
     },
 
-    -- デイリーノート
+    -- Daily notes
     daily_notes = {
       folder = 'daily',
       template = 'daily.md',
     },
 
-    -- 補完（nvim-cmp）
+    -- Completion（nvim-cmp）
     completion = {
-      nvim_cmp = true, -- ★ nvim-cmp を有効化！
+      nvim_cmp = true, -- ★ Enable nvim-cmp!
       min_chars = 2,
     },
 
-    -- UI設定
+    -- UIConfiguration
     ui = { enable = true },
 
-    -- note ID生成（好きに変更可能）
+    -- Note ID generation (can modify as desired)
     note_id_func = function(title)
       return title:gsub(' ', '-'):lower()
     end,
   },
 
-  -- キーマッピング
+  -- Key mapping
   keys = {
     { '<leader><leader>o', '', desc = 'Obsidian' },
     { '<leader><leader>oo', '<cmd>ObsidianOpen<CR>', desc = 'Obsidian: Open note' },

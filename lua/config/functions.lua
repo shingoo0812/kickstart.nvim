@@ -4,7 +4,7 @@ local M = {}
 -- Functions
 ----------------------------------------------
 M.functions = {
-  -- 汎用ユーティリティ系
+  -- General utilities
   utils = {
     -- Save Vim messages to a file
     save_message = function(filename)
@@ -27,9 +27,9 @@ M.functions = {
       return 'test'
     end,
 
-    -- TODO: NEOVIMで対応している箇所を置き換えする
+    -- TODO: Replace with Neovim-native functionality
     -- Get Git root directory or current file's directory
-    -- プロジェクトルートを検出する関数
+    -- Function to detect project root
     get_project_root = function()
       local root_patterns = { '.git', 'package.json', 'Cargo.toml', 'go.mod', 'pyproject.toml' }
       local current_file = vim.fn.expand '%:p:h'
@@ -48,7 +48,7 @@ M.functions = {
 
       return current_file
     end,
-    -- TODO: NEOVIMで対応している箇所を置き換えする
+    -- TODO: Replace with Neovim-native functionality
     -- OS detection
     detect_os = function()
       local has = vim.fn.has
@@ -70,7 +70,7 @@ M.functions = {
     find_venv_root = function(path)
       local utils = M.functions.utils
 
-      -- path がフォルダかファイルか判定して正しく処理
+      -- Determine if path is folder or file and process correctly
       local current
       if vim.fn.isdirectory(path) == 1 then
         current = path
@@ -99,7 +99,7 @@ M.functions = {
     -- More utility functions can be added here
   },
 
-  -- LSP系
+  -- LSP related
   lsp = {
     check_status = function()
       local clients = vim.lsp.get_clients()
@@ -131,7 +131,7 @@ M.functions = {
     -- More LSP-related functions can be added here
   },
 
-  -- Unity/C#系
+  -- Unity/C# related
   unity = {
     modify_csproj = function()
       if vim.fn.has 'win32' == 1 then
@@ -157,7 +157,7 @@ M.functions = {
 -- Commands
 ----------------------------------------------
 M.commands = {
-  -- ユーティリティ系
+  -- Utilities
   {
     name = 'MsgLog',
     func = function(opts)
@@ -184,7 +184,7 @@ M.commands = {
     end,
     desc = 'Get the project root directory',
   },
-  -- LSP系
+  -- LSP related
   {
     name = 'LspStatus',
     func = M.functions.lsp.check_status,
@@ -196,14 +196,14 @@ M.commands = {
     desc = 'Debug LSP information for current buffer',
   },
 
-  -- Unity/C#系
+  -- Unity/C# related
   {
     name = 'ModifyCSProjFile',
     func = M.functions.unity.modify_csproj,
     desc = 'Fix C# project paths for WSL/Unix',
   },
 
-  -- テスト用
+  -- For testing
   {
     name = 'TestCommand',
     func = function()

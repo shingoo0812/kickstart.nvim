@@ -5,13 +5,13 @@ local M = {}
 local func = require 'config.functions'
 local find_venv_root = func.functions.utils.find_venv_root
 
--- 仮想環境のキャッシュ（ファイルパス → venvルートのマッピング）
+-- Virtual environment cache (FilePath → venv root mapping)
 local venv_cache = {}
 
--- 現在アクティブなPyrightのルート
+-- Currently active Pyright root
 local current_pyright_root = nil
 
--- デバウンス用のタイマー
+-- Timer for debouncing
 local restart_timer = nil
 
 -----------------------------------------------------
@@ -28,40 +28,40 @@ M.autocmds = {
 
       -- vim.notify('## BufEnter: ' .. current_file, vim.log.levels.DEBUG)
 
-      -- 特殊なバッファタイプを除外
+      -- Exclude special buffer types
       local buftype = vim.bo[current_buf].buftype
       if buftype ~= '' then
         return
       end
 
-      -- ファイル名が空の場合は除外
+      -- Exclude if filename is empty
       if current_file == '' then
         return
       end
 
-      -- Pythonファイルかどうかを確認
+      -- Check if it's a Python file
       if vim.bo[current_buf].filetype ~= 'python' then
         return
       end
 
-      -- ファイルが実際に存在するか確認
+      -- Check if file actually exists
       if vim.fn.filereadable(current_file) ~= 1 then
         return
       end
 
-      -- キャッシュをチェック
+      -- Check cache
       local cached_root = venv_cache[current_file]
       local new_root
 
       if cached_root then
-        -- キャッシュヒット
+        -- Cache hit
         new_root = cached_root
         -- vim.notify('Cache hit: ' .. new_root, vim.log.levels.DEBUG)
       else
-        -- キャッシュミス、新規検索
+        -- Cache miss, new search
         new_root = find_venv_root(current_file)
         if new_root then
-          -- キャッシュに保存
+          -- Save to cache
           venv_cache[current_file] = new_root
           -- vim.notify('Cache miss, found: ' .. new_root, vim.log.levels.DEBUG)
         end
@@ -71,7 +71,7 @@ M.autocmds = {
         return
       end
 
-      -- 現在のPyrightルートと同じ場合はスキップ
+      -- Skip if same as current Pyright root
       if current_pyright_root == new_root then
         -- vim.notify('Skipping: same venv root as current Pyright', vim.log.levels.DEBUG)
         return
@@ -79,7 +79,7 @@ M.autocmds = {
 
       local clients = vim.lsp.get_clients { bufnr = current_buf, name = 'pyright' }
 
-      -- クライアントがない場合は起動
+      -- Launch if no client exists
       if #clients == 0 then
         vim.notify('Starting Pyright with root: ' .. new_root, vim.log.levels.INFO)
         current_pyright_root = new_root
@@ -87,7 +87,7 @@ M.autocmds = {
         return
       end
 
-      -- いずれかのクライアントが異なるルートを持っているか確認
+      -- Check if any client has a different root
       local needs_restart = false
       for _, client in ipairs(clients) do
         local current_root = client.config.root_dir
@@ -102,24 +102,24 @@ M.autocmds = {
         return
       end
 
-      -- 既存のタイマーをキャンセル（連続したBufEnterをデバウンス）
+      -- Cancel existing timer (debounce consecutive BufEnter)
       if restart_timer then
         vim.fn.timer_stop(restart_timer)
       end
 
-      -- 通知
+      -- Notification
       vim.notify('Pyright: Switching to ' .. new_root, vim.log.levels.INFO)
 
-      -- すべてのPyrightクライアントを停止
+      -- Stop all Pyright clients
       for _, client in ipairs(clients) do
         vim.lsp.stop_client(client.id, true)
       end
 
-      -- 少し待ってから再起動
+      -- Wait a bit before restarting
       restart_timer = vim.fn.timer_start(500, function()
-        -- 新しいルートで再起動
+        -- Restart with new root
         vim.cmd 'LspStart pyright'
-        -- 現在のルートを更新
+        -- Update current root
         current_pyright_root = new_root
         restart_timer = nil
       end)

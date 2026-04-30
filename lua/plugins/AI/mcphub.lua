@@ -9,13 +9,13 @@ return {
       -- Windows
       cmd = 'C:/Users/shing/AppData/Roaming/npm/mcp-hub.cmd'
     else
-      -- Linux/macOS - npm global binのパスを確認
+      -- Linux/macOS - Check npm global bin path
       local home = vim.fn.expand '~'
       local npm_bin = home .. '/.npm-global/bin/mcp-hub'
       if vim.fn.executable(npm_bin) == 1 then
         cmd = npm_bin
       else
-        cmd = 'mcp-hub' -- PATHから検索
+        cmd = 'mcp-hub' -- Search from PATH
       end
     end
     return {

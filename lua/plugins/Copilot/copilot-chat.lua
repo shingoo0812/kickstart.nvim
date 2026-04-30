@@ -45,7 +45,7 @@ return {
         normal = 'gy',
       },
       show_diff = {
-        normal = 'gd', -- CopilotChat内でのgdマッピング
+        normal = 'gd', -- gd mapping within CopilotChat
       },
       show_system_prompt = {
         normal = 'gp',
@@ -59,15 +59,15 @@ return {
     local chat = require 'CopilotChat'
     chat.setup(opts)
 
-    -- グローバルなgdマッピング（通常のバッファ用）
+    -- Global gd mapping (for normal buffers)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { noremap = true, silent = true })
 
-    -- CopilotChatバッファが開かれた時の処理
+    -- Processing when CopilotChat buffer is opened
     vim.api.nvim_create_autocmd('FileType', {
       pattern = 'copilot-chat',
       callback = function(ev)
-        -- このバッファ内では既にCopilotChatのmappingsが適用されているため
-        -- 追加の設定は不要ですが、必要に応じてカスタマイズ可能
+        -- CopilotChat mappings are already applied in this buffer
+        -- No additional configuration needed, but can be customized if needed
       end,
     })
   end,
