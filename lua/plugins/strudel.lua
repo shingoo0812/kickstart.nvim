@@ -1,25 +1,16 @@
-return {
-  {
-    'gruvw/strudel.nvim',
-    build = 'npm ci',
-    keys = {
-      { '<leader><leader>S', '', desc = 'Strudel' },
-      { '<leader><leader>Sl', '<cmd>StrudelLaunch<cr>', desc = 'Launch Strudel' },
-      { '<leader><leader>Sq', '<cmd>StrudelQuit<cr>', desc = 'Quit Strudel' },
-      { '<leader><leader>St', '<cmd>StrudelToggle<cr>', desc = 'Toggle Strudel' },
-      { '<leader><leader>Su', '<cmd>StrudelUpdate<cr>', desc = 'Update Strudel' },
-      { '<leader><leader>Ss', '<cmd>StrudelStop<cr>', desc = 'Stop Strudel' },
-      { '<leader><leader>Sb', '<cmd>StrudelSetBuffer<cr>', desc = 'Set Buffer Strudel' },
-      { '<leader><leader>Se', '<cmd>StrudelExecute<cr>', desc = 'Execute Strudel' },
-    },
-    config = function()
-      require('strudel').setup {
-        -- Minimal configuration. Works almost as default.
-        start_on_launch = true,
-        sync_cursor = true, -- Cursor sync (default ON)
-        report_eval_errors = true, -- Notify errors
-        update_on_save = true,
-      }
-    end,
-  },
+-- Note: strudel.nvim requires 'npm ci' build step — run manually after install
+require('strudel').setup {
+  start_on_launch = true,
+  sync_cursor = true,
+  report_eval_errors = true,
+  update_on_save = true,
 }
+
+vim.keymap.set('n', '<leader><leader>S', '', { desc = 'Strudel' })
+vim.keymap.set('n', '<leader><leader>Sl', '<cmd>StrudelLaunch<cr>', { desc = 'Launch Strudel' })
+vim.keymap.set('n', '<leader><leader>Sq', '<cmd>StrudelQuit<cr>', { desc = 'Quit Strudel' })
+vim.keymap.set('n', '<leader><leader>St', '<cmd>StrudelToggle<cr>', { desc = 'Toggle Strudel' })
+vim.keymap.set('n', '<leader><leader>Su', '<cmd>StrudelUpdate<cr>', { desc = 'Update Strudel' })
+vim.keymap.set('n', '<leader><leader>Ss', '<cmd>StrudelStop<cr>', { desc = 'Stop Strudel' })
+vim.keymap.set('n', '<leader><leader>Sb', '<cmd>StrudelSetBuffer<cr>', { desc = 'Set Buffer Strudel' })
+vim.keymap.set('n', '<leader><leader>Se', '<cmd>StrudelExecute<cr>', { desc = 'Execute Strudel' })

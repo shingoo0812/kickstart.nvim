@@ -1,3 +1,1 @@
-return {
-  'lambdalisue/vim-suda',
-}
+-- vim-suda: no configuration needed

@@ -32,132 +32,172 @@ vim.filetype.add({
   }
 })
 
--- [[ Install `lazy.nvim` plugin manager ]]
---    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
-local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
----@diagnostic disable-next-line: undefined-field
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = 'https://github.com/folke/lazy.nvim.git'
-  local out = vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
-  if vim.v.shell_error ~= 0 then
-    error('Error cloning lazy.nvim:\n' .. out)
-  end
-end ---@diagnostic disable-next-line: undefined-field
-vim.opt.rtp:prepend(lazypath)
+-- [[ Install plugins via vim.pack (Neovim 0.12 built-in) ]]
+vim.pack.add({
+  -- Core dependencies (loaded first)
+  'https://github.com/nvim-lua/plenary.nvim',
+  'https://github.com/nvim-tree/nvim-web-devicons',
+  'https://github.com/MunifTanjim/nui.nvim',
+  'https://github.com/folke/snacks.nvim',
+  'https://github.com/nvim-lualine/lualine.nvim',
+  'https://github.com/ibhagwan/fzf-lua',
+  'https://github.com/lukas-reineke/indent-blankline.nvim',
+  'https://github.com/nvim-tree/nvim-tree.lua',
 
--- [[ Configure and install plugins ]]
---
---  To check the current status of your plugins, run
---    :Lazy
---
---  You can press `?` in this menu for help. Use `:q` to close the window
---
---  To update plugins you can run
---    :Lazy update
---
---
--- [[ Configure and install plugins ]]
--- Auto-detect subfolders within plugins folder
-local function get_plugin_imports()
-  local plugins_path = vim.fn.stdpath 'config' .. '/lua/plugins'
-  local imports = { { import = 'plugins' } }
+  -- Treesitter (note: run :TSUpdate manually after first install)
+  'https://github.com/nvim-treesitter/nvim-treesitter',
+  'https://github.com/nvim-treesitter/nvim-treesitter-context',
 
-  -- Get directories within plugins folder
-  local items = vim.fn.readdir(plugins_path)
+  -- Theme
+  'https://github.com/neanias/everforest-nvim',
+  'https://github.com/sainnhe/gruvbox-material',
+
+  -- UI
+  'https://github.com/folke/which-key.nvim',
+  'https://github.com/nvim-neo-tree/neo-tree.nvim',
+  { src = 'https://github.com/s1n7ax/nvim-window-picker', version = 'v2.4.0' },
+  { src = 'https://github.com/romgrk/barbar.nvim', version = 'v1.9.1' },
+  'https://github.com/lewis6991/gitsigns.nvim',
+  'https://github.com/folke/trouble.nvim',
+  'https://github.com/Bekaboo/dropbar.nvim',
+  'https://github.com/nvim-telescope/telescope-fzf-native.nvim',
+  'https://github.com/shellRaining/hlchunk.nvim',
+  'https://github.com/rcarriga/nvim-notify',
+  'https://github.com/stevearc/oil.nvim',
+  'https://github.com/HiPhish/rainbow-delimiters.nvim',
+  'https://github.com/bassamsdata/namu.nvim',
+  'https://github.com/eero-lehtinen/oklch-color-picker.nvim',
+  'https://github.com/nosduco/remote-sshfs.nvim',
+  'https://github.com/folke/zen-mode.nvim',
+
+  -- Completion
+  'https://github.com/hrsh7th/nvim-cmp',
+  'https://github.com/L3MON4D3/LuaSnip',
+  'https://github.com/rafamadriz/friendly-snippets',
+  'https://github.com/saadparwaiz1/cmp_luasnip',
+  'https://github.com/hrsh7th/cmp-nvim-lsp',
+  'https://github.com/hrsh7th/cmp-path',
+
+  -- Editing
+  'https://github.com/kevinhwang91/nvim-ufo',
+  'https://github.com/kevinhwang91/promise-async',
+  'https://github.com/echasnovski/mini.nvim',
+  'https://github.com/folke/flash.nvim',
+  'https://github.com/numToStr/Comment.nvim',
+  'https://github.com/windwp/nvim-autopairs',
+  'https://github.com/rmagatti/auto-session',
+  'https://github.com/chentoast/marks.nvim',
+  'https://github.com/rainbowhxch/accelerated-jk.nvim',
+  'https://github.com/sphamba/smear-cursor.nvim',
+  'https://github.com/mg979/vim-visual-multi',
+  'https://github.com/junegunn/vim-easy-align',
+  { src = 'https://github.com/benlubas/molten-nvim', version = 'v1.9.2' },
+  'https://github.com/jbyuki/venn.nvim',
+  'https://github.com/GCBallesteros/jupytext.nvim',
+  'https://github.com/folke/noice.nvim',
+
+  -- LSP & Tools
+  'https://github.com/neovim/nvim-lspconfig',
+  'https://github.com/williamboman/mason.nvim',
+  'https://github.com/williamboman/mason-lspconfig.nvim',
+  'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim',
+  'https://github.com/rhysd/vim-clang-format',
+  'https://github.com/Decodetalkers/csharpls-extended-lsp.nvim',
+  'https://github.com/j-hui/fidget.nvim',
+  'https://github.com/stevearc/conform.nvim',
+  'https://github.com/dnlhc/glance.nvim',
+  'https://github.com/danymat/neogen',
+  'https://github.com/nvimtools/none-ls.nvim',
+  'https://github.com/antosha417/nvim-lsp-file-operations',
+  'https://github.com/rachartier/tiny-inline-diagnostic.nvim',
+
+  -- Git
+  'https://github.com/kdheepak/lazygit.nvim',
+
+  -- Search
+  { src = 'https://github.com/nvim-telescope/telescope.nvim', version = '0.1.x' },
+  'https://github.com/nvim-telescope/telescope-ui-select.nvim',
+  'https://github.com/MagicDuck/grug-far.nvim',
+
+  -- Testing
+  'https://github.com/nvim-neotest/neotest',
+  'https://github.com/antoinemadec/FixCursorHold.nvim',
+  'https://github.com/nvim-neotest/neotest-python',
+  'https://github.com/haydenmeade/neotest-jest',
+  'https://github.com/mfussenegger/nvim-dap',
+  'https://github.com/rcarriga/nvim-dap-ui',
+  'https://github.com/nvim-neotest/nvim-nio',
+  'https://github.com/jay-babu/mason-nvim-dap.nvim',
+  'https://github.com/leoluz/nvim-dap-go',
+  'https://github.com/mfussenegger/nvim-dap-python',
+
+  -- AI
+  'https://github.com/coder/claudecode.nvim',
+  { src = 'https://github.com/olimorris/codecompanion.nvim', version = 'v17.33.0' },
+  'https://github.com/David-Kunz/gen.nvim',
+  'https://github.com/ravitemer/mcphub.nvim',
+
+  -- Wiki
+  'https://github.com/OXY2DEV/markview.nvim',
+  'https://github.com/epwalsh/obsidian.nvim',
+  'https://github.com/vimwiki/vimwiki',
+
+  -- Misc
+  'https://github.com/kalvinpearce/ShaderHighlight',
+  'https://github.com/lambdalisue/vim-suda',
+  'https://github.com/tpope/vim-unimpaired',
+  'https://github.com/folke/persistence.nvim',
+  'https://github.com/mistweaverco/kulala.nvim',
+  'https://github.com/potamides/pantran.nvim',
+  'https://github.com/folke/todo-comments.nvim',
+  'https://github.com/EvWilson/spelunk.nvim',
+  'https://github.com/akinsho/toggleterm.nvim',
+  'https://github.com/uga-rosa/translate.nvim',
+  { src = 'https://github.com/ThePrimeagen/harpoon', version = 'harpoon2' },
+  'https://github.com/gruvw/strudel.nvim',
+  'https://github.com/andweeb/presence.nvim',
+  'https://github.com/ray-x/lsp_signature.nvim',
+  'https://github.com/goolord/alpha-nvim',
+  'https://github.com/tpope/vim-dadbod',
+  'https://github.com/kristijanhusak/vim-dadbod-ui',
+  'https://github.com/kristijanhusak/vim-dadbod-completion',
+})
+
+-- Run build steps after plugin install/update
+vim.api.nvim_create_autocmd('PackChanged', {
+  callback = function()
+    pcall(vim.cmd, 'TSUpdate')
+    pcall(vim.cmd, 'UpdateRemotePlugins')
+  end,
+})
+
+-- [[ Load plugin configurations ]]
+local function load_plugin_configs(base_path, prefix)
+  local items = vim.fn.readdir(base_path)
+  table.sort(items)
   for _, item in ipairs(items) do
-    local full_path = plugins_path .. '/' .. item
-    -- If directory, add to imports
+    local full_path = base_path .. '/' .. item
     if vim.fn.isdirectory(full_path) == 1 then
-      table.insert(imports, { import = 'plugins.' .. item })
+      load_plugin_configs(full_path, prefix .. item .. '.')
+    elseif item:match('%.lua$') then
+      local module = prefix .. item:gsub('%.lua$', '')
+      local ok, err = pcall(require, module)
+      if not ok then
+        vim.notify('Error loading plugin config ' .. module .. ': ' .. tostring(err), vim.log.levels.ERROR)
+      end
     end
   end
-
-  return imports
 end
 
-require('lazy').setup({
-  get_plugin_imports(),
-  -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-  -- {
-  --   import = 'plugins',
-  -- },
+load_plugin_configs(vim.fn.stdpath('config') .. '/lua/plugins', 'plugins.')
 
-  -- NOTE: Plugins can also be added by using a table,
-  -- with the first argument being the link and the following
-  -- keys can be used to configure plugin behavior/loading/etc.
-  --
-  -- Use `opts = {}` to force a plugin to be loaded.
-  --
-
-  -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
-  --
-  -- This is often very useful to both group configuration, as well as handle
-  -- lazy loading plugins that don't need to be loaded immediately at startup.
-  --
-  -- For example, in the following configuration, we use:
-  --  event = 'VimEnter'
-  --
-  -- which loads which-key before all the UI elements are loaded. Events can be
-  -- normal autocommands events (`:help autocmd-events`).
-  --
-  -- Then, because we use the `config` key, the configuration only runs
-  -- after the plugin has been loaded:
-  --  config = function() ... end
-
-  -- NOTE: Plugins can specify dependencies.
-  --
-  -- The dependencies are proper plugin specifications as well - anything
-  -- you do for a plugin at the top level, you can do for a dependency.
-  --
-  -- Use the `dependencies` key to specify the dependencies of a particular plugin
-
-  -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
-  -- init.lua. If you want these files, they are in the repository, so you can just download them and
-  -- place them in the correct locations.
-
-  -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
-  --
-  --  Here are some example plugins that I've included in the Kickstart repository.
-  --  Uncomment any of the lines below to enable them (you will need to restart nvim).
-  --
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    This is the easiest way to modularize your config.
-  --
-  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
-}, {
-  ui = {
-    -- If you are using a Nerd Font: set icons to an empty table which will use the
-    -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
-    icons = vim.g.have_nerd_font and {} or {
-      cmd = '⌘',
-      config = '🛠',
-      event = '📅',
-      ft = '📂',
-      init = '⚙',
-      keys = '🗝',
-      plugin = '🔌',
-      runtime = '💻',
-      require = '🌙',
-      source = '📄',
-      start = '🚀',
-      task = '📌',
-      lazy = '💤 ',
-    },
-  },
-})
 -- [[Read Configuration folders(./lua/config/*.lua)]]
 local config_path = vim.fn.stdpath 'config' .. '/lua/config'
--- Manually loaded files (before Lazy)
 local skip_files = {
   ['init.lua'] = true,
   ['functions.lua'] = true,
 }
 
--- Function to recursively process files and directories
 local function load_config_recursive(base_path, module_prefix)
   local files = vim.fn.readdir(base_path)
 
@@ -165,11 +205,9 @@ local function load_config_recursive(base_path, module_prefix)
     local full_path = base_path .. '/' .. file
 
     if vim.fn.isdirectory(full_path) == 1 then
-      -- If directory, process recursively
       local new_prefix = module_prefix .. file .. '.'
       load_config_recursive(full_path, new_prefix)
     else
-      -- If file, only process .lua files
       if file:match '%.lua$' and not skip_files[file] then
         local module_name = module_prefix .. file:gsub('%.lua$', '')
         local ok, result = pcall(require, module_name)
@@ -186,8 +224,6 @@ local function load_config_recursive(base_path, module_prefix)
   end
 end
 
--- Load config recursively
 load_config_recursive(config_path, 'config.')
 
--- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

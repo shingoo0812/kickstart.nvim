@@ -92,6 +92,7 @@ wk.add {
     { '<leader>Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
     { ':Q', '<cmd>confirm qall<cr>', desc = 'Exit Neovim' },
     { '<C-S>', '<cmd>silent! update! | redraw<cr>', desc = 'Force write' },
+    { 'q', '<cmd>bd!<cr>', { buffer = true } },
     {
       {
         '<leader>fp',
@@ -130,6 +131,7 @@ wk.add {
     { '<C-z>', '^', desc = 'Move to head' },
     { '<C-e>', '$', desc = 'Move to end' },
     { '<leader>fc', '<cmd>BufferClose<cr>', desc = 'Buffer Close' },
+    -- Open current location for neo-tree
     {
       '<leader>fo',
       function()

@@ -1,104 +1,57 @@
-return { -- Collection of various small independent plugins/modules
-  'echasnovski/mini.nvim',
-  config = function()
-    -- Better Around/Inside textobjects
-    --
-    -- Examples:
-    --  - va)  - [V]isually select [A]round [)]paren
-    --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
-    --  - ci'  - [C]hange [I]nside [']quote
-    require('mini.ai').setup {
-      n_lines = 500,
-      custom_textobjects = {
-        f = function()
-          local s = vim.fn.searchpos('(', 'cn')
-          local e = vim.fn.searchpos(')', 'cn')
-          if s[1] == 0 or e[1] == 0 then
-            return
-          end
-          return { s[1], s[2], e[1], e[2] }
-        end,
-      },
-    }
-    -- Visualize and operate on indent scope
-    require('mini.indentscope').setup {
-      symbol = '│',
-      options = { try_as_border = true },
-      draw = { delay = 0, animation = require('mini.indentscope').gen_animation.none() },
-    }
+require('mini.ai').setup {
+  n_lines = 500,
+  custom_textobjects = {
+    f = function()
+      local s = vim.fn.searchpos('(', 'cn')
+      local e = vim.fn.searchpos(')', 'cn')
+      if s[1] == 0 or e[1] == 0 then
+        return
+      end
+      return { s[1], s[2], e[1], e[2] }
+    end,
+  },
+}
 
-    -- Add/delete/replace surroundings (brackets, quotes, etc.)
-    --
-    -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-    -- - sd'   - [S]urround [D]elete [']quotes
-    -- - sr)'  - [S]urround [R]eplace [)] [']
-    -- - vai - [V]isually select [A]round [I]ndent
-    -- - vii - [V]isually select [I]nside [I]ndent
-    require('mini.surround').setup {
-      respect_selection_type = false,
-      custom_surroundings = {
-        ['('] = { output = { left = '(', right = ')' } },
-        ['{'] = { output = { left = '{', right = '}' } },
-        ['['] = { output = { left = '[', right = ']' } },
-        ['<'] = { output = { left = '<', right = '>' } },
-      },
-    }
-    -- Simple and easy statusline.
-    --  You could remove this setup call if you don't like it,
-    --  and try some other statusline plugin
-    local statusline = require 'mini.statusline'
-    -- set use_icons to true if you have a Nerd Font
-    statusline.setup { use_icons = vim.g.have_nerd_font }
+require('mini.indentscope').setup {
+  symbol = '│',
+  options = { try_as_border = true },
+  draw = { delay = 0, animation = require('mini.indentscope').gen_animation.none() },
+}
 
-    -- You can configure sections in the statusline by overriding their
-    -- default behavior. For example, here we set the section for
-    -- cursor location to LINE:COLUMN
-    ---@diagnostic disable-next-line: duplicate-set-field
-    statusline.section_location = function()
-      return '%2l:%-2v'
-    end
-    require('mini.cmdline').setup {
-      -- Autocompletion: show `:h 'wildmenu'` as you type
-      autocomplete = {
-        enable = true,
+require('mini.surround').setup {
+  respect_selection_type = false,
+  custom_surroundings = {
+    ['('] = { output = { left = '(', right = ')' } },
+    ['{'] = { output = { left = '{', right = '}' } },
+    ['['] = { output = { left = '[', right = ']' } },
+    ['<'] = { output = { left = '<', right = '>' } },
+  },
+}
 
-        -- Delay (in ms) after which to trigger completion
-        -- Neovim>=0.12 is recommended for positive values
-        delay = 0,
+local statusline = require 'mini.statusline'
+statusline.setup { use_icons = vim.g.have_nerd_font }
+---@diagnostic disable-next-line: duplicate-set-field
+statusline.section_location = function()
+  return '%2l:%-2v'
+end
 
-        -- Custom rule of when to trigger completion
-        predicate = nil,
-
-        -- Whether to map arrow keys for more consistent wildmenu behavior
-        map_arrows = true,
-      },
-
-      -- Autocorrection: adjust non-existing words (commands, options, etc.)
-      autocorrect = {
-        enable = true,
-
-        -- Custom autocorrection rule
-        func = nil,
-      },
-
-      -- Autopeek: show command's target range in a floating window
-      autopeek = {
-        enable = true,
-
-        -- Number of lines to show above and below range lines
-        n_context = 1,
-
-        -- Window options
-        window = {
-          -- Floating window config
-          config = {},
-
-          -- Function to render statuscolumn
-          statuscolumn = nil,
-        },
-      },
-    }
-    -- ... and there is more!
-    --  Check out: https://github.com/echasnovski/mini.nvim
-  end,
+require('mini.cmdline').setup {
+  autocomplete = {
+    enable = true,
+    delay = 0,
+    predicate = nil,
+    map_arrows = true,
+  },
+  autocorrect = {
+    enable = true,
+    func = nil,
+  },
+  autopeek = {
+    enable = true,
+    n_context = 1,
+    window = {
+      config = {},
+      statuscolumn = nil,
+    },
+  },
 }

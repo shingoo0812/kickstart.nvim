@@ -1,3 +1,1 @@
-return {
-  'kalvinpearce/ShaderHighlight',
-}
+-- ShaderHighlight: no configuration needed

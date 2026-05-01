@@ -51,21 +51,23 @@ M.functions = {
     -- TODO: Replace with Neovim-native functionality
     -- OS detection
     detect_os = function()
-      local has = vim.fn.has
+      -- Using jit.os is the fastest and most common way in Neovim/LuaJIT
+      local os = string.lower(jit.os)
 
-      if has 'wsl' == 1 then
-        return 'wsl'
-      elseif has 'win32' == 1 or has 'win64' == 1 then
+      if os == 'windows' then
+        -- Check for WSL if you specifically need to distinguish it from native Linux
+        if vim.fn.has 'wsl' == 1 then
+          return 'wsl'
+        end
         return 'windows'
-      elseif has 'macunix' == 1 then
+      elseif os == 'osx' then
         return 'mac'
-      elseif has 'unix' == 1 then
+      elseif os == 'linux' then
         return 'linux'
       else
         return 'unknown'
       end
     end,
-
     -- Find the root of a Python virtual environment by looking for a `.venv` folder
     find_venv_root = function(path)
       local utils = M.functions.utils

@@ -1,10 +1,1 @@
-return {
-  'sainnhe/gruvbox-material',
-  dependencies = {
-    'nvim-lualine/lualine.nvim',
-  },
-  init = function() end,
-  opts = {
-    lazy = true,
-  },
-}
+-- gruvbox-material: colorscheme loaded in everforest.lua via vim.cmd.colorscheme

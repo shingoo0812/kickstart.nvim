@@ -1,14 +1,4 @@
-return {
-  {
-    {
-      'rachartier/tiny-inline-diagnostic.nvim',
-      event = 'VeryLazy',
-      priority = 1000,
-      opts = {},
-    },
-    {
-      'neovim/nvim-lspconfig',
-      opts = { diagnostics = { virtual_text = false } },
-    },
-  },
-}
+require('tiny-inline-diagnostic').setup {}
+
+-- Disable default virtual text since tiny-inline-diagnostic replaces it
+vim.diagnostic.config { virtual_text = false }

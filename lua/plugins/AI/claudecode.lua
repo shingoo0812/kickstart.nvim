@@ -1,27 +1,12 @@
-return {
-  {
-    'coder/claudecode.nvim',
-    enabled = true,
-    dependencies = { 'folke/snacks.nvim' },
-    config = true,
-    keys = {
-      { '<leader>A', nil, desc = 'AI/Claude Code' },
-      { '<leader>Ac', '<cmd>ClaudeCode<cr>', desc = 'Toggle Claude' },
-      { '<leader>Af', '<cmd>ClaudeCodeFocus<cr>', desc = 'Focus Claude' },
-      { '<leader>Ar', '<cmd>ClaudeCode --resume<cr>', desc = 'Resume Claude' },
-      { '<leader>AC', '<cmd>ClaudeCode --continue<cr>', desc = 'Continue Claude' },
-      { '<leader>Am', '<cmd>ClaudeCodeSelectModel<cr>', desc = 'Select Claude model' },
-      { '<leader>Ab', '<cmd>ClaudeCodeAdd %<cr>', desc = 'Add current buffer' },
-      { '<leader>As', '<cmd>ClaudeCodeSend<cr>', mode = 'v', desc = 'Send to Claude' },
-      {
-        '<leader>As',
-        '<cmd>ClaudeCodeTreeAdd<cr>',
-        desc = 'Add file',
-        ft = { 'NvimTree', 'neo-tree', 'oil', 'minifiles', 'netrw' },
-      },
-      -- Diff management
-      { '<leader>Aa', '<cmd>ClaudeCodeDiffAccept<cr>', desc = 'Accept diff' },
-      { '<leader>Ad', '<cmd>ClaudeCodeDiffDeny<cr>', desc = 'Deny diff' },
-    },
-  },
-}
+require('claudecode').setup()
+
+vim.keymap.set('n', '<leader>A', function() end, { desc = 'AI/Claude Code' })
+vim.keymap.set('n', '<leader>Ac', '<cmd>ClaudeCode<cr>', { desc = 'Toggle Claude' })
+vim.keymap.set('n', '<leader>Af', '<cmd>ClaudeCodeFocus<cr>', { desc = 'Focus Claude' })
+vim.keymap.set('n', '<leader>Ar', '<cmd>ClaudeCode --resume<cr>', { desc = 'Resume Claude' })
+vim.keymap.set('n', '<leader>AC', '<cmd>ClaudeCode --continue<cr>', { desc = 'Continue Claude' })
+vim.keymap.set('n', '<leader>Am', '<cmd>ClaudeCodeSelectModel<cr>', { desc = 'Select Claude model' })
+vim.keymap.set('n', '<leader>Ab', '<cmd>ClaudeCodeAdd %<cr>', { desc = 'Add current buffer' })
+vim.keymap.set('v', '<leader>As', '<cmd>ClaudeCodeSend<cr>', { desc = 'Send to Claude' })
+vim.keymap.set('n', '<leader>Aa', '<cmd>ClaudeCodeDiffAccept<cr>', { desc = 'Accept diff' })
+vim.keymap.set('n', '<leader>Ad', '<cmd>ClaudeCodeDiffDeny<cr>', { desc = 'Deny diff' })

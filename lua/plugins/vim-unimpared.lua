@@ -1,3 +1,1 @@
-return {
-  'tpope/vim-unimpaired',
-}
+-- vim-unimpaired: no configuration needed
