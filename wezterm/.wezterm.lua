@@ -1,1 +1,0 @@
-C:/Users/shing/AppData/Local/dotfiles/windows/wezterm/.wezterm.lua
