@@ -24,16 +24,16 @@ require 'config.init'
 require 'config.functions'
 
 -- [[ GLSL Filetype Configuration ]]
-vim.filetype.add({
+vim.filetype.add {
   extension = {
-    vert = "glsl",
-    frag = "glsl",
-    comp = "glsl",
-  }
-})
+    vert = 'glsl',
+    frag = 'glsl',
+    comp = 'glsl',
+  },
+}
 
 -- [[ Install plugins via vim.pack (Neovim 0.12 built-in) ]]
-vim.pack.add({
+vim.pack.add {
   -- Core dependencies (loaded first)
   'https://github.com/nvim-lua/plenary.nvim',
   'https://github.com/nvim-tree/nvim-web-devicons',
@@ -115,7 +115,7 @@ vim.pack.add({
   'https://github.com/kdheepak/lazygit.nvim',
 
   -- Search
-  { src = 'https://github.com/nvim-telescope/telescope.nvim', version = '0.1.x' },
+  { src = 'https://github.com/nvim-telescope/telescope.nvim', version = 'master' },
   'https://github.com/nvim-telescope/telescope-ui-select.nvim',
   'https://github.com/MagicDuck/grug-far.nvim',
 
@@ -161,7 +161,7 @@ vim.pack.add({
   'https://github.com/tpope/vim-dadbod',
   'https://github.com/kristijanhusak/vim-dadbod-ui',
   'https://github.com/kristijanhusak/vim-dadbod-completion',
-})
+}
 
 -- Run build steps after plugin install/update
 vim.api.nvim_create_autocmd('PackChanged', {
@@ -179,7 +179,7 @@ local function load_plugin_configs(base_path, prefix)
     local full_path = base_path .. '/' .. item
     if vim.fn.isdirectory(full_path) == 1 then
       load_plugin_configs(full_path, prefix .. item .. '.')
-    elseif item:match('%.lua$') then
+    elseif item:match '%.lua$' then
       local module = prefix .. item:gsub('%.lua$', '')
       local ok, err = pcall(require, module)
       if not ok then
@@ -189,7 +189,7 @@ local function load_plugin_configs(base_path, prefix)
   end
 end
 
-load_plugin_configs(vim.fn.stdpath('config') .. '/lua/plugins', 'plugins.')
+load_plugin_configs(vim.fn.stdpath 'config' .. '/lua/plugins', 'plugins.')
 
 -- [[Read Configuration folders(./lua/config/*.lua)]]
 local config_path = vim.fn.stdpath 'config' .. '/lua/config'
