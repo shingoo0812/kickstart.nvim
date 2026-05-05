@@ -174,6 +174,21 @@ M.autocmds = {
     end,
   },
   -- You can add more autocmds here following the same format
+  -- Theme highlight overrides
+  {
+    group = 'ThemeHighlightOverrides',
+    event = 'ColorScheme',
+    pattern = '*',
+    callback = function()
+      vim.api.nvim_set_hl(0, '@variable', { fg = '#c0caf5' })
+      vim.api.nvim_set_hl(0, '@variable.member', { fg = '#dcdcaa' })
+      vim.api.nvim_set_hl(0, '@function.call', { fg = '#dcdcaa' })
+      vim.api.nvim_set_hl(0, 'TSFunctionCall', { fg = '#dcdcaa' })
+      vim.cmd.hi 'GreenBold guifg=#dcdcaa'
+      vim.api.nvim_set_hl(0, '@comment', { fg = '#7aa2f7' })
+      vim.api.nvim_set_hl(0, '@lsp.type.member.javascriptreact', { fg = '#dcdcaa' })
+      vim.api.nvim_set_hl(0, '@function.method.call.javascript', { fg = '#dcdcaa' })
+    end,
 }
 
 -----------------------------------------------------
