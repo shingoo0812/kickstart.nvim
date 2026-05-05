@@ -189,6 +189,7 @@ M.autocmds = {
       vim.api.nvim_set_hl(0, '@lsp.type.member.javascriptreact', { fg = '#dcdcaa' })
       vim.api.nvim_set_hl(0, '@function.method.call.javascript', { fg = '#dcdcaa' })
     end,
+  },
 }
 
 -----------------------------------------------------
