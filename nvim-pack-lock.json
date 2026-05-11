@@ -115,6 +115,10 @@
       "rev": "3bc2bd7aef28fbed6643534a0fdd0f19966544bc",
       "src": "https://github.com/shellRaining/hlchunk.nvim"
     },
+    "image.nvim": {
+      "rev": "da2be65c153ba15a14a342b05591652a6df70d58",
+      "src": "https://github.com/3rd/image.nvim"
+    },
     "indent-blankline.nvim": {
       "rev": "d28a3f70721c79e3c5f6693057ae929f3d9c0a03",
       "src": "https://github.com/lukas-reineke/indent-blankline.nvim"
@@ -405,6 +409,10 @@
     "vimwiki": {
       "rev": "a54a3002e229c4b43d69ced170ff77663a5b2c40",
       "src": "https://github.com/vimwiki/vimwiki"
+    },
+    "wezterm.nvim": {
+      "rev": "032c33b621b96cc7228955b4352b48141c482098",
+      "src": "https://github.com/willothy/wezterm.nvim"
     },
     "which-key.nvim": {
       "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
